@@ -1182,7 +1182,7 @@ export const getBookContextMenuItemIds = (
   ids.push('showDetails', 'showInFinder', 'searchGoodreads');
   // A feed book has no file to move: every transfer action would fail, and the
   // share dialog uploads before it can hand out a link (issue #5307).
-  if (!isFeedBook(book)) {
+  if (!book.kataKecil && !isFeedBook(book)) {
     if (book.uploadedAt && !book.downloadedAt) ids.push('download');
     if (!book.uploadedAt && book.downloadedAt) ids.push('upload');
     // Share is offered for any local-or-uploaded book; the dialog uploads first

@@ -41,6 +41,32 @@ afterEach(() => {
   localStorage.clear();
 });
 describe('Catalog reader integration', () => {
+  it('keeps native shelf metadata and completed status across an EPUB update', async () => {
+    const saved = {
+      ...previous,
+      tags: ['Novel'],
+      groupId: 'favorites',
+      groupName: 'Favorites',
+      readingStatus: 'finished' as const,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(new Blob(['EPUB']), {
+          headers: { 'content-type': 'application/epub+zip', 'x-katakecil-revision': 'new' },
+        }),
+      ),
+    );
+    const book = await prepareCatalogBook(
+      entry,
+      app() as unknown as AppService,
+      [saved],
+      {} as SystemSettings,
+    );
+    expect(book.tags).toEqual(['Novel']);
+    expect(book.groupId).toBe('favorites');
+    expect(book.readingStatus).toBe('finished');
+  });
   it('migrates progress and notes to a new EPUB version without altering serial status', async () => {
     vi.stubGlobal(
       'fetch',

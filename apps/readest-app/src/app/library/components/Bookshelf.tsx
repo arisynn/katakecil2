@@ -1,10 +1,8 @@
 import LibraryEmptyState from './LibraryEmptyState';
-import LibraryImportButton from './LibraryImportButton';
 import clsx from 'clsx';
 import { MdManageSearch } from 'react-icons/md';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PiPlus } from 'react-icons/pi';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Book, BooksGroup, type LibrarySearchConfig, ReadingStatus } from '@/types/book';
@@ -19,7 +17,6 @@ import { selectActiveBookDownloadProgress, useTransferStore } from '@/store/tran
 import { useTranslation } from '@/hooks/useTranslation';
 import { useMedianPageDurationsSecs } from '@/hooks/useMedianPageDurationSecs';
 import { useBookshelfDate } from '@/hooks/useBookshelfDate';
-import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import { navigateToLibrary, navigateToReader, showReaderWindow } from '@/utils/nav';
 import {
   createBookFilter,
@@ -62,6 +59,7 @@ import SelectModeActions from './SelectModeActions';
 import ShareBookDialog from './ShareBookDialog';
 import { createCollectionPack, READEST_PACK_MIME } from '@/services/pack/packService';
 import { useAuth } from '@/context/AuthContext';
+import { openCatalogLibraryBook } from '@/services/katakecil/library';
 import GroupingModal from './GroupingModal';
 import TaggingModal from './TaggingModal';
 import SetStatusAlert from './SetStatusAlert';
@@ -79,7 +77,6 @@ interface BookshelfProps {
   isSelectAll: boolean;
   isSelectNone: boolean;
   onScrollerRef: (el: HTMLDivElement | null) => void;
-  handleImportBooks: (anchor: HTMLElement) => void;
   handleBookDownload: (
     book: Book,
     options?: { redownload?: boolean; queued?: boolean; silent?: boolean },
@@ -106,7 +103,6 @@ const Bookshelf: React.FC<BookshelfProps> = ({
   isSelectAll,
   isSelectNone,
   onScrollerRef,
-  handleImportBooks,
   handleBookUpload,
   handleBookDownload,
   handleBookDelete,
@@ -197,16 +193,13 @@ const Bookshelf: React.FC<BookshelfProps> = ({
   const [showStatusAlert, setShowStatusAlert] = useState(false);
   const [showGroupingModal, setShowGroupingModal] = useState(false);
   const [tagBookHashes, setTagBookHashes] = useState<string[] | null>(null);
-  const [importBookUrl] = useState(searchParams?.get('url') || '');
 
   const abortDeletionRef = useRef(false);
   const selectAllAppliedRef = useRef(false);
-  const isImportingBook = useRef(false);
-  const iconSize15 = useResponsiveSize(15);
   const autofocusRef = useAutoFocus<HTMLDivElement>();
   useSpatialNavigation(autofocusRef);
 
-  const { setCurrentBookshelf, setLibrary, updateBooks } = useLibraryStore();
+  const { setCurrentBookshelf, updateBooks } = useLibraryStore();
   const { setSelectedBooks, getSelectedBooks, toggleSelectedBook } = useLibraryStore();
   // The raw Set from the store: its identity only changes when the selection
   // does, so memos keyed on it stay stable across unrelated re-renders
@@ -405,25 +398,6 @@ const Bookshelf: React.FC<BookshelfProps> = ({
   ]);
 
   useEffect(() => {
-    if (isImportingBook.current) return;
-    isImportingBook.current = true;
-
-    if (importBookUrl && appService) {
-      const importBook = async () => {
-        console.log('Importing book from URL:', importBookUrl);
-        const book = await appService.importBook(importBookUrl, libraryBooks);
-        if (book) {
-          setLibrary(libraryBooks);
-          appService.saveLibraryBooks(libraryBooks);
-          navigateToReader(router, [book.hash]);
-        }
-      };
-      importBook();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [importBookUrl, appService]);
-
-  useEffect(() => {
     setCurrentBookshelf(currentShelfBooks);
   }, [currentShelfBooks, setCurrentBookshelf]);
 
@@ -446,11 +420,37 @@ const Bookshelf: React.FC<BookshelfProps> = ({
     [toggleSelectedBook, setSelectedBooks],
   );
 
-  const openSelectedBooks = () => {
+  const openSelectedBooks = async () => {
+    const selected = getSelectedBooks();
+    const resolved = new Map(libraryBooks.map((book) => [book.hash, book]));
+    const ids: string[] = [];
     handleSetSelectMode(false);
-    const { audiobookHash, readerIds, droppedAudiobooks } = splitLibraryOpenIds(
-      getSelectedBooks(),
-      (hash) => libraryBooks.find((book) => book.hash === hash),
+    setLoading(true);
+    try {
+      for (const hash of selected) {
+        let book = resolved.get(hash);
+        if (book?.kataKecil && appService)
+          book = await openCatalogLibraryBook(
+            book,
+            appService,
+            useSettingsStore.getState().settings,
+          );
+        if (book) {
+          resolved.set(book.hash, book);
+          ids.push(book.hash);
+        }
+      }
+    } catch (error) {
+      eventDispatcher.dispatch('toast', {
+        type: 'error',
+        message: _(error instanceof Error ? error.message : 'Could not load this book.'),
+      });
+      return;
+    } finally {
+      setLoading(false);
+    }
+    const { audiobookHash, readerIds, droppedAudiobooks } = splitLibraryOpenIds(ids, (hash) =>
+      resolved.get(hash),
     );
     if (audiobookHash) {
       router.push(`/player?id=${audiobookHash}`);
@@ -976,36 +976,6 @@ const Bookshelf: React.FC<BookshelfProps> = ({
       showSeriesIndex,
     ],
   );
-  const lastShelf = sections.at(-1)?.definition;
-  const importTile =
-    visibleBooks.length > 0 && lastShelf?.layout === 'grid' ? (
-      <div
-        className='bookshelf-import-item mx-0 my-2 sm:mx-4 sm:my-4'
-        style={
-          lastShelf.coverFit === 'fit'
-            ? { display: 'flex', paddingBottom: `${iconSize15 + 24}px` }
-            : undefined
-        }
-      >
-        <button
-          type='button'
-          aria-label={_('Import Books')}
-          aria-haspopup='menu'
-          className={clsx(
-            'bookitem-main eink-bordered bg-base-100/50 hover:bg-base-300/50 flex aspect-28/41 w-full items-center justify-center rounded-sm',
-            'focus-visible:ring-base-content/15 focus-visible:outline-hidden focus-visible:ring-2',
-          )}
-          onClick={(event) => handleImportBooks(event.currentTarget)}
-        >
-          <PiPlus aria-hidden className='text-base-content/60 size-10' />
-        </button>
-      </div>
-    ) : undefined;
-  const importAction = !importTile ? (
-    <div className='flex justify-center px-4 py-4'>
-      <LibraryImportButton onImport={handleImportBooks} />
-    </div>
-  ) : undefined;
 
   return (
     <div
@@ -1034,7 +1004,7 @@ const Bookshelf: React.FC<BookshelfProps> = ({
       )}
       {!visibleBooks.length ? (
         <div className='flex min-h-0 flex-1 items-center-safe justify-center overflow-y-auto p-6'>
-          <LibraryEmptyState onImport={handleImportBooks} />
+          <LibraryEmptyState />
         </div>
       ) : contentSearch?.query.trim() && appService ? (
         <LibrarySearchResults
@@ -1064,8 +1034,6 @@ const Bookshelf: React.FC<BookshelfProps> = ({
             autoColumns={settings.libraryAutoColumns}
             fixedColumns={settings.libraryColumns}
             footerHeight={footerHeight}
-            importAction={importAction}
-            importTile={importTile}
             renderItem={renderBookshelfItem}
             onScrollerRef={handleScrollerRef}
           />

@@ -20,13 +20,11 @@ import {
 } from 'react-icons/md';
 import { RiForward30Line, RiReplay15Line, RiVoiceAiFill } from 'react-icons/ri';
 import { TbArrowBarToRight } from 'react-icons/tb';
-import { useAppRouter } from '@/hooks/useAppRouter';
 import { TTSVoicesGroup } from '@/services/tts';
 import { MEDIA_OVERLAY_VOICE_ID } from '@/services/tts/mediaOverlay';
 import type { TTSLoopState } from '@/services/tts/TTSController';
 import { saveViewSettings } from '@/helpers/settings';
 import { useEnv } from '@/context/EnvContext';
-import { useAuth } from '@/context/AuthContext';
 import { useReaderStore } from '@/store/readerStore';
 import { useBookProgress } from '@/store/readerProgressStore';
 import { useBookDataStore } from '@/store/bookDataStore';
@@ -35,7 +33,6 @@ import { TranslationFunc, useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import { useQuotaStats } from '@/hooks/useQuotaStats';
 import { isTTSCacheAllowed } from '@/utils/access';
-import { navigateToLogin, navigateToProfile } from '@/utils/nav';
 import { getLanguageName } from '@/utils/lang';
 import { formatPlaybackTime } from '@/utils/time';
 import Dialog from '@/components/Dialog';
@@ -163,25 +160,14 @@ const TTSPlayerSheet = ({
   activeSectionIndex,
 }: TTSPlayerSheetProps) => {
   const _ = useTranslation();
-  const router = useAppRouter();
   const { envConfig } = useEnv();
-  const { user } = useAuth();
   const { getViewSettings, setViewSettings } = useReaderStore();
   const { getBookData } = useBookDataStore();
   const progress = useBookProgress(bookKey);
   const viewSettings = getViewSettings(bookKey);
 
-  // Offline audio (pre-downloading Read Aloud audio per chapter) is a premium
-  // feature: any paid plan can use it; free / signed-out users see the row with
-  // a Premium badge that routes to the upgrade page instead of the per-chapter
-  // download controls. Mirrors the cloud-sync paywall in IntegrationsPanel.
   const { userProfilePlan, customizationPurchased } = useQuotaStats();
   const isDownloadPremium = isTTSCacheAllowed(userProfilePlan ?? 'free', customizationPurchased);
-  // Only badge users who can't use it yet: signed out (known at once), or a
-  // resolved plan without the feature. Suppress it while a signed-in user's
-  // plan is still loading so it never flashes at an entitled user.
-  const premiumBadge =
-    !user || (userProfilePlan !== undefined && !isDownloadPremium) ? _('Premium') : undefined;
 
   // A book can carry a coverImageUrl that no longer resolves (cover never
   // extracted, file pruned). A broken <img> still occupies its h-32 box, so
@@ -294,7 +280,9 @@ const TTSPlayerSheet = ({
     // language changed) must not overwrite its result.
     let current = true;
     const fetchVoices = async () => {
-      const groups = await onGetVoices(ttsLang);
+      const groups = (await onGetVoices(ttsLang))
+        .map((group) => ({ ...group, voices: group.voices.filter((voice) => !voice.disabled) }))
+        .filter((group) => group.voices.length > 0);
       if (!current) return;
       const voicesCount = groups.reduce((acc, group) => acc + group.voices.length, 0);
       if (!groups || voicesCount === 0) {
@@ -352,21 +340,6 @@ const TTSPlayerSheet = ({
   const handleSelectTimeout = (value: number) => {
     onSelectTimeout(bookKey, value);
     setView('main');
-  };
-
-  // Entitled users drill into the per-chapter download view; everyone else is
-  // routed to the upgrade page (or sign-in), the sheet closing first so the
-  // navigation isn't hidden behind it.
-  // Signed in, to the plans on the user page; signed out, to sign in first.
-  const handleUpgrade = () => {
-    onClose();
-    if (user) navigateToProfile(router);
-    else navigateToLogin(router);
-  };
-
-  const handleOpenDownloads = () => {
-    if (isDownloadPremium) setView('chapters');
-    else handleUpgrade();
   };
 
   const timeoutOptions = getTTSTimeoutOptions(_);
@@ -713,32 +686,31 @@ const TTSPlayerSheet = ({
               </span>
             </button>
           </div>
-          {!isNarrating && downloads.supported && downloads.chapters.length > 0 && (
-            <button
-              type='button'
-              aria-label={_('Offline Audio')}
-              onClick={handleOpenDownloads}
-              className='not-eink:bg-base-200 eink-bordered flex w-full items-center gap-3 rounded-xl px-3 py-2.5'
-            >
-              <MdOutlineFileDownload size={iconSize24} className='shrink-0' />
-              <div className='flex min-w-0 flex-1 flex-col items-start'>
-                <span className='text-sm font-semibold'>{_('Offline Audio')}</span>
-                <span className='text-base-content/60 line-clamp-1 text-start text-xs'>
-                  {premiumBadge
-                    ? _('Download chapters for offline playback')
-                    : _('{{done}} of {{total}} downloaded', {
-                        done: downloads.chapters.filter((c) => downloads.statusOf(c) === 'complete')
-                          .length,
-                        total: downloads.chapters.length,
-                      })}
-                </span>
-              </div>
-              {premiumBadge && (
-                <span className='badge badge-sm badge-ghost shrink-0'>{premiumBadge}</span>
-              )}
-              <MdChevronRight size={iconSize24} className='shrink-0 rtl:rotate-180' />
-            </button>
-          )}
+          {!isNarrating &&
+            isDownloadPremium &&
+            downloads.supported &&
+            downloads.chapters.length > 0 && (
+              <button
+                type='button'
+                aria-label={_('Offline Audio')}
+                onClick={() => setView('chapters')}
+                className='not-eink:bg-base-200 eink-bordered flex w-full items-center gap-3 rounded-xl px-3 py-2.5'
+              >
+                <MdOutlineFileDownload size={iconSize24} className='shrink-0' />
+                <div className='flex min-w-0 flex-1 flex-col items-start'>
+                  <span className='text-sm font-semibold'>{_('Offline Audio')}</span>
+                  <span className='text-base-content/60 line-clamp-1 text-start text-xs'>
+                    {_('{{done}} of {{total}} downloaded', {
+                      done: downloads.chapters.filter((c) => downloads.statusOf(c) === 'complete')
+                        .length,
+                      total: downloads.chapters.length,
+                    })}
+                  </span>
+                </div>
+
+                <MdChevronRight size={iconSize24} className='shrink-0 rtl:rotate-180' />
+              </button>
+            )}
         </div>
       )}
       {view === 'chapters' && (
@@ -793,12 +765,7 @@ const TTSPlayerSheet = ({
                     <button
                       key={`${voiceGroup.id}-${voice.id}`}
                       type='button'
-                      // A premium voice the plan lacks stays tappable: it
-                      // leads to the upgrade instead of speaking.
-                      disabled={voice.disabled && !voice.tier}
-                      onClick={() =>
-                        voice.disabled ? handleUpgrade() : handleSelectVoice(voice.id, voice.lang)
-                      }
+                      onClick={() => handleSelectVoice(voice.id, voice.lang)}
                       className='flex w-full items-center gap-2 rounded-lg px-2 py-2 text-start'
                     >
                       <span className='flex h-6 w-6 items-center justify-center'>

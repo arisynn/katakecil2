@@ -318,6 +318,7 @@ const BookItem: React.FC<BookItemProps> = ({
                 // Same for an ABS book: it streams from the server and never has
                 // uploadedAt/downloadedAt set, so without this check the badge
                 // would render forever and Upload would always fail.
+                !book.kataKecil &&
                 !isFeedBook(book) &&
                 !isAudiobook(book) &&
                 (!book.uploadedAt || (book.uploadedAt && !book.downloadedAt)) && (

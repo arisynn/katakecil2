@@ -150,6 +150,22 @@ export const themes = [
     },
   },
   {
+    name: 'white-glass',
+    label: _('White Glass'),
+    colors: {
+      light: generateLightPalette({ fg: '#111111', bg: '#f5f5f5', primary: '#444444' }),
+      dark: generateDarkPalette({ fg: '#eeeeee', bg: '#171717', primary: '#dddddd' }),
+    },
+  },
+  {
+    name: 'black-glass',
+    label: _('Black Glass'),
+    colors: {
+      light: generateLightPalette({ fg: '#171717', bg: '#e8e8e8', primary: '#111111' }),
+      dark: generateDarkPalette({ fg: '#ffffff', bg: '#050505', primary: '#ffffff' }),
+    },
+  },
+  {
     name: 'gray',
     label: _('Gray'),
     colors: {

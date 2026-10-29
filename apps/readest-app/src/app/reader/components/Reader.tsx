@@ -31,6 +31,7 @@ import { getLocale } from '@/utils/misc';
 import { initDayjs } from '@/utils/time';
 import ReaderContent from './ReaderContent';
 import PublicationNotice from '@/components/katakecil/PublicationNotice';
+import SettingsDialog from '@/components/settings/SettingsDialog';
 
 /*
 Z-Index Layering Guide:
@@ -56,7 +57,7 @@ Z-Index Layering Guide:
 const Reader: React.FC<{ ids?: string }> = ({ ids }) => {
   const router = useRouter();
   const { appService } = useEnv();
-  const { settings } = useSettingsStore();
+  const { settings, isSettingsDialogOpen, settingsDialogBookKey } = useSettingsStore();
   const { libraryLoaded } = useLibrary();
   const { sideBarBookKey } = useSidebarStore();
   const { hoveredBookKey } = useReaderStore();
@@ -164,6 +165,7 @@ const Reader: React.FC<{ ids?: string }> = ({ ids }) => {
       <Suspense fallback={<div className='full-height'></div>}>
         <PublicationNotice />
         <ReaderContent ids={ids} settings={settings} />
+        {isSettingsDialogOpen && <SettingsDialog bookKey={settingsDialogBookKey} />}
         <AboutWindow />
         <ReadingStatsDialog />
         <KeyboardShortcutsHelp />

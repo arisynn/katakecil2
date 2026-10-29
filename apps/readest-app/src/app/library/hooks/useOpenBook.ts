@@ -8,6 +8,7 @@ import { hasFileSyncMirror, useMakeBookAvailable } from '@/hooks/useMakeBookAvai
 import { eventDispatcher } from '@/utils/event';
 import { navigateToReader, showReaderWindow } from '@/utils/nav';
 import { isAbsEbook, isAudiobook } from '@/utils/audiobook';
+import { openCatalogLibraryBook } from '@/services/katakecil/library';
 
 interface UseOpenBookOptions {
   setLoading: Dispatch<SetStateAction<boolean>>;
@@ -33,6 +34,25 @@ export const useOpenBook = ({ setLoading, handleBookDownload }: UseOpenBookOptio
 
   const openBook = useCallback(
     async (book: Book, cfi?: string, options?: { highlightSearchResult?: boolean }) => {
+      if (book.kataKecil) {
+        if (!appService) return;
+        setLoading(true);
+        try {
+          book = await openCatalogLibraryBook(
+            book,
+            appService,
+            useSettingsStore.getState().settings,
+          );
+        } catch (error) {
+          eventDispatcher.dispatch('toast', {
+            type: 'error',
+            message: _(error instanceof Error ? error.message : 'Could not load this book.'),
+          });
+          return;
+        } finally {
+          setLoading(false);
+        }
+      }
       // A streaming audiobook has no local file and no document loader path -
       // it opens in the full-screen player instead of the reader. Short-circuit
       // before any of the file-availability logic below, which assumes a real

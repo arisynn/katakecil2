@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useEnv } from '@/context/EnvContext';
 import { useAuth } from '@/context/AuthContext';
-import { useAppRouter } from '@/hooks/useAppRouter';
 import { useKeyDownActions } from '@/hooks/useKeyDownActions';
 import { isCustomTTSAllowed } from '@/utils/access';
-import { navigateToLogin, navigateToProfile } from '@/utils/nav';
 import { useReaderStore } from '@/store/readerStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useResetViewSettings } from '@/hooks/useResetSettings';
@@ -31,8 +29,7 @@ import TTSHighlightStyleEditor, { TTSHighlightStyle } from './theme/TTSHighlight
 const TTSPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }) => {
   const _ = useTranslation();
   const { envConfig } = useEnv();
-  const router = useAppRouter();
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const hasPremium = isCustomTTSAllowed(token);
   const [showCustomServices, setShowCustomServices] = useState(false);
   const { getViewSettings } = useReaderStore();
@@ -131,14 +128,6 @@ const TTSPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }
     onCancel: () => setShowCustomServices(false),
   });
 
-  // Custom TTS services are premium: everyone else is routed to the plans page
-  // (or sign-in) instead of the sub-page.
-  const handleOpenCustomServices = () => {
-    if (hasPremium) setShowCustomServices(true);
-    else if (user) navigateToProfile(router);
-    else navigateToLogin(router);
-  };
-
   const handleTTSStyleChange = (style: TTSHighlightStyle) => {
     setTtsHighlightStyle(style);
     saveViewSettings(envConfig, bookKey, 'ttsHighlightOptions', {
@@ -184,15 +173,16 @@ const TTSPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }
 
   return (
     <div className='my-4 w-full space-y-6'>
-      <BoxedList title={_('Voices')} cardClassName='overflow-hidden'>
-        <NavigationRow
-          title={_('Custom TTS Services')}
-          status={_('Use your own OpenAI-compatible speech service')}
-          badge={hasPremium ? undefined : _('Premium')}
-          onClick={handleOpenCustomServices}
-          data-setting-id='settings.tts.customServices'
-        />
-      </BoxedList>
+      {hasPremium && (
+        <BoxedList title={_('Voices')} cardClassName='overflow-hidden'>
+          <NavigationRow
+            title={_('Custom TTS Services')}
+            status={_('Use your own OpenAI-compatible speech service')}
+            onClick={() => setShowCustomServices(true)}
+            data-setting-id='settings.tts.customServices'
+          />
+        </BoxedList>
+      )}
 
       <TTSHighlightStyleEditor
         granularity={ttsHighlightGranularity}

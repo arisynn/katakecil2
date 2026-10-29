@@ -106,7 +106,17 @@ export function prepareCatalogBook(
       title: entry.title,
       author: entry.author,
       coverImageUrl: entry.cover_url || imported.coverImageUrl,
-      readingStatus: previous ? 'reading' : 'unread',
+      readingStatus: previous?.readingStatus ?? 'unread',
+      ...(previous
+        ? {
+            createdAt: previous.createdAt,
+            tags: previous.tags,
+            groupId: previous.groupId,
+            groupName: previous.groupName,
+            groupUpdatedAt: previous.groupUpdatedAt,
+            readingStatusUpdatedAt: previous.readingStatusUpdatedAt,
+          }
+        : {}),
       kataKecil: { id: entry.id, revision: entry.revision, sectionIds: entry.section_ids },
     };
     if (previous && config)
