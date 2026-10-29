@@ -1,0 +1,57 @@
+{
+  "repository": "https://github.com/readest/readest",
+  "branch": "main",
+  "commit": "578b50fa7e2064ac3da6d1b082a90541394c6a75",
+  "upstream_app_version": "0.12.16",
+  "commit_date": "2026-10-28T17:48:16+01:00",
+  "prepared_at": "2026-10-29T13:38:00.099547+00:00",
+  "source_runtime_modified": false,
+  "integration_with_user_supabase_implemented": false,
+  "web_or_apk_built": false,
+  "git_history_in_zip": false,
+  "submodules": [
+    {
+      "path": "apps/readest-app/.claude/skills/gstack",
+      "commit": "a3259400a366593e0c909dd9ac3e59752efd2488"
+    },
+    {
+      "path": "apps/readest-app/src-tauri/plugins/tauri-plugin-turso",
+      "commit": "3c4be4fd92fbe11e8e374b6e8e85dbf9a3b1b4ac"
+    },
+    {
+      "path": "apps/readest-app/src-tauri/plugins/tauri-plugin-webview-upgrade",
+      "commit": "c861233a9328319bf36369159735c7100e65c287"
+    },
+    {
+      "path": "packages/foliate-js",
+      "commit": "0c7a0edcda672218e958fb92b4cdf090d7ca9daa"
+    },
+    {
+      "path": "packages/js-mdict",
+      "commit": "d01bf62af872b1fbeacb2f18446460960e7400de"
+    },
+    {
+      "path": "packages/qcms",
+      "commit": "fc23a407f1ed9ccfea15875d27e0936dcc798a1f"
+    },
+    {
+      "path": "packages/simplecc-wasm",
+      "commit": "5e5b56f5b82394e7df07f9171ac70f4578b24a32"
+    },
+    {
+      "path": "packages/simplecc-wasm/OpenCC",
+      "commit": "e0d41d7f5e7c62f9be1cfdd9e6cb1d03847c06e7"
+    },
+    {
+      "path": "packages/tauri",
+      "commit": "382ea858bdd29458a5447e49c401b3ac64f0c3c0"
+    }
+  ],
+  "scope": "Unchanged tracked source snapshot plus contextual file copies and documentation.",
+  "package_variant": "lite-source",
+  "runtime_source_modified": false,
+  "trimmed_non_runtime_assets": true,
+  "optional_wordlens_source_packs_included": false,
+  "test_fixtures_complete": false,
+  "duplicate_source_extracts_included": false
+}

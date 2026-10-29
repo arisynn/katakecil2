@@ -1,0 +1,11 @@
+{
+  "source_files": 4612,
+  "source_bytes": 69959631,
+  "source_hashes_match": true,
+  "static_local_import_edges_checked": 6655,
+  "dependencies_restored_to_avoid_breakage": [],
+  "cargo_paths_and_members_checked": 65,
+  "removed_files": 3727,
+  "runtime_source_modified": false,
+  "web_or_apk_build_run": false
+}

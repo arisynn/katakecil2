@@ -1,0 +1,23 @@
+{
+  "name": "Kata Kecil",
+  "short_name": "Kata Kecil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F5F5",
+  "description": "Kata Kecil \u2014 Ruang untuk Membaca.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "splash_pages": null,
+  "theme_color": "#F5F5F5"
+}
