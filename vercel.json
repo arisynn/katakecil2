@@ -1,0 +1,18 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "readest-app": {
+      "root": "apps/readest-app",
+      "framework": "nextjs",
+      "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+      "buildCommand": "pnpm run setup-vendors && pnpm run build-web",
+      "devCommand": "pnpm run setup-vendors && pnpm run dev-web --hostname 127.0.0.1 --port $PORT"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": { "service": "readest-app" }
+    }
+  ]
+}
