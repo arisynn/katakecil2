@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/'))
     return NextResponse.json({ error: 'Reader only' }, { status: 404 });
   const response = NextResponse.next();
