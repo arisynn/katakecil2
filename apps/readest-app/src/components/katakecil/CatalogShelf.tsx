@@ -21,7 +21,7 @@ export default function CatalogShelf() {
   const { appService } = useEnv();
   const { libraryLoaded } = useLibrary();
   const { library, setLibrary } = useLibraryStore();
-  const { settings, setSettingsDialogOpen } = useSettingsStore();
+  const { settings, isSettingsDialogOpen, setSettingsDialogOpen } = useSettingsStore();
   const { safeAreaInsets: insets } = useThemeStore();
   const router = useAppRouter();
   const [books, setBooks] = useState<CatalogBook[]>([]);
@@ -123,6 +123,7 @@ export default function CatalogShelf() {
         <button
           type='button'
           className='kk-icon-button'
+          disabled={!settings.globalViewSettings}
           onClick={() => setSettingsDialogOpen(true)}
           aria-label={_('Settings')}
         >
@@ -239,7 +240,7 @@ export default function CatalogShelf() {
           </p>
         </div>
       )}
-      <SettingsDialog bookKey='' />
+      {isSettingsDialogOpen && settings.globalViewSettings && <SettingsDialog bookKey='' />}
       <AboutWindow />
     </main>
   );
