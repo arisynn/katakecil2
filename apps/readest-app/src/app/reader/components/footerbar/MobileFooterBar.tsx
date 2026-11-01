@@ -31,6 +31,7 @@ const MobileFooterBar: React.FC<FooterBarChildProps> = ({
   return (
     <>
       <ColorPanel
+        onSetActionTab={onSetActionTab}
         actionTab={actionTab}
         bottomOffset={bottomOffset}
         forceMobileLayout={forceMobileLayout}
@@ -48,6 +49,7 @@ const MobileFooterBar: React.FC<FooterBarChildProps> = ({
         insetStyle={panelInsetStyle}
       />
       <FontLayoutPanel
+        onSetActionTab={onSetActionTab}
         bookKey={bookKey}
         actionTab={actionTab}
         bottomOffset={bottomOffset}

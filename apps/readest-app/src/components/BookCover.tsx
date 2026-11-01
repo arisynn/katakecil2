@@ -40,13 +40,32 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
     bookRef.current = book;
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
-    const [failedThumbnailUrl, setFailedThumbnailUrl] = useState<string | null>(null);
+    const [failedSources, setFailedSources] = useState<string[]>([]);
     const thumbnail = useLibraryStore((state) => state.coverThumbnails.get(book.hash));
     const matchingThumbnail =
       thumbnail?.coverHash === (book.coverHash ?? null) ? thumbnail.url : null;
-    const usableThumbnail = matchingThumbnail === failedThumbnailUrl ? null : matchingThumbnail;
     const metadataCoverImageUrl = book.metadata?.coverImageUrl || null;
-    const coverImageUrl = metadataCoverImageUrl || usableThumbnail || book.coverImageUrl || null;
+    // The catalog URL survives reloads. Imported blob URLs can expire and must
+    // never mask a published cover or prevent trying the remaining sources.
+    const sources = [
+      ...new Set(
+        [
+          book.kataKecil?.coverUrl,
+          metadataCoverImageUrl,
+          matchingThumbnail,
+          book.coverImageUrl,
+        ].filter((url): url is string => !!url),
+      ),
+    ];
+    const sourceKey = JSON.stringify(sources);
+    const [previousSourceKey, setPreviousSourceKey] = useState(sourceKey);
+    const sourcesChanged = sourceKey !== previousSourceKey;
+    if (sourcesChanged) {
+      setPreviousSourceKey(sourceKey);
+      setFailedSources([]);
+    }
+    const coverImageUrl =
+      sources.find((url) => sourcesChanged || !failedSources.includes(url)) || null;
     const shelfHideCovers = useContext(HideBookCoversContext);
     const defaultShelfCovers = useDefaultBookshelfCovers();
     const hideCovers = shelfHideCovers ?? defaultShelfCovers.hideCovers;
@@ -64,15 +83,11 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
     };
 
     const handleImageError = () => {
-      if (usableThumbnail && book.coverImageUrl) {
-        setFailedThumbnailUrl(usableThumbnail);
-        setImageLoaded(false);
-        setImageError(false);
-        return;
-      }
+      if (coverImageUrl) setFailedSources((failed) => [...failed, coverImageUrl]);
       setImageLoaded(false);
       setImageError(true);
-      onImageError?.();
+      if (sources.every((url) => url === coverImageUrl || failedSources.includes(url)))
+        onImageError?.();
     };
 
     // Reset during render, not in an effect: a cached cover can report `load`
@@ -84,10 +99,6 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
       setImageLoaded(false);
       setImageError(false);
     }
-
-    useEffect(() => {
-      setFailedThumbnailUrl(null);
-    }, [book.hash, book.coverHash]);
 
     useEffect(() => {
       const element = coverRef.current;
@@ -119,12 +130,14 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
       <div
         ref={coverRef}
         className={clsx('book-cover-container relative flex h-full w-full', className)}
+        aria-busy={!!displayCoverUrl && !imageLoaded && !imageError}
       >
         {coverFit === 'crop' ? (
           <>
             {displayCoverUrl && (
               <Image
                 src={displayCoverUrl}
+                unoptimized
                 alt={book.title}
                 fill={true}
                 loading='lazy'
@@ -153,6 +166,7 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
               {displayCoverUrl && (
                 <Image
                   src={displayCoverUrl}
+                  unoptimized
                   alt={book.title}
                   width={0}
                   height={0}
@@ -216,6 +230,7 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
       prevProps.book.deletedAt === nextProps.book.deletedAt &&
       prevProps.book.coverImageUrl === nextProps.book.coverImageUrl &&
       prevProps.book.metadata?.coverImageUrl === nextProps.book.metadata?.coverImageUrl &&
+      prevProps.book.kataKecil?.coverUrl === nextProps.book.kataKecil?.coverUrl &&
       prevProps.book.updatedAt === nextProps.book.updatedAt &&
       prevProps.mode === nextProps.mode &&
       prevProps.coverFit === nextProps.coverFit &&

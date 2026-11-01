@@ -70,7 +70,7 @@ const BookItem: React.FC<BookItemProps> = ({
   // fit cover in a full-height cell with the spine and selection wash spilling
   // past the image (a carousel remounts covers as they scroll back into view).
   const [coverAspect, setCoverAspect] = useState<number | null>(null);
-  const coverKey = `${book.hash}|${book.metadata?.coverImageUrl}|${book.coverImageUrl}`;
+  const coverKey = `${book.hash}|${book.kataKecil?.coverUrl}|${book.metadata?.coverImageUrl}|${book.coverImageUrl}`;
   const [prevCoverKey, setPrevCoverKey] = useState(coverKey);
   if (coverKey !== prevCoverKey) {
     setPrevCoverKey(coverKey);

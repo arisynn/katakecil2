@@ -37,6 +37,7 @@ interface FontLayoutPanelProps {
   forceMobileLayout: boolean;
   // Keeps the panel clear of iPhone Duo's side status strip (#6307).
   insetStyle?: React.CSSProperties;
+  onSetActionTab?: (tab: string) => void;
 }
 
 export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
@@ -46,6 +47,7 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
   marginIconSize,
   forceMobileLayout,
   insetStyle,
+  onSetActionTab,
 }) => {
   const _ = useTranslation();
   const { envConfig, appService } = useEnv();
@@ -112,7 +114,7 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
   }, []);
 
   const classes = clsx(
-    'footerbar-font-mobile not-eink:bg-base-200 eink:bg-base-100 absolute flex w-full flex-col items-center gap-y-8 px-4 transition-all',
+    'kk-reader-sheet footerbar-font-mobile not-eink:bg-base-200 eink:bg-base-100 absolute flex w-full flex-col items-center gap-y-8 px-4 transition-all',
     'eink:border-base-content eink:border-t',
     !forceMobileLayout && 'sm:hidden',
     // Paddings stay constant in both states (the slide is transform-only) so
@@ -134,6 +136,18 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
         ...insetStyle,
       }}
     >
+      <div className='kk-sheet-heading'>
+        <h2>{_('Font & Layout')}</h2>
+        {onSetActionTab && (
+          <button
+            type='button'
+            className='kk-text-button eink-bordered'
+            onClick={() => onSetActionTab('color')}
+          >
+            {_('Color')}
+          </button>
+        )}
+      </div>
       <Slider
         label={_('Font Size')}
         initialValue={viewSettings?.defaultFontSize ?? FONT_SIZE_LIMITS.DEFAULT}

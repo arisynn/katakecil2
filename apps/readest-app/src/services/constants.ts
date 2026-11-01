@@ -246,9 +246,9 @@ export const DEFAULT_SYSTEM_SETTINGS: Partial<SystemSettings> = {
   libraryThenSortBy: 'none',
   libraryThenSortAscending: true,
   libraryGroupBy: LibraryGroupByType.Group,
-  libraryCoverFit: 'crop',
-  libraryAutoColumns: true,
-  libraryColumns: 6,
+  libraryCoverFit: 'fit',
+  libraryAutoColumns: false,
+  libraryColumns: 1,
   librarySkeuomorphicCovers: false,
   libraryHideCovers: false,
   libraryRecentShelfEnabled: false,
@@ -301,7 +301,7 @@ export const DEFAULT_SYSTEM_SETTINGS: Partial<SystemSettings> = {
 };
 
 export const DEFAULT_MOBILE_SYSTEM_SETTINGS: Partial<SystemSettings> = {
-  libraryColumns: 3,
+  libraryColumns: 1,
   // Import files opened via the system "Open with" chooser into the library by
   // default so they persist and sync, instead of opening them transiently.
   autoImportBooksOnOpen: true,

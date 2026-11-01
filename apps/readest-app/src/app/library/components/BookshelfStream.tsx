@@ -23,6 +23,7 @@ import type { BookshelfDefinition } from '@/types/bookshelf';
 import { bookshelfName } from '@/services/bookshelves/definitions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLibraryPagination } from '../hooks/useLibraryPagination';
+import CoverCarousel from './CoverCarousel';
 
 export interface ShelfSection {
   definition: BookshelfDefinition;
@@ -116,12 +117,14 @@ export const BookshelfCarousel = ({
   width,
   renderItem,
   hidePageButtons = false,
+  scrollKey = '',
 }: {
   section: ShelfSection;
   columns: number;
   width: number;
   renderItem: StreamProps['renderItem'];
   hidePageButtons?: boolean;
+  scrollKey?: string;
 }) => {
   const _ = useTranslation();
   const scroller = useRef<HTMLDivElement>(null);
@@ -170,6 +173,16 @@ export const BookshelfCarousel = ({
       behavior: smooth ? 'smooth' : 'instant',
     });
   };
+  if (columns === 1)
+    return (
+      <HideBookCoversContext.Provider value={section.definition.hideCovers}>
+        <CoverCarousel
+          items={section.items}
+          storageKey={`${scrollKey}:${section.definition.id}`}
+          renderItem={(item) => renderItem(item, 'grid', section.definition)}
+        />
+      </HideBookCoversContext.Provider>
+    );
   return (
     <HideBookCoversContext.Provider value={section.definition.hideCovers}>
       <div className='group/carousel relative px-4 sm:px-2' data-shelf-layout='carousel'>
@@ -414,6 +427,7 @@ export default function BookshelfStream({
                 return (
                   <div className='transform-wrapper'>
                     <BookshelfCarousel
+                      scrollKey={scrollKey}
                       section={row.section}
                       columns={columns}
                       width={width / scale}

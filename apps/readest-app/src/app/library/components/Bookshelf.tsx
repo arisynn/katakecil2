@@ -60,6 +60,7 @@ import ShareBookDialog from './ShareBookDialog';
 import { createCollectionPack, READEST_PACK_MIME } from '@/services/pack/packService';
 import { useAuth } from '@/context/AuthContext';
 import { openCatalogLibraryBook } from '@/services/katakecil/library';
+import { libraryPresentation } from '@/services/katakecil/presentation';
 import GroupingModal from './GroupingModal';
 import TaggingModal from './TaggingModal';
 import SetStatusAlert from './SetStatusAlert';
@@ -170,7 +171,7 @@ const Bookshelf: React.FC<BookshelfProps> = ({
     [storedDefinitions, globalSort],
   );
   const defaultShelf = definitions.find((s) => s.id === 'default')!;
-  const viewMode = searchParams?.get('view') || settings.libraryViewMode;
+  const viewMode = libraryPresentation(settings, searchParams?.get('view'));
   const globalGroupBy = ensureLibraryGroupByType(
     searchParams?.get('groupBy'),
     settings.libraryGroupBy,
@@ -324,12 +325,22 @@ const Bookshelf: React.FC<BookshelfProps> = ({
               excluded: 0,
             },
           ]
-        : results.filter((r) => !groupId || r.definition.id === activeShelfId)
+        : results.filter(
+            (r) =>
+              (!groupId || r.definition.id === activeShelfId) &&
+              !(viewMode === 'carousel' && !groupId && r.definition.id === 'recent'),
+          )
     )
       .map((result) => {
         const definition: BookshelfDefinition = {
           ...result.definition,
-          layout: resolveBookshelfLayout(result.definition, viewMode),
+          layout:
+            viewMode === 'carousel'
+              ? 'carousel'
+              : result.definition.id === 'default'
+                ? viewMode
+                : resolveBookshelfLayout(result.definition, viewMode),
+          ...(viewMode === 'carousel' && { coverFit: 'fit' as const }),
         };
         // Legacy group links have no shelf and use their URL/global grouping.
         if (groupId) {
@@ -1031,8 +1042,8 @@ const Bookshelf: React.FC<BookshelfProps> = ({
             }
             pageDurations={pageDurations}
             sections={sections}
-            autoColumns={settings.libraryAutoColumns}
-            fixedColumns={settings.libraryColumns}
+            autoColumns={viewMode === 'carousel' ? false : settings.libraryAutoColumns}
+            fixedColumns={viewMode === 'carousel' ? 1 : settings.libraryColumns}
             footerHeight={footerHeight}
             renderItem={renderBookshelfItem}
             onScrollerRef={handleScrollerRef}

@@ -18,6 +18,7 @@ import NumberInput from '@/components/settings/NumberInput';
 import MenuItem from '@/components/MenuItem';
 import Menu from '@/components/Menu';
 import { ensureLibraryGroupByType } from '../utils/libraryUtils';
+import { libraryPresentation } from '@/services/katakecil/presentation';
 
 interface ViewMenuProps {
   setIsDropdownOpen?: (isOpen: boolean) => void;
@@ -43,7 +44,7 @@ const ViewMenu: React.FC<ViewMenuProps> = ({ setIsDropdownOpen }) => {
   const { envConfig, appService } = useEnv();
   const { settings } = useSettingsStore();
 
-  const viewMode = searchParams?.get('view') || settings.libraryViewMode;
+  const viewMode = libraryPresentation(settings, searchParams?.get('view'));
   const autoColumns = settings.libraryAutoColumns;
   const columns = settings.libraryColumns;
   const groupBy = ensureLibraryGroupByType(searchParams?.get('groupBy'), settings.libraryGroupBy);
@@ -64,6 +65,7 @@ const ViewMenu: React.FC<ViewMenuProps> = ({ setIsDropdownOpen }) => {
   const isThenAscending = globalSort.thenAscending;
 
   const viewOptions = [
+    { label: _('Carousel'), value: 'carousel' },
     { label: _('List'), value: 'list' },
     { label: _('Grid'), value: 'grid' },
   ];
@@ -89,8 +91,9 @@ const ViewMenu: React.FC<ViewMenuProps> = ({ setIsDropdownOpen }) => {
     { label: _('Descending'), value: false },
   ];
 
-  const handleSetViewMode = async (value: LibraryViewModeType) => {
-    await saveSysSettings(envConfig, 'libraryViewMode', value);
+  const handleSetViewMode = async (value: LibraryViewModeType | 'carousel') => {
+    await saveSysSettings(envConfig, 'libraryCarouselEnabled', value === 'carousel');
+    if (value !== 'carousel') await saveSysSettings(envConfig, 'libraryViewMode', value);
 
     const params = new URLSearchParams(window.location.search);
     params.set('view', value);
@@ -184,7 +187,7 @@ const ViewMenu: React.FC<ViewMenuProps> = ({ setIsDropdownOpen }) => {
           label={option.label}
           buttonClass='min-h-8 py-1!'
           toggled={viewMode === option.value}
-          onClick={() => handleSetViewMode(option.value as LibraryViewModeType)}
+          onClick={() => handleSetViewMode(option.value as LibraryViewModeType | 'carousel')}
           transient
         />
       ))}
@@ -201,14 +204,14 @@ const ViewMenu: React.FC<ViewMenuProps> = ({ setIsDropdownOpen }) => {
         label={_('Auto')}
         buttonClass='min-h-10 py-2!'
         toggled={autoColumns}
-        disabled={viewMode === 'list'}
+        disabled={viewMode !== 'grid'}
         siblings={
           <NumberInput
             className='h-10! p-0! pe-1! ps-0!'
             inputClassName={`p-0! text-center text-base sm:text-sm w-10! h-6! pe-0! ${autoColumns ? 'opacity-50' : ''}`}
             label={''}
             value={columns}
-            disabled={viewMode === 'list'}
+            disabled={viewMode !== 'grid'}
             onChange={handleSetColumns}
             min={window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3}
             max={window.innerWidth < 640 ? 4 : window.innerWidth < 1024 ? 6 : 12}

@@ -24,8 +24,15 @@ export function mergeCatalogLibrary(entries: CatalogBook[], library: Book[]): Bo
         createdAt: Date.now(),
         updatedAt: Date.now(),
         readingStatus: 'unread',
-        kataKecil: { id: entry.id, revision: entry.revision, sectionIds: entry.section_ids },
         ...local,
+        kataKecil: {
+          ...(local?.kataKecil ?? {
+            id: entry.id,
+            revision: entry.revision,
+            sectionIds: entry.section_ids,
+          }),
+          coverUrl: entry.cover_url,
+        },
         title: entry.title,
         author: entry.author,
         coverImageUrl: entry.cover_url || local?.coverImageUrl,

@@ -172,8 +172,9 @@ describe('Catalog settings hydration', () => {
     });
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(saveViewSettings).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Settings Menu' }));
-    fireEvent.click(screen.getByText('Settings', { exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Library Menu' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Settings' }));
     expect(screen.getByRole('dialog')).toBeTruthy();
     expect(screen.getByDisplayValue('23')).toBeTruthy();
     expect(useSettingsStore.getState().settings.globalViewSettings.defaultFontSize).toBe(23);
@@ -230,11 +231,14 @@ describe('Catalog settings hydration', () => {
     await act(async () => {});
     expect(screen.getByLabelText('Bookshelf')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Import Books' })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Settings Menu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Library Menu' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }));
     expect(screen.queryByText('Sign In')).toBeNull();
-    expect(screen.getByText('Settings', { exact: true })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'View Menu' }));
-    fireEvent.click(screen.getByText('List', { exact: true }));
+    expect(screen.getByRole('menuitem', { name: 'Settings' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: 'View' }));
+    await act(async () => {
+      fireEvent.click(screen.getByText('List', { exact: true }));
+    });
     expect(saveSysSettings).toHaveBeenCalledWith(expect.anything(), 'libraryViewMode', 'list');
     expect(screen.getByText('Grid', { exact: true })).toBeTruthy();
   });

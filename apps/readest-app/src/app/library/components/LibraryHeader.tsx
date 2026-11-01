@@ -1,25 +1,15 @@
-import clsx from 'clsx';
-import React, { useRef } from 'react';
-import { FaChevronDown, FaSearch } from 'react-icons/fa';
-import { MdManageSearch } from 'react-icons/md';
-import { PiSelectionAll, PiSelectionAllFill } from 'react-icons/pi';
-import { PiDotsThreeCircle } from 'react-icons/pi';
-import { MdOutlineMenu } from 'react-icons/md';
-import { IoMdCloseCircle } from 'react-icons/io';
-
-import { useEnv } from '@/context/EnvContext';
+import React, { useEffect, useRef, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { MdClose, MdManageSearch } from 'react-icons/md';
+import { PiDotsThree } from 'react-icons/pi';
 import { useThemeStore } from '@/store/themeStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { LibrarySearchConfig, LibrarySearchTarget } from '@/types/book';
 import { useLibraryStore } from '@/store/libraryStore';
-import { useTrafficLight } from '@/hooks/useTrafficLight';
-import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import useShortcuts from '@/hooks/useShortcuts';
-import WindowButtons from '@/components/WindowButtons';
 import Dropdown from '@/components/Dropdown';
-import SettingsMenu from './SettingsMenu';
 import LibrarySearchOptionsMenu from './LibrarySearchOptionsMenu';
-import ViewMenu from './ViewMenu';
+import LibraryMenu from './LibraryMenu';
 
 interface LibraryHeaderProps {
   isSelectMode: boolean;
@@ -36,233 +26,127 @@ interface LibraryHeaderProps {
   onSearchTargetChange: (target: LibrarySearchTarget) => void;
 }
 
-const LibraryHeader: React.FC<LibraryHeaderProps> = ({
-  isSelectMode,
-  isSelectAll,
-  onPullLibrary,
-  onToggleSelectMode,
-  onSelectAll,
-  onDeselectAll,
-  searchQuery,
-  searchTarget,
-  searchConfig,
-  onSearchConfigChange,
-  onSearchQueryChange,
-  onSearchTargetChange,
-}) => {
+const LibraryHeader: React.FC<LibraryHeaderProps> = (props) => {
   const _ = useTranslation();
-  const { appService } = useEnv();
-  const { systemUIVisible, statusBarHeight } = useThemeStore();
-  const { currentBookshelf } = useLibraryStore();
-
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { isTrafficLightVisible } = useTrafficLight(headerRef);
-  const iconSize18 = useResponsiveSize(18);
-  const { safeAreaInsets: insets, isIPhoneDuo } = useThemeStore();
-
-  useShortcuts({
-    onToggleSelectMode,
-  });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchQueryChange(e.target.value);
+  const { safeAreaInsets: insets } = useThemeStore();
+  const count = useLibraryStore((state) => state.currentBookshelf.length);
+  const [searchOpen, setSearchOpen] = useState(!!props.searchQuery);
+  const input = useRef<HTMLInputElement>(null);
+  const showSearch = searchOpen || !!props.searchQuery;
+  useShortcuts({ onToggleSelectMode: props.onToggleSelectMode });
+  useEffect(() => {
+    if (searchOpen) input.current?.focus();
+  }, [searchOpen]);
+  if (!insets) return null;
+  const closeSearch = () => {
+    props.onSearchQueryChange('');
+    setSearchOpen(false);
   };
 
-  const windowButtonVisible = appService?.hasWindowBar && !isTrafficLightVisible;
-  const currentBooksCount = currentBookshelf.length;
-
-  if (!insets) return null;
-
-  const isMobile = appService?.isMobile || window.innerWidth <= 640;
-
   return (
-    <div
-      ref={headerRef}
-      className={clsx(
-        'titlebar z-10 flex h-[52px] w-full items-center py-2 pr-4 sm:h-[44px]',
-        windowButtonVisible ? 'sm:pr-4' : 'sm:pr-6',
-        isTrafficLightVisible ? 'pl-16' : 'pl-0 sm:pl-2',
-      )}
+    <header
+      className='kk-library-header'
       style={{
-        marginTop: appService?.hasSafeAreaInset
-          ? `max(${insets.top}px, ${systemUIVisible ? statusBarHeight : 0}px)`
-          : '0px',
-        // Keep the trailing buttons clear of iPhone Duo's side status strip /
-        // camera cutout (#6307); bases match pl-0 / pr-4. Only with a side
-        // inset, so responsive sm:pl-2 / sm:pr-6 keep applying otherwise.
-        ...(isIPhoneDuo && (insets.left || insets.right)
-          ? { paddingLeft: `${insets.left}px`, paddingRight: `${insets.right + 16}px` }
-          : {}),
+        paddingTop: `max(24px, ${insets.top}px)`,
+        paddingInlineStart: `max(24px, ${insets.left}px)`,
+        paddingInlineEnd: `max(24px, ${insets.right}px)`,
       }}
     >
-      <div className='flex w-full items-center justify-between space-x-6 sm:space-x-12'>
-        <div className='exclude-title-bar-mousedown relative flex w-full items-center ps-4'>
-          <div className='relative flex h-9 w-full items-center sm:h-7'>
-            {/* The icon doubles as the mode indicator and toggle: magnifier
-                for book search, full-text glyph for content search. */}
-            <div className='absolute inset-y-0 start-0 z-10 flex items-center'>
+      <div className='kk-library-heading'>
+        <h1>Kata Kecil</h1>
+        <div className='flex items-center gap-2'>
+          {props.isSelectMode ? (
+            <>
               <button
                 type='button'
-                aria-pressed={searchTarget === 'text'}
-                aria-label={searchTarget === 'text' ? _('Full Text Search') : _('Search Books')}
-                title={searchTarget === 'text' ? _('Full Text Search') : _('Search Books')}
-                className={clsx(
-                  'text-base-content/55 hover:text-base-content',
-                  'not-eink:transition-colors ms-1.5 flex h-7 min-h-7 items-center justify-center',
-                  'touch-target w-8 rounded-full bg-transparent duration-150',
-                  'focus-visible:ring-base-content/15 focus-visible:outline-hidden focus-visible:ring-2',
-                )}
-                onClick={() => onSearchTargetChange(searchTarget === 'text' ? 'books' : 'text')}
+                className='kk-text-button'
+                onClick={props.isSelectAll ? props.onDeselectAll : props.onSelectAll}
               >
-                {searchTarget === 'text' ? (
-                  <MdManageSearch className='h-5 w-5 -translate-y-[1px]' />
-                ) : (
-                  <FaSearch className='h-3.5 w-3.5' />
-                )}
+                {props.isSelectAll ? _('Deselect') : _('Select All')}
               </button>
-            </div>
-            <input
-              type='text'
-              value={searchQuery}
-              placeholder={
-                searchTarget === 'text'
-                  ? _('Search contents in {{count}} Book(s)...', { count: currentBooksCount })
-                  : currentBooksCount > 1
-                    ? _('Search in {{count}} Book(s)...', {
-                        count: currentBooksCount,
-                      })
-                    : _('Search Books...')
-              }
-              onChange={handleSearchChange}
-              spellCheck='false'
-              className={clsx(
-                'window-drag-input search-input input h-9 w-full rounded-full pe-[30%] ps-10 sm:h-7',
-                'bg-base-300/45 border-0',
-                'font-sans text-sm font-light',
-                'placeholder:text-base-content/50 truncate',
-                'focus:outline-hidden focus:ring-0',
-              )}
-            />
-            {searchTarget === 'text' && (
-              <div
-                className={clsx(
-                  'not-eink:bg-base-300/70 not-eink:hover:bg-base-300 not-eink:transition-colors',
-                  'absolute end-0 flex h-full w-9 items-center justify-center rounded-e-full duration-150',
-                )}
-              >
-                <Dropdown
-                  label={_('Search Options')}
-                  className='dropdown-bottom dropdown-end'
-                  menuClassName='no-triangle mt-1'
-                  buttonClassName={clsx(
-                    'btn btn-ghost h-full min-h-0 w-9 rounded-none rounded-e-full p-0',
-                    'bg-transparent! hover:bg-transparent!',
-                  )}
-                  toggleButton={
-                    <FaChevronDown role='none' className='text-base-content/50 h-3 w-3' />
-                  }
-                >
-                  <LibrarySearchOptionsMenu
-                    config={searchConfig}
-                    onConfigChange={onSearchConfigChange}
-                  />
-                </Dropdown>
-              </div>
-            )}
-          </div>
-          <div
-            className={clsx(
-              'text-base-content/50 absolute flex items-center gap-1',
-              searchTarget === 'text' ? 'end-14' : 'end-4',
-            )}
-          >
-            {searchQuery && (
               <button
                 type='button'
-                onClick={() => onSearchQueryChange('')}
-                className='text-base-content/40 hover:text-base-content/60 pe-1'
-                aria-label={_('Clear Search')}
+                className='kk-circle-button eink-bordered'
+                aria-label={_('Cancel')}
+                onClick={props.onToggleSelectMode}
               >
-                <IoMdCloseCircle className='h-4 w-4' />
+                <MdClose size={22} />
               </button>
-            )}
-            {searchTarget !== 'text' && (
-              <>
-                {isMobile ? null : (
-                  <button
-                    onClick={onToggleSelectMode}
-                    aria-label={_('Select Books')}
-                    title={_('Select Books')}
-                    className='h-6'
-                  >
-                    {isSelectMode ? (
-                      <PiSelectionAllFill role='button' className='text-base-content/60 h-6 w-6' />
-                    ) : (
-                      <PiSelectionAll role='button' className='text-base-content/60 h-6 w-6' />
-                    )}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <button
+                type='button'
+                className='kk-circle-button eink-bordered'
+                aria-label={_('Search Books')}
+                aria-expanded={showSearch}
+                aria-controls='kk-library-search'
+                onClick={() => (showSearch ? closeSearch() : setSearchOpen(true))}
+              >
+                {showSearch ? <MdClose size={22} /> : <FaSearch size={18} />}
+              </button>
+              <Dropdown
+                label={_('Library Menu')}
+                className='dropdown-bottom dropdown-end'
+                buttonClassName='kk-circle-button eink-bordered'
+                toggleButton={<PiDotsThree size={27} />}
+              >
+                <LibraryMenu
+                  onPullLibrary={props.onPullLibrary}
+                  onToggleSelectMode={props.onToggleSelectMode}
+                />
+              </Dropdown>
+            </>
+          )}
         </div>
-        {isSelectMode ? (
-          <div
-            className={clsx(
-              'flex h-full items-center',
-              'w-max-[72px] w-min-[72px] sm:w-max-[80px] sm:w-min-[80px]',
-            )}
-          >
-            <button
-              onClick={isSelectAll ? onDeselectAll : onSelectAll}
-              className='btn btn-ghost text-base-content/85 h-8 min-h-8 w-[72px] p-0 sm:w-[80px]'
-              aria-label={isSelectAll ? _('Deselect') : _('Select All')}
-            >
-              <span className='font-sans text-base font-normal sm:text-sm whitespace-nowrap truncate'>
-                {isSelectAll ? _('Deselect') : _('Select All')}
-              </span>
-            </button>
-            {/* Mounted without buttons so the header still drags the window (#6917). */}
-            {appService?.hasWindowBar && (
-              <WindowButtons
-                headerRef={headerRef}
-                showMinimize={false}
-                showMaximize={false}
-                showClose={false}
-              />
-            )}
-          </div>
-        ) : (
-          <div className='flex h-full items-center gap-x-2 sm:gap-x-4'>
-            <Dropdown
-              label={_('View Menu')}
-              className='exclude-title-bar-mousedown dropdown-bottom dropdown-end'
-              buttonClassName='btn btn-ghost h-8 min-h-8 w-8 p-0'
-              toggleButton={<PiDotsThreeCircle role='none' size={iconSize18} />}
-            >
-              <ViewMenu />
-            </Dropdown>
-            <Dropdown
-              label={_('Settings Menu')}
-              className='exclude-title-bar-mousedown dropdown-bottom dropdown-end'
-              buttonClassName='btn btn-ghost h-8 min-h-8 w-8 p-0'
-              toggleButton={<MdOutlineMenu role='none' size={iconSize18} />}
-            >
-              <SettingsMenu onPullLibrary={onPullLibrary} />
-            </Dropdown>
-            {appService?.hasWindowBar && (
-              <WindowButtons
-                headerRef={headerRef}
-                showMinimize={windowButtonVisible}
-                showMaximize={windowButtonVisible}
-                showClose={windowButtonVisible}
-              />
-            )}
-          </div>
-        )}
       </div>
-    </div>
+      {showSearch && (
+        <div id='kk-library-search' className='kk-library-search eink-bordered' role='search'>
+          <button
+            type='button'
+            className='kk-circle-button'
+            aria-label={props.searchTarget === 'text' ? _('Full Text Search') : _('Search Books')}
+            aria-pressed={props.searchTarget === 'text'}
+            onClick={() =>
+              props.onSearchTargetChange(props.searchTarget === 'text' ? 'books' : 'text')
+            }
+          >
+            {props.searchTarget === 'text' ? <MdManageSearch size={24} /> : <FaSearch size={17} />}
+          </button>
+          <input
+            ref={input}
+            value={props.searchQuery}
+            type='search'
+            spellCheck={false}
+            aria-label={_('Search Books')}
+            placeholder={
+              props.searchTarget === 'text'
+                ? _('Search contents in {{count}} Book(s)...', { count })
+                : _('Search Books...')
+            }
+            onChange={(event) => props.onSearchQueryChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                closeSearch();
+              }
+            }}
+          />
+          {props.searchTarget === 'text' && (
+            <Dropdown
+              label={_('Search Options')}
+              className='dropdown-bottom dropdown-end'
+              buttonClassName='kk-circle-button'
+              toggleButton={<PiDotsThree size={24} />}
+            >
+              <LibrarySearchOptionsMenu
+                config={props.searchConfig}
+                onConfigChange={props.onSearchConfigChange}
+              />
+            </Dropdown>
+          )}
+        </div>
+      )}
+    </header>
   );
 };
-
 export default LibraryHeader;

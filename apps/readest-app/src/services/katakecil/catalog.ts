@@ -117,7 +117,12 @@ export function prepareCatalogBook(
             readingStatusUpdatedAt: previous.readingStatusUpdatedAt,
           }
         : {}),
-      kataKecil: { id: entry.id, revision: entry.revision, sectionIds: entry.section_ids },
+      kataKecil: {
+        id: entry.id,
+        revision: entry.revision,
+        sectionIds: entry.section_ids,
+        coverUrl: entry.cover_url,
+      },
     };
     if (previous && config)
       await app.saveBookConfig(

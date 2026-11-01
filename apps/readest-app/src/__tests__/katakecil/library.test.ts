@@ -41,6 +41,14 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Catalog on the native Readest shelf', () => {
+  it('retains a durable cover inside the persisted catalog identity', () => {
+    const cover = 'https://example.com/cover.jpg';
+    const projected = mergeCatalogLibrary([{ ...entry, cover_url: cover }], [local])[0]!;
+    // library.json intentionally omits transient coverImageUrl values.
+    const { coverImageUrl: _transient, ...saved } = projected;
+    expect(JSON.parse(JSON.stringify(saved)).kataKecil.coverUrl).toBe(cover);
+    expect(saved.progress).toEqual(local.progress);
+  });
   it('projects metadata without downloading EPUBs and preserves local reading data', () => {
     const fetcher = vi.fn();
     vi.stubGlobal('fetch', fetcher);

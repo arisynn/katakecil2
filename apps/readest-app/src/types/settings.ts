@@ -509,6 +509,8 @@ export interface SystemSettings {
   discordRichPresenceEnabled: boolean;
   bookshelves?: BookshelfState;
   libraryViewMode: LibraryViewModeType;
+  /** Kata Kecil's cover carousel; absent on older installations means enabled. */
+  libraryCarouselEnabled?: boolean;
   librarySortBy: LibrarySortByType;
   librarySortAscending: boolean;
   /**
