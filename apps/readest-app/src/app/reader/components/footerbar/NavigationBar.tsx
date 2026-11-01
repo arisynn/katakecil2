@@ -4,12 +4,10 @@ import { IoIosList as TOCIcon } from 'react-icons/io';
 import { RxSlider as SliderIcon } from 'react-icons/rx';
 import { RiFontFamily as FontIcon } from 'react-icons/ri';
 import { MdOutlineHeadphones as TTSIcon } from 'react-icons/md';
-import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSidebarStore } from '@/store/sidebarStore';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
-import Button from '@/components/Button';
 import { Insets } from '@/types/misc';
 
 interface NavigationBarProps {
@@ -32,56 +30,52 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 }) => {
   const isMobile = forceMobileLayout || window.innerWidth < 640 || window.innerHeight < 640;
   const _ = useTranslation();
-  const { appService } = useEnv();
   const { getViewState } = useReaderStore();
   const { isSideBarVisible, isSideBarPinned } = useSidebarStore();
 
   const viewState = getViewState(bookKey);
   const tocIconSize = useResponsiveSize(23);
   const fontIconSize = useResponsiveSize(18);
-  const navPadding = isMobile ? `${gridInsets.bottom * 0.33 + 16}px` : '0px';
+  const navPadding = isMobile ? `max(${gridInsets.bottom}px, env(safe-area-inset-bottom))` : '0px';
 
   return (
     <div
       className={clsx(
-        'kk-reader-dock not-eink:bg-base-200 eink:bg-base-100 z-30 mt-auto flex w-full justify-between px-8 py-4',
+        'kk-reader-dock z-30 mt-auto flex w-full justify-between',
         'eink:border-base-content eink:border-t',
         !forceMobileLayout && 'sm:hidden',
       )}
       style={{
-        paddingBottom: appService?.isAndroidApp
-          ? `calc(env(safe-area-inset-bottom) + 16px)`
-          : navPadding,
+        paddingBottom: `calc(${navPadding} + 8px)`,
         ...insetStyle,
       }}
     >
-      {isSideBarVisible && isSideBarPinned ? null : (
-        <Button
-          label={_('Table of Contents')}
-          icon={<TOCIcon size={tocIconSize} />}
-          onClick={() => onSetActionTab('toc')}
-        />
-      )}
-      <Button
-        label={_('Reading Progress')}
-        icon={<SliderIcon className={clsx(actionTab === 'progress' && 'text-blue-500')} />}
-        onClick={() => onSetActionTab('progress')}
-      />
-      <Button
-        label={_('Font & Layout')}
-        icon={
-          <FontIcon
-            size={fontIconSize}
-            className={clsx((actionTab === 'font' || actionTab === 'color') && 'text-blue-500')}
-          />
-        }
-        onClick={() => onSetActionTab('font')}
-      />
-      <Button
-        label={_('Speak')}
-        icon={<TTSIcon className={viewState?.ttsEnabled ? 'text-blue-500' : ''} />}
-        onClick={() => onSetActionTab('tts')}
-      />
+      {[
+        ...(!isSideBarVisible || !isSideBarPinned
+          ? [{ tab: 'toc', label: _('Contents'), icon: <TOCIcon size={tocIconSize} /> }]
+          : []),
+        { tab: 'progress', label: _('Progress'), icon: <SliderIcon size={22} /> },
+        { tab: 'font', label: _('Appearance'), icon: <FontIcon size={fontIconSize} /> },
+        { tab: 'tts', label: _('Listen'), icon: <TTSIcon size={23} /> },
+      ].map(({ tab, label, icon }) => (
+        <button
+          key={tab}
+          type='button'
+          className='kk-dock-action'
+          aria-label={label}
+          aria-pressed={
+            tab === 'tts'
+              ? !!viewState?.ttsEnabled
+              : tab === 'font'
+                ? actionTab === 'font' || actionTab === 'color'
+                : actionTab === tab
+          }
+          onClick={() => onSetActionTab(tab)}
+        >
+          {icon}
+          <span>{label}</span>
+        </button>
+      ))}
     </div>
   );
 };

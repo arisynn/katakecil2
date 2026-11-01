@@ -9,7 +9,8 @@ import {
 describe('Kata Kecil publication and stable progress', () => {
   it('never confuses finishing the current EPUB with a completed serial', () => {
     expect(publicationLabel('ongoing')).toBe('Ongoing');
-    expect(publicationLabel('completed')).toBe('Completed');
+    expect(publicationLabel('hiatus')).toBe('Hiatus');
+    expect(publicationLabel('completed')).toBe('Tamat');
   });
   it('keeps a text anchor when an earlier chapter is inserted', () => {
     expect(migrateLocation('epubcfi(/6/4!/4/2/1:12)', ['a', 'b'], ['x', 'a', 'b'])).toBe(

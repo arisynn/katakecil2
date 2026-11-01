@@ -33,6 +33,7 @@ import HintInfo from './HintInfo';
 import ReadingRuler from './ReadingRuler';
 import DoubleBorder from './DoubleBorder';
 import ReadingStatsTracker from './ReadingStatsTracker';
+import ReaderPageFrame from './ReaderPageFrame';
 
 interface BooksGridProps {
   bookKeys: string[];
@@ -126,6 +127,8 @@ const BookCellInner: React.FC<BookCellProps> = ({
   // relocate path — so this does NOT reintroduce the commit storm the
   // progress-store split removed.
   const progress = useBookProgress(bookKey);
+  const bottomBarTab = useReaderStore((s) => s.bottomBarTab);
+  const setHoveredBookKey = useReaderStore((s) => s.setHoveredBookKey);
   const viewState = useReaderStore((s) => s.viewStates[bookKey]);
   const getView = useReaderStore((s) => s.getView);
   const viewSettings = viewState?.viewSettings ?? null;
@@ -186,6 +189,7 @@ const BookCellInner: React.FC<BookCellProps> = ({
   const columnGap = getSpreadColumnGap(viewSettings, getView(bookKey)?.renderer?.columnCount ?? 1);
   const showHeader = viewSettings.showHeader;
   const showFooter = viewSettings.showFooter;
+  const previewActive = hoveredBookKey === bookKey || isDropdownOpen;
 
   return (
     <div
@@ -218,50 +222,69 @@ const BookCellInner: React.FC<BookCellProps> = ({
         An opaque background inside the wrapper keeps the blend backdrop with
         the transformed group, so the drag is luminance-invariant.
       */}
-      <div ref={slideRef} className='bg-base-100 absolute inset-0'>
-        <FoliateViewer
-          key={viewerKey}
-          bookKey={bookKey}
-          bookDoc={bookDoc}
-          config={config}
-          gridInsets={gridInsets}
-          contentInsets={contentInsets}
-        />
-        {viewSettings.vertical && viewSettings.scrolled && (
-          <>
-            {(showFooter || viewSettings.doubleBorder) && (
-              <div
-                className='bg-base-100 absolute left-0 top-0 h-full'
-                style={{
-                  width: `calc(${contentInsets.left + (viewSettings.doubleBorder ? 32 : 0)}px)`,
-                  height: `calc(100%)`,
-                }}
-              />
-            )}
-            {(showHeader || viewSettings.doubleBorder) && (
-              <div
-                className='bg-base-100 absolute right-0 top-0 h-full'
-                style={{
-                  width: `calc(${contentInsets.right + (viewSettings.doubleBorder ? 32 : 0)}px)`,
-                  height: `calc(100%)`,
-                }}
-              />
-            )}
-          </>
-        )}
-        {viewSettings.vertical && viewSettings.doubleBorder && (
-          <DoubleBorder
-            showHeader={showHeader}
-            showFooter={showFooter}
-            borderColor={viewSettings.borderColor}
-            horizontalGap={horizontalGapPercent}
-            insets={viewInsets}
-          />
-        )}
-        {showHeader && (
-          <SectionInfo
+      <ReaderPageFrame
+        active={previewActive}
+        captureKey={previewActive ? JSON.stringify([progress?.location, viewSettings]) : ''}
+        panelKey={bottomBarTab}
+        onResume={() => setHoveredBookKey('')}
+      >
+        <div ref={slideRef} className='bg-base-100 absolute inset-0'>
+          <FoliateViewer
+            key={viewerKey}
             bookKey={bookKey}
-            section={sectionLabel}
+            bookDoc={bookDoc}
+            config={config}
+            gridInsets={gridInsets}
+            contentInsets={contentInsets}
+          />
+          {viewSettings.vertical && viewSettings.scrolled && (
+            <>
+              {(showFooter || viewSettings.doubleBorder) && (
+                <div
+                  className='bg-base-100 absolute left-0 top-0 h-full'
+                  style={{
+                    width: `calc(${contentInsets.left + (viewSettings.doubleBorder ? 32 : 0)}px)`,
+                    height: `calc(100%)`,
+                  }}
+                />
+              )}
+              {(showHeader || viewSettings.doubleBorder) && (
+                <div
+                  className='bg-base-100 absolute right-0 top-0 h-full'
+                  style={{
+                    width: `calc(${contentInsets.right + (viewSettings.doubleBorder ? 32 : 0)}px)`,
+                    height: `calc(100%)`,
+                  }}
+                />
+              )}
+            </>
+          )}
+          {viewSettings.vertical && viewSettings.doubleBorder && (
+            <DoubleBorder
+              showHeader={showHeader}
+              showFooter={showFooter}
+              borderColor={viewSettings.borderColor}
+              horizontalGap={horizontalGapPercent}
+              insets={viewInsets}
+            />
+          )}
+          {showHeader && (
+            <SectionInfo
+              bookKey={bookKey}
+              section={sectionLabel}
+              showDoubleBorder={viewSettings.vertical && viewSettings.doubleBorder}
+              isScrolled={viewSettings.scrolled}
+              isVertical={viewSettings.vertical}
+              isEink={viewSettings.isEink}
+              horizontalGap={horizontalGapPercent}
+              contentInsets={contentInsets}
+              gridInsets={gridInsets}
+              columnGap={columnGap}
+              hidden={pageOverflowing}
+            />
+          )}
+          <HintInfo
+            bookKey={bookKey}
             showDoubleBorder={viewSettings.vertical && viewSettings.doubleBorder}
             isScrolled={viewSettings.scrolled}
             isVertical={viewSettings.vertical}
@@ -270,48 +293,36 @@ const BookCellInner: React.FC<BookCellProps> = ({
             contentInsets={contentInsets}
             gridInsets={gridInsets}
             columnGap={columnGap}
-            hidden={pageOverflowing}
           />
-        )}
-        <HintInfo
-          bookKey={bookKey}
-          showDoubleBorder={viewSettings.vertical && viewSettings.doubleBorder}
-          isScrolled={viewSettings.scrolled}
-          isVertical={viewSettings.vertical}
-          isEink={viewSettings.isEink}
-          horizontalGap={horizontalGapPercent}
-          contentInsets={contentInsets}
-          gridInsets={gridInsets}
-          columnGap={columnGap}
-        />
-        {viewSettings.readingRulerEnabled && viewState?.inited && (
-          <ReadingRuler
-            bookKey={bookKey}
-            isVertical={viewSettings.vertical}
-            rtl={viewSettings.rtl}
-            lines={viewSettings.readingRulerLines}
-            position={viewSettings.readingRulerPosition}
-            opacity={viewSettings.readingRulerOpacity}
-            color={viewSettings.readingRulerColor}
-            bookFormat={book.format}
-            viewSettings={viewSettings}
-            gridInsets={gridInsets}
-          />
-        )}
-        {showFooter && (
-          <ProgressBar
-            bookKey={bookKey}
-            horizontalGap={horizontalGapPercent}
-            contentInsets={contentInsets}
-            gridInsets={gridInsets}
-            columnGap={columnGap}
-            cornerRadii={cornerRadii}
-            hidden={pageOverflowing}
-          />
-        )}
-      </div>
-      {/* After the page chrome so it can't paint over ink near the edges. */}
-      <HandwritingOverlay bookKey={bookKey} gridInsets={gridInsets} />
+          {viewSettings.readingRulerEnabled && viewState?.inited && (
+            <ReadingRuler
+              bookKey={bookKey}
+              isVertical={viewSettings.vertical}
+              rtl={viewSettings.rtl}
+              lines={viewSettings.readingRulerLines}
+              position={viewSettings.readingRulerPosition}
+              opacity={viewSettings.readingRulerOpacity}
+              color={viewSettings.readingRulerColor}
+              bookFormat={book.format}
+              viewSettings={viewSettings}
+              gridInsets={gridInsets}
+            />
+          )}
+          {showFooter && (
+            <ProgressBar
+              bookKey={bookKey}
+              horizontalGap={horizontalGapPercent}
+              contentInsets={contentInsets}
+              gridInsets={gridInsets}
+              columnGap={columnGap}
+              cornerRadii={cornerRadii}
+              hidden={pageOverflowing}
+            />
+          )}
+        </div>
+        {/* Ink stays in the same visual coordinate space as the live page. */}
+        <HandwritingOverlay bookKey={bookKey} gridInsets={gridInsets} />
+      </ReaderPageFrame>
       <BookmarkPullDown bookKey={bookKey} ribbonHidden={!!hoveredBookKey} slideRef={slideRef} />
       <PageNavigationButtons bookKey={bookKey} isDropdownOpen={isDropdownOpen} />
       <SearchResultsNav bookKey={bookKey} gridInsets={gridInsets} />

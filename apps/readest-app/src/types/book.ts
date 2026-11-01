@@ -97,7 +97,13 @@ export interface ImportBookOptions {
 }
 
 export interface Book {
-  kataKecil?: { id: string; revision: string; sectionIds: string[]; coverUrl?: string | null };
+  kataKecil?: {
+    id: string;
+    revision: string;
+    sectionIds: string[];
+    coverUrl?: string | null;
+    status?: 'ongoing' | 'completed' | 'hiatus';
+  };
   // if Book is a remote book we just lazy load the book content via url
   url?: string;
   // if Book is a transient local book we can load the book content via filePath

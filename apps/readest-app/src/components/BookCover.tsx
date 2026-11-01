@@ -137,6 +137,7 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
             {displayCoverUrl && (
               <Image
                 src={displayCoverUrl}
+                crossOrigin={displayCoverUrl === book.kataKecil?.coverUrl ? 'anonymous' : undefined}
                 unoptimized
                 alt={book.title}
                 fill={true}
@@ -166,6 +167,9 @@ const BookCover: React.FC<BookCoverProps> = memo<BookCoverProps>(
               {displayCoverUrl && (
                 <Image
                   src={displayCoverUrl}
+                  crossOrigin={
+                    displayCoverUrl === book.kataKecil?.coverUrl ? 'anonymous' : undefined
+                  }
                   unoptimized
                   alt={book.title}
                   width={0}

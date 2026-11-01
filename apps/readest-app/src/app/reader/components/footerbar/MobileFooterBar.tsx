@@ -26,7 +26,9 @@ const MobileFooterBar: React.FC<FooterBarChildProps> = ({
   // the bases match the panels' px-4 and the bar's px-8.
   const panelInsetStyle = getHorizontalInsetStyle(gridInsets, isIPhoneDuo, 16);
   const barInsetStyle = getHorizontalInsetStyle(gridInsets, isIPhoneDuo, 32);
-  const bottomOffset = isMobile ? `${gridInsets.bottom * 0.33 + 64}px` : '64px';
+  const bottomOffset = isMobile
+    ? `calc(max(${gridInsets.bottom}px, env(safe-area-inset-bottom)) + 64px)`
+    : '64px';
 
   return (
     <>

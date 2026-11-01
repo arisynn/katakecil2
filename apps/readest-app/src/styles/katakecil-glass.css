@@ -1,14 +1,15 @@
 /* Kata Kecil: cover-first library and quiet reader chrome, using the active palette. */
 :root {
   --kk-glass: color-mix(in srgb, var(--color-base-100) 72%, transparent);
-  --kk-glass-strong: color-mix(in srgb, var(--color-base-100) 90%, transparent);
+  --kk-glass-strong: color-mix(in srgb, var(--color-base-100) 97%, transparent);
   --kk-glass-border: color-mix(in srgb, var(--color-base-content) 12%, transparent);
   --kk-opaque: var(--color-base-100);
 }
 html
   :is(
     .glass,
-    .library-page .titlebar,
+    .kk-header-actions,
+    :where(.library-page) .titlebar,
     .modal-box,
     .dropdown-content,
     .header-bar,
@@ -60,7 +61,8 @@ html[data-theme$='-dark'] .kk-mark {
   html
     :is(
       .glass,
-      .library-page .titlebar,
+      .kk-header-actions,
+      :where(.library-page) .titlebar,
       .modal-box,
       .dropdown-content,
       .header-bar,
@@ -77,7 +79,8 @@ html[data-theme$='-dark'] .kk-mark {
   html
     :is(
       .glass,
-      .library-page .titlebar,
+      .kk-header-actions,
+      :where(.library-page) .titlebar,
       .modal-box,
       .dropdown-content,
       .header-bar,
@@ -95,7 +98,8 @@ html[data-theme$='-dark'] .kk-mark {
 html[data-eink='true']
   :is(
     .glass,
-    .library-page .titlebar,
+    .kk-header-actions,
+    :where(.library-page) .titlebar,
     .modal-box,
     .dropdown-content,
     .header-bar,
@@ -416,4 +420,431 @@ html[data-eink='true']
   ) {
   border: 1px solid var(--color-base-content);
   background: var(--color-base-100) !important;
+}
+
+/* Update 006: a quiet shelf, with glass confined to controls. */
+.kk-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.kk-brand h1 {
+  font-size: 25px;
+  letter-spacing: -0.045em;
+}
+.kk-header-actions {
+  border-radius: 28px;
+  padding: 2px;
+  gap: 0;
+}
+.kk-library-intro {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-block: 30px 0;
+  gap: 12px;
+}
+.kk-library-intro h2 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.kk-library-intro > span {
+  font-size: 12px;
+  color: var(--color-neutral-content);
+}
+.kk-cover-carousel {
+  padding-block: clamp(16px, 3svh, 32px) 24px;
+}
+.kk-carousel-scroller {
+  padding-block: 8px 18px;
+}
+.kk-carousel-card .bookitem-main {
+  border-radius: 5px;
+}
+.kk-carousel-card .cover-image {
+  border-radius: 5px;
+  box-shadow:
+    0 24px 32px -20px #0005,
+    0 3px 8px #0002;
+}
+.kk-carousel-card .kk-book-caption {
+  align-items: center;
+  gap: 12px;
+  padding-top: 22px !important;
+}
+.kk-carousel-card .kk-book-caption > div:first-of-type {
+  display: none;
+}
+.kk-carousel-card .kk-book-caption > div:last-child {
+  width: 100%;
+  min-height: 44px !important;
+  height: auto !important;
+  position: relative;
+}
+.kk-carousel-card .show-detail-button {
+  position: absolute;
+  inset-inline-end: 0;
+  margin: 0;
+  padding: 12px;
+  opacity: 1;
+}
+.kk-publication-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--kk-glass-border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-base-content);
+  background: var(--color-base-100);
+}
+.kk-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #50816b;
+}
+[data-publication-status='completed'] .kk-status-dot {
+  background: currentColor;
+}
+[data-publication-status='hiatus'] .kk-status-dot {
+  background: #a67839;
+}
+.library-list-item .kk-publication-badge {
+  margin-block-end: 6px;
+}
+.kk-carousel-navigation {
+  gap: 20px;
+}
+.kk-carousel-count {
+  opacity: 1;
+  color: var(--color-neutral-content);
+}
+.kk-library-menu {
+  padding: 12px;
+  border-radius: 24px;
+}
+.kk-menu-tabs button {
+  min-height: 44px;
+}
+.kk-reader-heading {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+}
+.kk-reader-heading > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+}
+.kk-reader-tools {
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px;
+  border-radius: 24px;
+  margin-top: 8px;
+  max-height: 75dvh;
+  overflow-y: auto;
+}
+.kk-reader-tools .kk-sheet-heading {
+  padding-inline-start: 12px;
+}
+.kk-tool-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 50px;
+  width: 100%;
+  text-align: start;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+.kk-tool-row:hover {
+  background: var(--color-base-200);
+}
+.kk-tool-row svg {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+}
+.kk-tool-shortcuts {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--kk-glass-border);
+  margin-top: 8px;
+  padding-top: 12px;
+  gap: 8px;
+}
+.kk-tool-shortcuts > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  padding-bottom: 8px;
+}
+.kk-tool-shortcuts button {
+  min-width: 44px !important;
+  min-height: 44px !important;
+}
+.kk-reader-dock {
+  background: var(--kk-glass-strong);
+  padding-block: 8px;
+  padding-inline: 12px !important;
+  gap: 4px;
+  border-radius: 0;
+}
+.kk-reader-dock .kk-dock-action {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 48px;
+  border-radius: 16px;
+  color: var(--color-base-content);
+}
+.kk-dock-action span {
+  font-size: 10px;
+  font-weight: 500;
+}
+.kk-dock-action[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--color-base-content) 9%, transparent);
+}
+.kk-reader-sheet {
+  padding-inline: max(24px, env(safe-area-inset-left)) !important;
+  gap: 24px;
+  max-height: min(65dvh, 560px);
+}
+.kk-reader-sheet button {
+  min-height: 44px;
+}
+.kk-reader-sheet .kk-sheet-heading {
+  min-height: 44px;
+}
+.kk-reader-sheet button:focus-visible,
+.kk-tool-row:focus-visible,
+.kk-dock-action:focus-visible {
+  outline: 2px solid var(--color-base-content);
+  outline-offset: 2px;
+}
+@media (max-width: 639px) {
+  html .header-bar {
+    height: 56px;
+    padding-inline: max(8px, env(safe-area-inset-left)) !important;
+  }
+  .header-tools-end {
+    gap: 0;
+    padding-inline-start: 4px;
+  }
+  .header-tools-end .dropdown-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  html .footer-bar {
+    border-radius: 24px 24px 0 0;
+  }
+  .sidebar-container {
+    border-radius: 28px 28px 0 0 !important;
+  }
+  .sidebar-header {
+    height: 56px;
+    padding-inline: 16px;
+  }
+  .sidebar-header button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+@media (max-width: 360px) {
+  .kk-brand {
+    gap: 6px;
+  }
+  .kk-brand h1 {
+    font-size: 22px;
+  }
+  .kk-library-header {
+    padding-inline: 16px !important;
+  }
+}
+@media (max-height: 500px) {
+  .kk-library-intro {
+    margin-top: 10px;
+  }
+  .kk-reader-sheet {
+    max-height: calc(100dvh - 130px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-bar,
+  .footer-bar,
+  .kk-carousel-card,
+  .sidebar-container {
+    transition: none !important;
+  }
+}
+html[data-eink='true'] .kk-dock-action[aria-pressed='true'] {
+  outline: 1px solid currentColor;
+  background: var(--color-base-100);
+}
+html[data-eink='true'] .kk-status-dot {
+  background: currentColor;
+}
+html[data-eink='true'] .kk-carousel-card .cover-image {
+  box-shadow: none;
+}
+.kk-material-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  gap: 16px;
+  min-height: 50px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--kk-glass-border);
+}
+html[data-kk-solid='true']
+  :is(
+    .glass,
+    .kk-header-actions,
+    .modal-box,
+    .dropdown-content,
+    .header-bar,
+    .footer-bar,
+    .sidebar-container,
+    .notebook-container,
+    .tts-control,
+    .tts-player,
+    .kk-reader-sheet,
+    .kk-reader-dock
+  ) {
+  background: var(--kk-opaque) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html :is(.kk-reader-sheet, .kk-reader-dock) {
+    background: var(--kk-opaque) !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html :is(.kk-reader-sheet, .kk-reader-dock) {
+    background: var(--kk-opaque) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+.kk-selection-actions summary {
+  padding: 14px 12px;
+  min-height: 44px;
+  font-size: 13px;
+  cursor: pointer;
+}
+html .kk-inline-menu {
+  position: static !important;
+  width: 100%;
+  background: transparent !important;
+  box-shadow: none;
+  border: 0;
+  padding: 0;
+}
+html[data-eink='true'] .kk-reader-dock {
+  background: var(--kk-opaque);
+}
+.kk-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+.kk-slider-group > span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-neutral-content);
+}
+.kk-layout-sliders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* Page overview: leave EPUB dimensions intact and make room for the controls. */
+.kk-reader-preview-stage,
+.kk-reader-page-frame {
+  position: absolute;
+  inset: 0;
+}
+.kk-reader-preview-stage {
+  background: var(--color-base-100);
+}
+.kk-reader-preview-stage[data-preview-active='true'] {
+  background: var(--color-base-200);
+}
+.kk-reader-page-frame {
+  transform-origin: center;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-radius 260ms,
+    box-shadow 260ms;
+}
+[data-preview-active='true'] > .kk-reader-page-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px #0003,
+    0 0 0 1px var(--kk-glass-border);
+  pointer-events: none;
+}
+.kk-reader-resume-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: pointer;
+  background: transparent;
+}
+.kk-reader-resume-layer:focus-visible {
+  outline: 2px solid var(--color-base-content);
+  outline-offset: -8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kk-reader-page-frame {
+    transition: none;
+  }
+}
+html[data-eink='true'] .kk-reader-page-frame {
+  transition: none;
+  box-shadow: none;
+}
+html[data-eink='true'] [data-preview-active='true'] > .kk-reader-page-frame {
+  outline: 1px solid var(--color-base-content);
+}
+/* The preview never changes the engine's getBoundingClientRect geometry. */
+.kk-reader-live-page {
+  position: absolute;
+  inset: 0;
+}
+.kk-reader-page-frame {
+  opacity: 0;
+  pointer-events: none;
+}
+[data-preview-ready='true'] > .kk-reader-live-page {
+  opacity: 0;
+  pointer-events: none;
+}
+[data-preview-ready='true'] > .kk-reader-page-frame {
+  opacity: 1;
 }

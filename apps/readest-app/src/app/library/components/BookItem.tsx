@@ -25,6 +25,7 @@ import { splitDuration } from '@/utils/time';
 import { INDETERMINATE_PROGRESS } from '@/utils/transfer';
 import { getBookTags } from '../utils/libraryUtils';
 import ReadingProgress from './ReadingProgress';
+import { publicationLabel } from '@/services/katakecil/model';
 import BookCover from '@/components/BookCover';
 
 interface BookItemProps {
@@ -195,11 +196,20 @@ const BookItem: React.FC<BookItemProps> = ({
       </div>
       <div
         className={clsx(
-          'flex w-full flex-col p-0',
+          'kk-book-caption flex w-full flex-col p-0',
           mode === 'grid' && 'pt-2',
           mode === 'list' && 'gap-1 py-0',
         )}
       >
+        {book.kataKecil?.status && (
+          <span
+            className='kk-publication-badge eink-bordered'
+            data-publication-status={book.kataKecil.status}
+          >
+            <span aria-hidden='true' className='kk-status-dot' />
+            {publicationLabel(book.kataKecil.status)}
+          </span>
+        )}
         <div className={clsx('min-w-0 flex-1', mode === 'list' && 'flex flex-col gap-1')}>
           <h4
             title={book.title}

@@ -148,41 +148,46 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
           </button>
         )}
       </div>
-      <Slider
-        label={_('Font Size')}
-        initialValue={viewSettings?.defaultFontSize ?? FONT_SIZE_LIMITS.DEFAULT}
-        bubbleLabel={`${viewSettings?.defaultFontSize ?? FONT_SIZE_LIMITS.DEFAULT}`}
-        minLabel='A'
-        maxLabel='A'
-        minClassName='text-xs'
-        maxClassName='text-base'
-        onChange={handleFontSizeChange}
-        min={FONT_SIZE_LIMITS.MIN}
-        max={FONT_SIZE_LIMITS.MAX}
-      />
-      <div className='flex w-full items-center justify-between gap-x-6'>
+      <div className='kk-slider-group'>
+        <span>{_('Font Size')}</span>
         <Slider
-          label={_('Page Margin')}
-          initialValue={getMarginProgressValue(
-            viewSettings?.marginTopPx ?? 44,
-            viewSettings?.gapPercent ?? 5,
-          )}
-          bubbleElement={<TbBoxMargin size={marginIconSize} />}
-          minLabel={_('Small')}
-          maxLabel={_('Large')}
-          step={10}
-          onChange={handleMarginChange}
+          label={_('Font Size')}
+          initialValue={viewSettings?.defaultFontSize ?? FONT_SIZE_LIMITS.DEFAULT}
+          bubbleLabel={`${viewSettings?.defaultFontSize ?? FONT_SIZE_LIMITS.DEFAULT}`}
+          minLabel='A'
+          maxLabel='A'
+          minClassName='text-xs'
+          maxClassName='text-base'
+          onChange={handleFontSizeChange}
+          min={FONT_SIZE_LIMITS.MIN}
+          max={FONT_SIZE_LIMITS.MAX}
         />
-        <Slider
-          label={_('Line Spacing')}
-          initialValue={(viewSettings?.lineHeight ?? 1.6) * LINE_HEIGHT_LIMITS.MULTIPLIER}
-          bubbleElement={<RxLineHeight size={marginIconSize} />}
-          minLabel={_('Small')}
-          maxLabel={_('Large')}
-          min={LINE_HEIGHT_LIMITS.MIN}
-          max={LINE_HEIGHT_LIMITS.MAX}
-          onChange={handleLineHeightChange}
-        />
+      </div>
+      <div className='kk-layout-sliders'>
+        <div className='kk-slider-group'>
+          <span>{_('Page Margin')}</span>
+          <Slider
+            label={_('Page Margin')}
+            initialValue={getMarginProgressValue(
+              viewSettings?.marginTopPx ?? 44,
+              viewSettings?.gapPercent ?? 5,
+            )}
+            bubbleElement={<TbBoxMargin size={marginIconSize} />}
+            step={10}
+            onChange={handleMarginChange}
+          />
+        </div>
+        <div className='kk-slider-group'>
+          <span>{_('Line Spacing')}</span>
+          <Slider
+            label={_('Line Spacing')}
+            initialValue={(viewSettings?.lineHeight ?? 1.6) * LINE_HEIGHT_LIMITS.MULTIPLIER}
+            bubbleElement={<RxLineHeight size={marginIconSize} />}
+            min={LINE_HEIGHT_LIMITS.MIN}
+            max={LINE_HEIGHT_LIMITS.MAX}
+            onChange={handleLineHeightChange}
+          />
+        </div>
       </div>
       {/* -mt-4 halves the container's gap-y-8 above this row: the sliders are
           peers of each other, this is a trailing escape hatch and reads better
@@ -193,7 +198,7 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
         onClick={handleOpenSettings}
       >
         <PiGear size={16} />
-        {_('More Settings')}
+        {_('Font family & more')}
       </button>
     </div>
   );

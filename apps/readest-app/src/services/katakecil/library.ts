@@ -32,6 +32,7 @@ export function mergeCatalogLibrary(entries: CatalogBook[], library: Book[]): Bo
             sectionIds: entry.section_ids,
           }),
           coverUrl: entry.cover_url,
+          status: entry.status,
         },
         title: entry.title,
         author: entry.author,

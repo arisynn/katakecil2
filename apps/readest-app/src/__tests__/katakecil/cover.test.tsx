@@ -31,6 +31,15 @@ const book = {
 afterEach(cleanup);
 
 describe('Published book covers', () => {
+  it.each([
+    'crop',
+    'fit',
+  ] as const)('requests published %s covers with CORS so the PWA receives a readable response', (coverFit) => {
+    render(<BookCover book={book} coverFit={coverFit} />);
+    expect(screen.getByRole('img').getAttribute('crossorigin')).toBe('anonymous');
+    fireEvent.error(screen.getByRole('img'));
+    expect(screen.getByRole('img').getAttribute('crossorigin')).toBeNull();
+  });
   it('uses the durable catalog cover before stale imported metadata', () => {
     render(<BookCover book={book} />);
     expect(screen.getByRole('img').getAttribute('src')).toBe('https://example.com/cover.jpg');

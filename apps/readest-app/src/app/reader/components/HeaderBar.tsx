@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VscLibrary } from 'react-icons/vsc';
-import { MdOutlineMenu } from 'react-icons/md';
+import { MdArrowBack, MdMoreHoriz, MdOutlineMenu } from 'react-icons/md';
 
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
@@ -34,6 +34,7 @@ import NotebookToggler from './NotebookToggler';
 import TranslationToggler from './TranslationToggler';
 import ViewMenu from './ViewMenu';
 import SyncInfoDialog from './SyncInfoDialog';
+import ReaderTools from './ReaderTools';
 
 interface HeaderBarProps {
   bookKey: string;
@@ -259,7 +260,24 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
           }
         }}
       >
-        <div className='header-tools-start bg-base-100 sidebar-bookmark-toggler z-20 flex h-full min-w-0 items-center gap-x-4 pe-2 max-[350px]:gap-x-2'>
+        {isMobile && (
+          <div className='kk-reader-heading'>
+            <button
+              className='kk-circle-button'
+              aria-label={_('Go to Library')}
+              onClick={onGoToLibrary}
+            >
+              <MdArrowBack size={22} className='rtl:rotate-180' />
+            </button>
+            <span>{bookTitle}</span>
+          </div>
+        )}
+        <div
+          className={clsx(
+            isMobile && 'hidden!',
+            'header-tools-start bg-base-100 sidebar-bookmark-toggler z-20 flex h-full min-w-0 items-center gap-x-4 pe-2 max-[350px]:gap-x-2',
+          )}
+        >
           {/* h-full so this scroller spans the whole bar: `overflow-x-auto`
               also clips vertically, and shrink-wrapped to the 32px icons it
               cut the buttons' touch halos back down to 32px (#5401). */}
@@ -286,7 +304,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
               <VscLibrary size={iconSize18} className='fill-base-content' />
             </button>
             <BookmarkToggler bookKey={bookKey} />
-            <TranslationToggler bookKey={bookKey} />
+            {!isMobile && <TranslationToggler bookKey={bookKey} />}
           </div>
           {enableAnnotationQuickActions && (
             <Dropdown
@@ -348,12 +366,31 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         </div>
 
         <div className='header-tools-end bg-base-100 z-20 ms-auto flex h-full min-w-max items-center gap-x-4 ps-2 max-[350px]:gap-x-2'>
-          <NotebookToggler bookKey={bookKey} />
+          {!isMobile && <NotebookToggler bookKey={bookKey} />}
+          {isMobile && (
+            <Dropdown
+              label={_('Reading Tools')}
+              className='dropdown-bottom dropdown-end'
+              buttonClassName='kk-circle-button'
+              toggleButton={<MdMoreHoriz size={25} />}
+              onToggle={handleToggleDropdown}
+            >
+              <ReaderTools
+                bookKey={bookKey}
+                onCloseBook={() => {
+                  setHoveredBookKey(null);
+                  onCloseBook(bookKey);
+                }}
+              />
+            </Dropdown>
+          )}
           <Dropdown
             label={_('View Options')}
-            containerClassName='h-8'
+            containerClassName={isMobile ? 'h-11' : 'h-8'}
             className='exclude-title-bar-mousedown dropdown-bottom dropdown-end'
-            buttonClassName='btn btn-ghost h-8 min-h-8 w-8 p-0 mt-0'
+            buttonClassName={
+              isMobile ? 'kk-circle-button' : 'btn btn-ghost h-8 min-h-8 w-8 p-0 mt-0'
+            }
             toggleButton={<MdOutlineMenu />}
             onToggle={handleToggleDropdown}
           >
@@ -374,17 +411,19 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
               />
             </ModalPortal>
           )}
-          <WindowButtons
-            className='window-buttons flex items-center'
-            headerRef={headerRef}
-            showMinimize={bookKeys.length == 1 && windowButtonVisible}
-            showMaximize={bookKeys.length == 1 && windowButtonVisible}
-            closeButtonLabel={_('Close Book')}
-            onClose={() => {
-              setHoveredBookKey(null);
-              onCloseBook(bookKey);
-            }}
-          />
+          {!isMobile && (
+            <WindowButtons
+              className='window-buttons flex items-center'
+              headerRef={headerRef}
+              showMinimize={bookKeys.length == 1 && windowButtonVisible}
+              showMaximize={bookKeys.length == 1 && windowButtonVisible}
+              closeButtonLabel={_('Close Book')}
+              onClose={() => {
+                setHoveredBookKey(null);
+                onCloseBook(bookKey);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

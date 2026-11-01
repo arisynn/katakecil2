@@ -73,6 +73,12 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     loadDataTheme();
+    try {
+      document.documentElement.dataset['kkSolid'] =
+        localStorage.getItem('katakecil:solid-ui') === 'true' ? 'true' : 'false';
+    } catch {
+      /* Storage can be disabled; CSS still provides a solid fallback. */
+    }
     if (appService) {
       initSystemThemeListener(appService);
       // Windows: the main window is created hidden and only mapped once the

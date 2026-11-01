@@ -1,5 +1,6 @@
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 import { NetworkFirst, CacheFirst, ExpirationPlugin, Serwist } from 'serwist';
+import { KATAKECIL_URL } from './services/katakecil/config';
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -80,6 +81,24 @@ const serwist = new Serwist({
             maxAgeSeconds: 365 * 24 * 60 * 60 * 2, // 2 years - fonts rarely change
             purgeOnQuotaError: true, // Automatically purge if storage quota exceeded
           }),
+        ],
+      }),
+    },
+    // Published covers use CORS and their own cache. Never reuse an opaque
+    // entry left in the generic resource cache by an older PWA build.
+    {
+      matcher: ({ url }) =>
+        url.origin === new URL(KATAKECIL_URL).origin &&
+        url.pathname.startsWith('/storage/v1/object/public/kk-covers/'),
+      handler: new NetworkFirst({
+        cacheName: 'katakecil-published-covers-v2',
+        networkTimeoutSeconds: 3,
+        plugins: [
+          {
+            cacheWillUpdate: async ({ response }) =>
+              response.status === 200 && response.type !== 'opaque' ? response : null,
+          },
+          new ExpirationPlugin({ maxEntries: 64, maxAgeSeconds: 365 * 24 * 60 * 60 }),
         ],
       }),
     },

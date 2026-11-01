@@ -41,6 +41,15 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Catalog on the native Readest shelf', () => {
+  it('carries catalog publication status independently of finished reading at 100%', () => {
+    const projected = mergeCatalogLibrary([entry], [local])[0]!;
+    expect(projected.kataKecil).toMatchObject({ status: 'ongoing' });
+    expect(projected.readingStatus).toBe('finished');
+    expect(projected.progress).toEqual([20, 20]);
+    expect(
+      mergeCatalogLibrary([{ ...entry, status: 'hiatus' }], [projected])[0]?.kataKecil,
+    ).toMatchObject({ status: 'hiatus' });
+  });
   it('retains a durable cover inside the persisted catalog identity', () => {
     const cover = 'https://example.com/cover.jpg';
     const projected = mergeCatalogLibrary([{ ...entry, cover_url: cover }], [local])[0]!;

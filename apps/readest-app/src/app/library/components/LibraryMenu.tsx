@@ -13,6 +13,9 @@ export default function LibraryMenu({
   setIsDropdownOpen?: (open: boolean) => void;
 }) {
   const _ = useTranslation();
+  const [solid, setSolid] = useState(
+    () => typeof document !== 'undefined' && document.documentElement.dataset['kkSolid'] === 'true',
+  );
   const [tab, setTab] = useState<'view' | 'settings'>('view');
   return (
     <div className='kk-library-menu dropdown-content no-triangle'>
@@ -47,7 +50,27 @@ export default function LibraryMenu({
             <ViewMenu setIsDropdownOpen={setIsDropdownOpen} />
           </>
         ) : (
-          <SettingsMenu onPullLibrary={onPullLibrary} setIsDropdownOpen={setIsDropdownOpen} />
+          <>
+            <label className='kk-material-switch'>
+              <span>{_('Solid controls')}</span>
+              <input
+                type='checkbox'
+                className='toggle toggle-sm'
+                checked={solid}
+                onChange={(event) => {
+                  const next = event.target.checked;
+                  setSolid(next);
+                  document.documentElement.dataset['kkSolid'] = String(next);
+                  try {
+                    localStorage.setItem('katakecil:solid-ui', String(next));
+                  } catch {
+                    /* Preference remains active for this session. */
+                  }
+                }}
+              />
+            </label>
+            <SettingsMenu onPullLibrary={onPullLibrary} setIsDropdownOpen={setIsDropdownOpen} />
+          </>
         )}
       </div>
     </div>

@@ -53,8 +53,11 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = (props) => {
       }}
     >
       <div className='kk-library-heading'>
-        <h1>Kata Kecil</h1>
-        <div className='flex items-center gap-2'>
+        <div className='kk-brand'>
+          <img src='/katakecil-mark.svg' alt='' width={30} height={36} className='kk-mark' />
+          <h1>Kata Kecil</h1>
+        </div>
+        <div className='kk-header-actions eink-bordered flex items-center'>
           {props.isSelectMode ? (
             <>
               <button
@@ -99,6 +102,10 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = (props) => {
             </>
           )}
         </div>
+      </div>
+      <div className='kk-library-intro'>
+        <h2>{_('Your Library')}</h2>
+        <span>{_('{{count}} books', { count })}</span>
       </div>
       {showSearch && (
         <div id='kk-library-search' className='kk-library-search eink-bordered' role='search'>

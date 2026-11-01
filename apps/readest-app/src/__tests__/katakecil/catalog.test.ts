@@ -103,7 +103,7 @@ describe('Catalog reader integration', () => {
         [previous],
         {} as SystemSettings,
       ),
-    ).toBe(previous);
+    ).toMatchObject({ ...previous, kataKecil: { ...previous.kataKecil, status: 'ongoing' } });
     expect(fetcher).not.toHaveBeenCalled();
   });
   it('never imports a conflict or server error as an EPUB', async () => {

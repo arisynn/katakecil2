@@ -67,7 +67,11 @@ export function prepareCatalogBook(
   const work = async () => {
     const previous = books.find((b) => !b.deletedAt && b.kataKecil?.id === entry.id);
     if (previous?.kataKecil?.revision === entry.revision && (await app.isBookAvailable(previous)))
-      return previous;
+      return {
+        ...previous,
+        coverImageUrl: entry.cover_url || previous.coverImageUrl,
+        kataKecil: { ...previous.kataKecil, coverUrl: entry.cover_url, status: entry.status },
+      };
     if (!entry.section_ids.length) throw Error('This book has no published sections yet.');
     if (
       typeof navigator !== 'undefined' &&
@@ -122,6 +126,7 @@ export function prepareCatalogBook(
         revision: entry.revision,
         sectionIds: entry.section_ids,
         coverUrl: entry.cover_url,
+        status: entry.status,
       },
     };
     if (previous && config)

@@ -12,7 +12,7 @@ export interface CatalogBook {
 }
 
 export const publicationLabel = (status: string) =>
-  status === 'completed' ? 'Completed' : status === 'hiatus' ? 'On hiatus' : 'Ongoing';
+  status === 'completed' ? 'Tamat' : status === 'hiatus' ? 'Hiatus' : 'Ongoing';
 
 export const nextRelease = (value: string | null, now = Date.now()): string | null =>
   value && Number.isFinite(Date.parse(value)) && Date.parse(value) > now ? value : null;
