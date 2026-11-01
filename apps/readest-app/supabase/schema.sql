@@ -24,7 +24,7 @@ create table public.kk_sections (
   book_id text not null references public.kk_books(id) on delete cascade,
   position integer not null check (position >= 0),
   title text not null check (length(title) between 1 and 300),
-  content_html text not null check (octet_length(content_html) <= 3000000),
+  content_html text not null check (octet_length(content_html) <= 16000000),
   is_enabled boolean not null default true,
   release_at timestamptz not null,
   updated_at timestamptz not null default now(),
@@ -115,7 +115,7 @@ grant execute on function public.kk_consume_read_budget(text) to service_role;
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('kk-sources','kk-sources',false,20000000,array['application/epub+zip']),
- ('kk-covers','kk-covers',true,5000000,array['image/png','image/jpeg','image/webp']);
+ ('kk-covers','kk-covers',true,10000000,array['image/png','image/jpeg','image/webp']);
 create policy kk_sources_author on storage.objects for all to authenticated
   using (bucket_id='kk-sources' and exists(select 1 from public.kk_author_members where user_id=(select auth.uid())))
   with check (bucket_id='kk-sources' and exists(select 1 from public.kk_author_members where user_id=(select auth.uid())));

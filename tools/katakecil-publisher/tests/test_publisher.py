@@ -1,6 +1,9 @@
 import datetime as dt
 import importlib.util
+import io
 import json
+import os
+from contextlib import redirect_stdout
 import tempfile
 import unittest
 import zipfile
@@ -71,6 +74,38 @@ class PickerTests(unittest.TestCase):
 
 
 class EpubTests(unittest.TestCase):
+    def large_image_epub(self, path, size, copies=1):
+        fixture(path, extra='<img src="../cover.png"/>' * copies)
+        with zipfile.ZipFile(path) as z:
+            data = {name: z.read(name) for name in z.namelist()}
+        data['OPS/cover.png'] = b'\x89PNG\r\n\x1a\n' + b'x' * (size - 8)
+        with zipfile.ZipFile(path, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+            for name, raw in data.items():
+                z.writestr(name, raw)
+
+    def test_accepts_ten_mb_image_and_cover_without_losing_text(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'large.epub'
+            self.large_image_epub(path, 10_000_000)
+            _, sections, cover = kk.read_epub(path, 'book')
+            self.assertEqual(len(cover[0]), 10_000_000)
+            self.assertIn('Halo dunia.', sections[1]['content_html'])
+            self.assertIn('data:image/png;base64,', sections[1]['content_html'])
+
+    def test_rejects_image_over_ten_mb_with_filename(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'large.epub'
+            self.large_image_epub(path, 10_000_001)
+            with self.assertRaisesRegex(ValueError, r'cover.png.*10 MB'):
+                kk.read_epub(path, 'book')
+
+    def test_rejects_combined_content_that_cannot_fit_the_reader(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'large.epub'
+            self.large_image_epub(path, 7_000_000, copies=2)
+            with self.assertRaisesRegex(ValueError, '16 MB'):
+                kk.read_epub(path, 'book')
+
     def test_standard_xhtml_doctype_is_not_fetched_and_svg_cover_is_inlined(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'book.epub'
@@ -172,6 +207,11 @@ class ScheduleTests(unittest.TestCase):
 
 
 class ConfigTests(unittest.TestCase):
+    def test_combined_content_is_rejected_before_creating_upload_payload(self):
+        sections = [{'content_html': 'x' * 8_000_001}, {'content_html': 'y' * 8_000_001}]
+        with self.assertRaisesRegex(ValueError, 'gabungan.*16 MB'):
+            kk.publication_payload({'id': 'book'}, sections)
+
     def test_private_atomic_config_and_no_password(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'config.json'
@@ -188,6 +228,38 @@ class ConfigTests(unittest.TestCase):
         payload = kk.publication_payload({'id':'a','title':'A'}, [section])
         self.assertNotIn('source_path', payload['sections'][0])
         self.assertNotIn('kind', payload['sections'][0])
+
+
+class TerminalTests(unittest.TestCase):
+    def test_panels_and_filenames_fit_narrow_and_wide_terminals(self):
+        for width in (28, 40, 80):
+            with self.subTest(width=width), patch.object(kk.shutil, 'get_terminal_size', return_value=os.terminal_size((width, 24))), patch.object(kk, 'COLOR', False):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    kk.panel('KATA KECIL', ['Studio Terminal ' + kk.VERSION, 'Batas gambar dalam isi dan sampul 10 MB'])
+                    kk.menu_row('12', 'Garis_yang_Kita_Teruskan_Karisyono_Final_45_Bab.epub')
+                self.assertTrue(all(kk.visible_width(line) <= width for line in output.getvalue().splitlines()))
+                self.assertIn('.epub', output.getvalue())
+                self.assertNotIn('\x1b', output.getvalue())
+
+    def test_piped_home_and_inspect_are_noninteractive_and_secret_free(self):
+        output = io.StringIO()
+        with patch.object(kk, 'load_config', return_value={'token': 'private-token'}), patch.object(kk.sys, 'argv', ['kk']), patch('builtins.input', return_value='0'), redirect_stdout(output):
+            kk.main()
+        self.assertIn('Upload EPUB', output.getvalue())
+        self.assertNotIn('private-token', output.getvalue())
+        self.assertNotIn('\x1b', output.getvalue())
+
+    def test_data_uri_images_obey_the_same_ten_mb_limit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'large.epub'
+            encoded = 'eA==' * 1  # Valid small embedded image.
+            fixture(path, extra=f'<img src="data:image/png;base64,{encoded}"/>')
+            _, sections, _ = kk.read_epub(path, 'book')
+            self.assertIn('data:image/png;base64,eA==', sections[1]['content_html'])
+            fixture(path, extra='<img src="data:image/png;base64,' + 'eHh4' * 3_333_334 + '"/>')
+            with self.assertRaisesRegex(ValueError, '10 MB'):
+                kk.read_epub(path, 'book')
 
 
 if __name__ == '__main__':

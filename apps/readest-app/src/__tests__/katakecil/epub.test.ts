@@ -8,6 +8,17 @@ const section = {
   content_html: '<h1>Bab 1</h1><p>Teks<br>baris<img src="data:image/png;base64,YQ=="></p>',
 };
 describe('Published EPUB', () => {
+  it('keeps a ten MB embedded image readable within the existing EPUB budget', () => {
+    const data = 'eHh4'.repeat(3_333_333) + 'eA==';
+    const bytes = makeEpub(book, [
+      { ...section, content_html: `<p>Still here</p><img src="data:image/png;base64,${data}"/>` },
+    ]);
+    expect(bytes.length).toBeLessThanOrEqual(18_000_000);
+    const files = unzipSync(bytes);
+    const content = strFromU8(files[`OEBPS/section-${section.id}.xhtml`]!);
+    expect(content).toContain('Still here');
+    expect(content).toContain('data:image/png;base64,' + data);
+  });
   it('produces a valid EPUB container with stable identity and well formed XHTML', () => {
     const bytes = makeEpub(book, [section]);
     const files = unzipSync(bytes);
@@ -37,9 +48,10 @@ describe('Readest / Foliate compatibility', () => {
     const files = unzipSync(makeEpub(book, [section]));
     const epub = await new EPUB({
       sha1: undefined,
-      entries: Object.keys(files).map(filename => ({ filename })),
-      loadText: async (name: string) => files[name] ? strFromU8(files[name]!) : null,
-      loadBlob: async (name: string, type: string) => files[name] ? new Blob([files[name]!], { type }) : null,
+      entries: Object.keys(files).map((filename) => ({ filename })),
+      loadText: async (name: string) => (files[name] ? strFromU8(files[name]!) : null),
+      loadBlob: async (name: string, type: string) =>
+        files[name] ? new Blob([files[name]!], { type }) : null,
       getSize: (name: string) => files[name]?.length || 0,
     }).init();
     expect(epub.sections).toHaveLength(1);

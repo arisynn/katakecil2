@@ -39,6 +39,7 @@ export function validatePublication(value: unknown) {
   )
     throw Error('Use 1–600 sections');
   const ids = new Set<string>();
+  let totalContentBytes = 0;
   const kinds = (input['kinds'] || {}) as Record<string, unknown>;
   const sections = input['sections'].map((raw, position) => {
     const section = raw as Record<string, unknown>;
@@ -59,9 +60,11 @@ export function validatePublication(value: unknown) {
       throw Error('Invalid section order/title');
     if (
       typeof section['content_html'] !== 'string' ||
-      new TextEncoder().encode(section['content_html']).length > 3_000_000
+      new TextEncoder().encode(section['content_html']).length > 16_000_000
     )
       throw Error('Invalid section content');
+    totalContentBytes += new TextEncoder().encode(section['content_html']).length;
+    if (totalContentBytes > 16_000_000) throw Error('Invalid publication size');
     if (
       typeof section['release_at'] !== 'string' ||
       !/(Z|[+-]\d\d:\d\d)$/.test(section['release_at']) ||

@@ -9,7 +9,9 @@ import mimetypes
 import os
 import posixpath
 import re
+import shutil
 import sys
+import textwrap
 import tempfile
 import time
 import unicodedata
@@ -19,9 +21,15 @@ import urllib.request
 import uuid
 import xml.etree.ElementTree as ET
 import zipfile
+from contextlib import contextmanager
 from pathlib import Path
+from threading import Event, Thread
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
+MAX_IMAGE_BYTES = 10_000_000
+MAX_CONTENT_BYTES = 16_000_000
+MAX_SOURCE_BYTES = 18_000_000
+MAX_REQUEST_BYTES = 24_000_000
 WIB = dt.timezone(dt.timedelta(hours=7), 'WIB')
 CONFIG = Path.home() / '.config' / 'katakecil' / 'config.json'
 DEFAULT_URL = 'https://hrbcwymdqigtfmpmsdsi.supabase.co'
@@ -33,6 +41,82 @@ COLOR = sys.stdout.isatty() and 'NO_COLOR' not in os.environ
 
 def say(message, color='36'):
     print(f'\033[{color}m{message}\033[0m' if COLOR else message)
+
+
+def terminal_width():
+    return max(20, min(100, shutil.get_terminal_size(fallback=(60, 24)).columns))
+
+
+def visible_width(text):
+    return sum(0 if unicodedata.combining(c) else 2 if unicodedata.east_asian_width(c) in ('F', 'W') else 1 for c in text)
+
+
+def shorten(text, width):
+    text = ''.join(c for c in str(text) if not unicodedata.category(c).startswith('C'))
+    if visible_width(text) <= width:
+        return text
+    left, right = '', ''
+    for c in text:
+        if visible_width(left + c) > max(0, (width - 1) // 2):
+            break
+        left += c
+    for c in reversed(text):
+        if visible_width(c + right) > max(0, width - 1 - visible_width(left)):
+            break
+        right = c + right
+    return left + '…' + right
+
+
+def screen():
+    if sys.stdout.isatty() and os.environ.get('TERM') != 'dumb':
+        print('\033[2J\033[H', end='')
+
+
+def panel(title, lines=()):
+    width = terminal_width() - 2
+    say('╭' + '─' * width + '╮', '2;36')
+    for text in [title, *lines]:
+        words = textwrap.wrap(str(text), width=max(8, width - 4)) or ['']
+        for line in words:
+            line = shorten(line, width - 2)
+            padding = ' ' * max(0, width - 2 - visible_width(line))
+            say('│ ' + line + padding + ' │', '1;36' if text == title else '2')
+    say('╰' + '─' * width + '╯', '2;36')
+
+
+def menu_row(key, title, detail=None):
+    prefix = f'  {key}  '
+    say(prefix + shorten(title, terminal_width() - visible_width(prefix) - 1), '0')
+    if detail:
+        say('     ' + shorten(detail, terminal_width() - 6), '2')
+
+
+@contextmanager
+def activity(label):
+    """A real waiting indicator, without inventing upload percentages."""
+    if not sys.stdout.isatty() or os.environ.get('TERM') == 'dumb':
+        say(label + '…')
+        yield
+        return
+    stop = Event()
+    def animate():
+        frames = '◐◓◑◒'
+        index = 0
+        while not stop.is_set():
+            text = frames[index % len(frames)] + ' ' + shorten(label, terminal_width() - 5)
+            sys.stdout.write('\r\033[2K' + (f'\033[36m{text}\033[0m' if COLOR else text))
+            sys.stdout.flush()
+            index += 1
+            stop.wait(.12)
+    thread = Thread(target=animate, daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        thread.join()
+        sys.stdout.write('\r\033[2K')
+        sys.stdout.flush()
 
 
 def save_json(path, data):
@@ -102,7 +186,12 @@ def filter_page(paths, query, page):
 
 
 def prompt(label, default=None):
-    value = input(f'{label}' + (f' [{default}]' if default is not None else '') + ': ').strip()
+    hint = f' [{default}]' if default is not None else ''
+    if visible_width(label + hint) > terminal_width() - 5:
+        for line in textwrap.wrap(label, width=terminal_width() - 2):
+            say(line, '2')
+        label = 'Pilihan'
+    value = input(f'› {label}{hint}: ').strip()
     return value if value else default
 
 
@@ -134,15 +223,16 @@ def pick_epub(config):
         filtered = [p for p in candidates if query.casefold() in p.name.casefold()]
         page = min(page, max(0, (len(filtered) - 1) // PAGE_SIZE))
         shown = filter_page(candidates, query, page)
-        say(f'\nPilih EPUB · {folder}')
+        screen()
+        panel('PILIH EPUB', [str(folder).replace(str(Path.home()), '~', 1), 'Hanya EPUB dan folder berisi EPUB'])
         for index, path in enumerate(shown, 1):
             suffix = '/' if path.is_dir() else ''
-            print(f'  {index:2}. {path.name}{suffix}')
+            menu_row(f'{index:2}', path.name + suffix)
         if not shown:
             print('  Belum ada EPUB di daftar ini.')
-        print(f'Halaman {page + 1}/{max(1, (len(filtered) + PAGE_SIZE - 1) // PAGE_SIZE)} · {len(filtered)} hasil')
-        print('n Berikut · p Sebelum · / Cari nama · l Lokasi lain')
-        print('s Cari EPUB di subfolder · u Folder induk · 0 Kembali')
+        say(f'\n  {page + 1} / {max(1, (len(filtered) + PAGE_SIZE - 1) // PAGE_SIZE)} halaman · {len(filtered)} hasil', '2')
+        for help_line in ('n/p Halaman · / Cari', 'l Lokasi · u Folder induk', 's Cari subfolder · 0 Kembali'):
+            say('  ' + help_line, '2')
         choice = str(prompt('Pilih', '0'))
         if choice == '0':
             return None
@@ -200,9 +290,20 @@ def local_path(base, href):
     return path
 
 
+def check_image_size(raw, name):
+    if len(raw) > MAX_IMAGE_BYTES:
+        raise ValueError(f'Gambar {name} ({len(raw) / 1_000_000:.1f} MB) melebihi 10 MB.')
+
+
+def check_content_budget(sections):
+    total = sum(len(s['content_html'].encode('utf-8')) for s in sections)
+    if total > MAX_CONTENT_BYTES:
+        raise ValueError('Isi gabungan buku melebihi 16 MB setelah gambar disertakan. Kecilkan gambar agar buku tetap dapat dibaca.')
+
+
 def read_epub(path, book_id):
     path = Path(path)
-    if path.stat().st_size > 18_000_000:
+    if path.stat().st_size > MAX_SOURCE_BYTES:
         raise ValueError('Ukuran EPUB maksimal 18 MB untuk reader ini.')
     with zipfile.ZipFile(path) as archive:
         entries = archive.infolist()
@@ -249,9 +350,10 @@ def read_epub(path, book_id):
             mime = element.attrib.get('media-type', '')
             if mime in ('image/png', 'image/jpeg', 'image/webp'):
                 raw = archive.read(cover_name)
-                if len(raw) <= 5_000_000:
-                    cover = (raw, mime)
+                check_image_size(raw, cover_name)
+                cover = (raw, mime)
         sections = []
+        total_content = 0
         front_types = {'titlepage', 'copyright-page', 'dedication', 'acknowledgments', 'preface', 'foreword', 'toc', 'cover', 'halftitlepage', 'imprint'}
         for position, name in enumerate(spine):
             document = xml(name)
@@ -290,9 +392,17 @@ def read_epub(path, book_id):
                             element.attrib.pop('src', None)
                         else:
                             raw = archive.read(resource)
-                            if len(raw) > 1_500_000:
-                                raise ValueError('Satu gambar dalam isi EPUB melebihi 1,5 MB.')
+                            check_image_size(raw, resource)
                             element.set('src', 'data:' + mime + ';base64,' + base64.b64encode(raw).decode())
+                    else:
+                        match = re.fullmatch(r'data:image/(png|jpeg|webp|gif);base64,([a-zA-Z0-9+/=\s]+)', source)
+                        if not match:
+                            raise ValueError(f'Format gambar di {name} tidak didukung.')
+                        encoded = re.sub(r'\s+', '', match[2])
+                        if len(encoded) > ((MAX_IMAGE_BYTES + 2) // 3) * 4:
+                            raise ValueError(f'Gambar di {name} melebihi 10 MB.')
+                        check_image_size(base64.b64decode(encoded, validate=True), name)
+                        element.set('src', f'data:image/{match[1]};base64,' + encoded)
                 if element.tag == 'a' and element.attrib.get('href'):
                     href = element.attrib['href']
                     if not href.startswith('#'):
@@ -305,9 +415,13 @@ def read_epub(path, book_id):
                         except ValueError:
                             element.attrib.pop('href', None)
             html = (body.text or '') + ''.join(ET.tostring(x, encoding='unicode') for x in body)
-            if len(html.encode()) > 3_000_000:
-                raise ValueError(f'Isi bagian {title} melebihi 3 MB.')
+            html_size = len(html.encode())
+            if html_size > MAX_CONTENT_BYTES:
+                raise ValueError(f'Isi bagian {title} melebihi 16 MB setelah gambar disertakan.')
             sections.append(dict(id=ids[name], position=position, title=title, content_html=html, source_path=name, kind=kind, is_enabled=True))
+            total_content += html_size
+            if total_content > MAX_CONTENT_BYTES:
+                check_content_budget(sections)
         book = dict(id=book_id, title=metadata('title', path.stem)[:300], author=metadata('creator', 'Kata Kecil')[:300], language=metadata('language', 'id'), synopsis=metadata('description', '')[:10000], status='ongoing', is_published=False)
         return book, sections, cover
 
@@ -386,6 +500,7 @@ def plan_schedule(sections, initial=0, weekdays=None, hour='19:00', start=None, 
 
 
 def publication_payload(book, sections, expected=None):
+    check_content_budget(sections)
     keys = ('id', 'position', 'title', 'content_html', 'is_enabled', 'release_at')
     return dict(book=book, sections=[{k: s[k] for k in keys} for s in sections], kinds={s['id']:s.get('kind', 'episode') for s in sections}, expected_updated_at=expected)
 
@@ -404,6 +519,8 @@ class Client:
         query = urllib.parse.urlencode({'action': action, **(params or {})})
         url = self.url + '/functions/v1/katakecil-publisher?' + query
         body = raw if raw is not None else (json.dumps(payload, ensure_ascii=False).encode() if payload is not None else None)
+        if body is not None and len(body) > MAX_REQUEST_BYTES:
+            raise ValueError('Paket unggahan melebihi 24 MB. Kurangi ukuran gambar, lalu coba lagi.')
         headers = {'apikey': self.config.get('key', DEFAULT_KEY), 'Authorization': 'Bearer ' + token, 'Content-Type': mime}
         for attempt in range(3):
             req = urllib.request.Request(url, data=body, headers=headers, method='POST' if body is not None else 'GET')
@@ -426,8 +543,11 @@ class Client:
         return self.request('book', params={'id': book_id})
 
     def upload(self, action, book_id, raw, mime):
-        say(f'  Mengunggah {"sampul" if action == "cover" else "EPUB"} · {len(raw) / 1_000_000:.1f} MB…')
-        return self.request(action, raw=raw, mime=mime, params={'id': book_id})
+        label = f'Mengunggah {"sampul" if action == "cover" else "EPUB"} · {len(raw) / 1_000_000:.1f} MB'
+        with activity(label):
+            result = self.request(action, raw=raw, mime=mime, params={'id': book_id})
+        say('✓ ' + label.replace('Mengunggah', 'Terkirim'), '32')
+        return result
 
     def publish(self, book, sections, expected=None):
         payload = publication_payload(book, sections, expected)
@@ -454,14 +574,15 @@ class Client:
 def preview(sections):
     page = 0
     while True:
-        say('\nSusunan isi dan jadwal · WIB')
+        screen()
+        panel('ISI DAN JADWAL', ['Semua waktu menggunakan WIB'])
         for i, section in enumerate(sections[page * PAGE_SIZE:(page + 1) * PAGE_SIZE], page * PAGE_SIZE + 1):
             release = section.get('release_at')
             label = dt.datetime.fromisoformat(release.replace('Z', '+00:00')).astimezone(WIB).strftime('%d-%m-%Y %H:%M') if release else 'belum diatur'
             if not section.get('is_enabled', True):
                 label = 'ditahan'
             kind = 'halaman' if section.get('kind') == 'page' else 'episode'
-            print(f'{i:3}. {section["title"]}\n     {kind} · {label}')
+            menu_row(f'{i:2}', section['title'], kind + ' · ' + label)
         choice = prompt('n Berikut · p Sebelum · 0 Selesai', '0')
         if choice == 'n' and (page + 1) * PAGE_SIZE < len(sections):
             page += 1
@@ -492,7 +613,11 @@ def edit_metadata(book):
 
 
 def choose_schedule(sections, existing=False):
-    print('\n1. Terbit lengkap\n2. Terbit bertahap\n3. Simpan draf' + ('\n4. Pertahankan jadwal' if existing else ''))
+    panel('PENERBITAN')
+    for key, title in [('1', 'Terbit lengkap'), ('2', 'Terbit bertahap'), ('3', 'Simpan draf')]:
+        menu_row(key, title)
+    if existing:
+        menu_row('4', 'Pertahankan jadwal')
     choice = number('Penerbitan', 4 if existing else 2, 1, 4 if existing else 3)
     if choice == 4:
         return None
@@ -539,8 +664,10 @@ def choose_book(client):
         found = [b for b in books if query.casefold() in b['title'].casefold()]
         page = min(page, max(0, (len(found) - 1) // PAGE_SIZE))
         shown = found[page * PAGE_SIZE:(page + 1) * PAGE_SIZE]
+        screen()
+        panel('PILIH BUKU', [f'{len(found)} buku cocok · Halaman {page + 1}'])
         for i, book in enumerate(shown, 1):
-            print(f'{i}. {book["title"]} · {"terbit" if book["is_published"] else "draf"}')
+            menu_row(f'{i:2}', book['title'], 'Terbit' if book['is_published'] else 'Draf')
         choice = str(prompt('Nomor buku · n/p Halaman · / Cari · 0 Kembali', '0'))
         if choice == '0':
             return None
@@ -562,9 +689,9 @@ def upload_flow(config, update=False):
     path = pick_epub(config)
     if path is None:
         return
-    say('Memeriksa EPUB…')
     book_id = previous['book']['id'] if previous else slugify(path.stem)
-    book, sections, cover = read_epub(path, book_id)
+    with activity('Memeriksa EPUB'):
+        book, sections, cover = read_epub(path, book_id)
     if previous:
         book = {**previous['book'], **{k:book[k] for k in ('title','author','language')}}
         book.pop('updated_at', None)
@@ -578,8 +705,8 @@ def upload_flow(config, update=False):
         books = client.request('list')['books']
         if any(b['id'] == book_id for b in books):
             raise ValueError('Buku dengan ID ini sudah ada. Pilih Update cerita agar jadwal tidak tertimpa.')
-    say(f'\n{book["title"]} · {book["author"]}')
-    print(f'{len(sections)} bagian · Sampul {"tersedia" if cover else "belum ada"}')
+    panel(book['title'], [book['author'], f'{len(sections)} bagian · EPUB {path.stat().st_size / 1_000_000:.1f} MB',
+        f'Sampul {"tersedia" if cover else "belum ada"} · Gambar maks. 10 MB'])
     while True:
         choice = number('1 Lanjut · 2 Edit info · 3 Tinjau isi · 4 Ganti sampul · 0 Batal', 1, 0, 4)
         if choice == 0:
@@ -593,8 +720,8 @@ def upload_flow(config, update=False):
         elif choice == 4:
             target = Path(str(prompt('Lokasi JPG/PNG/WebP')).strip('"\'')).expanduser()
             mime = mimetypes.guess_type(target)[0]
-            if mime not in ('image/png', 'image/jpeg', 'image/webp') or target.stat().st_size > 5_000_000:
-                raise ValueError('Sampul harus JPG/PNG/WebP maksimal 5 MB.')
+            if mime not in ('image/png', 'image/jpeg', 'image/webp') or target.stat().st_size > MAX_IMAGE_BYTES:
+                raise ValueError('Sampul harus JPG/PNG/WebP maksimal 10 MB.')
             cover = (target.read_bytes(), mime)
     published = choose_schedule(sections, bool(previous))
     if published is not None:
@@ -607,10 +734,11 @@ def upload_flow(config, update=False):
     if cover:
         book['cover_url'] = client.upload('cover', book_id, *cover)['url']
     client.upload('source', book_id, path.read_bytes(), 'application/epub+zip')
-    say('Menyimpan isi dan jadwal…')
-    result = client.publish(book, sections, previous['book']['updated_at'] if previous else None)
+    with activity('Menyimpan dan memverifikasi isi serta jadwal'):
+        result = client.publish(book, sections, previous['book']['updated_at'] if previous else None)
     say(f'Selesai · {book["title"]} · bukti {result["receipt"]}', '32')
     print('Segarkan koleksi di website untuk mengambil pembaruan.')
+    prompt('Enter untuk kembali', '')
 
 
 def manage_flow(config, schedule=False):
@@ -648,10 +776,14 @@ def manage_flow(config, schedule=False):
     config.setdefault('kinds', {})[book['id']] = {s['id']:s.get('kind', 'episode') for s in sections}
     save_json(CONFIG, config)
     say('Perubahan tersimpan · ' + result['receipt'], '32')
+    prompt('Enter untuk kembali', '')
 
 
 def settings(config):
-    print('\n1. Pasang file aktivasi\n2. Atur token penerbit\n3. Cek koneksi\n0. Kembali')
+    screen()
+    panel('PENGATURAN')
+    for key, title in [('1', 'Pasang file aktivasi'), ('2', 'Atur token penerbit'), ('3', 'Cek koneksi'), ('0', 'Kembali')]:
+        menu_row(key, title)
     choice = prompt('Pilih', '0')
     if choice == '1':
         path = Path(str(prompt('Lokasi file aktivasi')).strip('"\'')).expanduser()
@@ -665,8 +797,11 @@ def settings(config):
         config['token'] = getpass.getpass('Token penerbit (disembunyikan): ').strip()
         save_json(CONFIG, config)
     elif choice == '3':
-        Client(config).request('status')
+        with activity('Memeriksa akses penerbit'):
+            Client(config).request('status')
         say('Koneksi dan akses penerbit siap.', '32')
+    if choice != '0':
+        prompt('Enter untuk kembali', '')
 
 
 def main():
@@ -685,8 +820,18 @@ def main():
         say('Koneksi dan akses penerbit siap.', '32')
         return
     while True:
-        say('\nKATA KECIL · Studio Terminal ' + VERSION)
-        print('1. Upload EPUB\n2. Update cerita\n3. Atur jadwal episode\n4. Kelola buku\n5. Pengaturan\n0. Keluar')
+        screen()
+        panel('KATA KECIL', ['Studio Terminal ' + VERSION, 'EPUB 18 MB · Gambar 10 MB',
+            'Akses penerbit tersimpan' if config.get('token') else 'Atur akses melalui Pengaturan'])
+        print()
+        for key, title, detail in [('1', 'Upload EPUB', 'Buku baru, langsung atau terjadwal'),
+                ('2', 'Update cerita', 'Lanjutkan buku yang sudah ada'),
+                ('3', 'Jadwal episode', 'Atur hari, jam, dan jumlah episode'),
+                ('4', 'Kelola buku', 'Info, status terbit, dan jadwal'),
+                ('5', 'Pengaturan', 'Akses penerbit dan cek koneksi')]:
+            menu_row(key, title, detail)
+            print()
+        menu_row('0', 'Keluar')
         try:
             choice = prompt('Pilih', '0')
             if choice == '0':
@@ -702,6 +847,7 @@ def main():
         except (ValueError, OSError, KeyError, StopIteration, zipfile.BadZipFile, ET.ParseError) as error:
             # No raw HTTP payloads or credential values are printed.
             say('Belum selesai: ' + str(error), '31')
+            prompt('Enter untuk kembali', '')
 
 
 if __name__ == '__main__':

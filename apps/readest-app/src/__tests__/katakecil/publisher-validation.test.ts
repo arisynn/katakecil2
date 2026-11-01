@@ -45,11 +45,22 @@ describe('terminal publisher boundary', () => {
   });
   it('rejects oversized sections and incorrect ordering', () => {
     const large = publication();
-    large.sections[0]!.content_html = 'x'.repeat(3_000_001);
+    large.sections[0]!.content_html = 'x'.repeat(16_000_001);
     expect(() => validatePublication(large)).toThrow('content');
     const order = publication();
     order.sections[0]!.position = 4;
     expect(() => validatePublication(order)).toThrow('order');
+  });
+  it('accepts a large image section and checks the complete book budget', () => {
+    const input = publication();
+    input.sections[0]!.content_html = '<p>' + 'x'.repeat(13_333_400) + '</p>';
+    expect(validatePublication(input).sections).toHaveLength(1);
+    input.sections.push({
+      ...input.sections[0]!,
+      id: '42f00000-0000-5000-8000-000000000002',
+      position: 1,
+    });
+    expect(() => validatePublication(input)).toThrow('publication');
   });
   it('does not forward unrecognized book or section fields to the database', () => {
     const input = publication();

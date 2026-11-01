@@ -64,7 +64,10 @@ lama selalu menunjuk kalimat yang sama setelah naskah direvisi.
 ## Batas format
 
 EPUB reflowable maksimal 18 MB, 600 bagian, dan 70 MB setelah dekompresi. Satu
-bagian maksimal 3 MB; gambar isi maksimal 1,5 MB; sampul maksimal 5 MB. EPUB DRM,
+gambar isi/sampul maksimal 10 MB. Gabungan isi setelah penyertaan gambar maksimal
+16 MB agar hasil EPUB tetap cocok dengan batas reader 18 MB. Gambar di dalam
+isi memakai base64, sehingga ukurannya bertambah sekitar sepertiga; kuota
+database terpisah dari kuota Storage. EPUB DRM,
 encrypted, fixed-layout, script, dan sumber eksternal tidak didukung oleh jalur
 penerbitan ini. Isi disanitasi dan dirakit menjadi EPUB publik dengan format
 reader. CSS/font EPUB asli tidak dijamin dipertahankan persis.
@@ -85,3 +88,13 @@ kk --version
 Kegagalan koneksi dapat dicoba ulang. Jika respons akhir terputus, periksa koleksi
 dahulu: backend menyimpan perubahan secara atomik dan mencegah publikasi ganda
 untuk permintaan yang sama. Berkas asli di HP tetap tersedia.
+
+## Tampilan terminal 1.1
+
+Menu, pemilih EPUB, daftar buku, dan pratinjau jadwal memakai tata letak yang
+menyesuaikan lebar terminal. Nama berkas panjang dipendekkan di tengah sehingga
+akhiran/versi tetap terlihat. Berkas yang dipilih tetap memakai nama lengkap.
+Indikator bergerak tampil selama pemeriksaan/upload/verifikasi; tidak menampilkan
+persentase buatan. Output noninteraktif dan `kk --inspect` tetap dapat diproses.
+Gunakan `NO_COLOR=1 kk` untuk mematikan warna atau `TERM=dumb NO_COLOR=1 kk`
+untuk mematikan warna serta pembersihan layar. Tidak ada paket Python tambahan.

@@ -64,7 +64,12 @@ Deno.serve(async (request) => {
     const target = new URL(request.url);
     const action = target.searchParams.get('action') || 'status';
     if (request.method === 'GET') {
-      if (action === 'status') return json({ ok: true, version: 1 });
+      if (action === 'status')
+        return json({
+          ok: true,
+          version: 2,
+          limits: { image: 10_000_000, content: 16_000_000, epub: 18_000_000 },
+        });
       if (action === 'list') {
         const { data, error } = await admin
           .from('kk_books')
@@ -135,7 +140,7 @@ Deno.serve(async (request) => {
     };
     if (!mime || !extensions[mime] || (action === 'source') !== (mime === 'application/epub+zip'))
       return json({ error: 'Invalid file type' }, 400);
-    const raw = await readLimited(request, action === 'cover' ? 5_000_000 : 18_000_000);
+    const raw = await readLimited(request, action === 'cover' ? 10_000_000 : 18_000_000);
     if (!raw.length) return json({ error: 'Empty file' }, 400);
     const path = id + '/' + (await sha256(raw)) + '.' + extensions[mime];
     const bucket = action === 'cover' ? 'kk-covers' : 'kk-sources';
