@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
-import { CgColorPicker } from 'react-icons/cg';
+import { Pipette as CgColorPicker } from 'lucide-react';
 
 type ColorInputProps = {
   label: string;

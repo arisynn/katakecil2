@@ -1,7 +1,8 @@
+import { navigationLabel } from '../../utils/navigationLabel';
 import clsx from 'clsx';
 import React from 'react';
-import { IoIosList, IoMdCloseCircle } from 'react-icons/io';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { List as IoIosList, CircleX as IoMdCloseCircle } from 'lucide-react';
+import { ChevronLeft as MdChevronLeft, ChevronRight as MdChevronRight } from 'lucide-react';
 
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
@@ -110,7 +111,9 @@ const ContentNavBar: React.FC<ContentNavBarProps> = ({
             <div className='relative z-10 flex flex-1 flex-col items-center px-2'>
               <span className='line-clamp-1 text-sm font-medium'>{title}</span>
               {section && showSection && (
-                <span className='text-base-content/70 line-clamp-1 text-xs'>{section}</span>
+                <span className='text-base-content/70 line-clamp-1 text-xs'>
+                  {navigationLabel(section)}
+                </span>
               )}
             </div>
 

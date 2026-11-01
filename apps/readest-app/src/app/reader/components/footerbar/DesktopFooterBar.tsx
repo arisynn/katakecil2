@@ -1,9 +1,12 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { FaHeadphones } from 'react-icons/fa6';
-import { RiArrowLeftSLine, RiArrowRightSLine } from 'react-icons/ri';
-import { RiArrowGoBackLine, RiArrowGoForwardLine } from 'react-icons/ri';
-import { RiArrowLeftDoubleLine, RiArrowRightDoubleLine } from 'react-icons/ri';
+import { Headphones as FaHeadphones } from 'lucide-react';
+import { ChevronLeft as RiArrowLeftSLine, ChevronRight as RiArrowRightSLine } from 'lucide-react';
+import { Undo2 as RiArrowGoBackLine, Redo2 as RiArrowGoForwardLine } from 'lucide-react';
+import {
+  ChevronsLeft as RiArrowLeftDoubleLine,
+  ChevronsRight as RiArrowRightDoubleLine,
+} from 'lucide-react';
 import { useReaderStore } from '@/store/readerStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { FooterBarChildProps } from './types';

@@ -1,6 +1,12 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
-import { MdCheck, MdLabelOff, MdLabelOutline, MdNewLabel, MdRemove } from 'react-icons/md';
+import {
+  Check as MdCheck,
+  CircleMinus as MdLabelOff,
+  Tag as MdLabelOutline,
+  Tag as MdNewLabel,
+  Minus as MdRemove,
+} from 'lucide-react';
 
 import { Book } from '@/types/book';
 import { useEnv } from '@/context/EnvContext';

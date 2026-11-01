@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PiSpinner } from 'react-icons/pi';
+import { LoaderCircle as PiSpinner } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCustomTTSStore } from '@/store/customTTSStore';

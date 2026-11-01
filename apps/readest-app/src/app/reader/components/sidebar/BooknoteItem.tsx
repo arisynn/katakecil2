@@ -1,7 +1,12 @@
 import clsx from 'clsx';
 import React, { useMemo, useRef } from 'react';
-import { MdEdit, MdDelete, MdContentCopy } from 'react-icons/md';
-import { PiBookmarkSimple, PiHighlighter, PiNotePencil, PiScribbleLoop } from 'react-icons/pi';
+import { Pencil as MdEdit, Trash2 as MdDelete, Copy as MdContentCopy } from 'lucide-react';
+import {
+  Bookmark as PiBookmarkSimple,
+  Highlighter as PiHighlighter,
+  NotebookPen as PiNotePencil,
+  PencilLine as PiScribbleLoop,
+} from 'lucide-react';
 
 import { useEnv } from '@/context/EnvContext';
 import { BookNote, HighlightColor } from '@/types/book';

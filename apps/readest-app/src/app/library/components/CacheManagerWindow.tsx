@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import {
-  RiDatabase2Line,
-  RiCheckboxCircleFill,
-  RiErrorWarningFill,
-  RiLoader2Line,
-} from 'react-icons/ri';
+  Database as RiDatabase2Line,
+  CircleCheck as RiCheckboxCircleFill,
+  CircleAlert as RiErrorWarningFill,
+  LoaderCircle as RiLoader2Line,
+} from 'lucide-react';
 import { documentDir, join } from '@/platform/browser/path';
 import { useEnv } from '@/context/EnvContext';
 import { useLibraryStore } from '@/store/libraryStore';

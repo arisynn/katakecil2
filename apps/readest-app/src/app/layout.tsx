@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   authors: [
     {
       name: 'Kata Kecil',
-      url: 'https://github.com/readest/readest',
+      url: 'https://github.com/arisynn/katakecil2',
     },
   ],
   icons: {
-    icon: [{ url: '/icon.png' }, { url: '/favicon.ico' }],
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }, { url: '/favicon.ico' }],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
   appleWebApp: {

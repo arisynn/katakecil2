@@ -1,12 +1,22 @@
 import { Fzf, FzfResultItem, byLengthAsc } from 'fzf';
 import { SettingsPanelType } from '@/components/settings/SettingsDialog';
-import { RiFontSize, RiDashboardLine, RiTranslate, RiShareLine } from 'react-icons/ri';
-import { VscSymbolColor } from 'react-icons/vsc';
-import { LiaHandPointerSolid } from 'react-icons/lia';
-import { IoAccessibilityOutline } from 'react-icons/io5';
-import { PiRobot, PiSpeakerHigh, PiSun, PiMoon } from 'react-icons/pi';
-import { TbSunMoon } from 'react-icons/tb';
-import { MdRefresh } from 'react-icons/md';
+import {
+  Type as RiFontSize,
+  PanelsTopLeft as RiDashboardLine,
+  Languages as RiTranslate,
+  Share2 as RiShareLine,
+} from 'lucide-react';
+import { Palette as VscSymbolColor } from 'lucide-react';
+import { Hand as LiaHandPointerSolid } from 'lucide-react';
+import { Accessibility as IoAccessibilityOutline } from 'lucide-react';
+import {
+  Bot as PiRobot,
+  Volume2 as PiSpeakerHigh,
+  Sun as PiSun,
+  Moon as PiMoon,
+} from 'lucide-react';
+import { SunMoon as TbSunMoon } from 'lucide-react';
+import { RefreshCw as MdRefresh } from 'lucide-react';
 import { IconType } from 'react-icons';
 import { stubTranslation as _ } from '@/utils/misc';
 

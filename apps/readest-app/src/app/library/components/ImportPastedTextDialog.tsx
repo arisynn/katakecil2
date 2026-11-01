@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MdContentPaste } from 'react-icons/md';
+import { ClipboardPaste as MdContentPaste } from 'lucide-react';
 import Dialog from '@/components/Dialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { readTextFromClipboard } from '@/utils/clipboard';

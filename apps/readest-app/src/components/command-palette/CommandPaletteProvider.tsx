@@ -56,7 +56,8 @@ export const CommandPaletteProvider: React.FC<CommandPaletteProviderProps> = ({ 
   const _ = useTranslation();
   const { envConfig, appService } = useEnv();
   const { themeMode, setThemeMode } = useThemeStore();
-  const { settings, setSettingsDialogOpen, setActiveSettingsItemId } = useSettingsStore();
+  const { settings, setSettingsDialogOpen, setActiveSettingsItemId, setRequestedPanel } =
+    useSettingsStore();
 
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -109,15 +110,16 @@ export const CommandPaletteProvider: React.FC<CommandPaletteProviderProps> = ({ 
   }, [envConfig, settings.telemetryEnabled]);
 
   const openSettingsPanel = useCallback(
-    (_panel: SettingsPanelType, itemId?: string) => {
+    (panel: SettingsPanelType, itemId?: string) => {
       // panel is encoded in itemId (e.g., 'settings.font.defaultFontSize')
       // SettingsDialog will parse this to determine which panel to show
+      setRequestedPanel(panel);
       if (itemId) {
         setActiveSettingsItemId(itemId);
       }
       setSettingsDialogOpen(true);
     },
-    [setSettingsDialogOpen, setActiveSettingsItemId],
+    [setSettingsDialogOpen, setActiveSettingsItemId, setRequestedPanel],
   );
 
   // build command registry

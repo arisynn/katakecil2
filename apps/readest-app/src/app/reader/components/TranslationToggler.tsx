@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { RiTranslate } from 'react-icons/ri';
+import { Languages as RiTranslate } from 'lucide-react';
 
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';

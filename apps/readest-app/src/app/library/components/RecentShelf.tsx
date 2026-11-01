@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { ChevronLeft as MdChevronLeft, ChevronRight as MdChevronRight } from 'lucide-react';
 import { Book } from '@/types/book';
 import { LibraryCoverFitType } from '@/types/settings';
 import { useTranslation } from '@/hooks/useTranslation';

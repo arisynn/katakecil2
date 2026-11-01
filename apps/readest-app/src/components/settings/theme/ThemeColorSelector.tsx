@@ -1,10 +1,10 @@
 import React from 'react';
-import { PiPlus } from 'react-icons/pi';
+import { Plus as PiPlus } from 'lucide-react';
 import { Theme } from '@/styles/themes';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import { SectionTitle } from '../primitives';
-import { BiPencil } from 'react-icons/bi';
+import { Pencil as BiPencil } from 'lucide-react';
 
 interface ThemeColorSelectorProps {
   themes: Theme[];

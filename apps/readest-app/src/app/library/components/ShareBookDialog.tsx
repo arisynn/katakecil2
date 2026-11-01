@@ -2,11 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  IoCheckmarkCircle,
-  IoCopyOutline,
-  IoLinkOutline,
-  IoShareSocialOutline,
-} from 'react-icons/io5';
+  CircleCheck as IoCheckmarkCircle,
+  Copy as IoCopyOutline,
+  Link as IoLinkOutline,
+  Share2 as IoShareSocialOutline,
+} from 'lucide-react';
 import Dialog from '@/components/Dialog';
 import SegmentedControl from '@/components/SegmentedControl';
 import { useEnv } from '@/context/EnvContext';

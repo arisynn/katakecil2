@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaSearch, FaChevronDown } from 'react-icons/fa';
-import { IoMdCloseCircle } from 'react-icons/io';
-import { MdDeleteOutline } from 'react-icons/md';
+import { Search as FaSearch, ChevronDown as FaChevronDown } from 'lucide-react';
+import { CircleX as IoMdCloseCircle } from 'lucide-react';
+import { Trash2 as MdDeleteOutline } from 'lucide-react';
 
 import { useEnv } from '@/context/EnvContext';
 import { useSettingsStore } from '@/store/settingsStore';

@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import {
-  RiFolderOpenLine,
-  RiCheckboxCircleFill,
-  RiErrorWarningFill,
-  RiLoader2Line,
-} from 'react-icons/ri';
+  FolderOpen as RiFolderOpenLine,
+  CircleCheck as RiCheckboxCircleFill,
+  CircleAlert as RiErrorWarningFill,
+  LoaderCircle as RiLoader2Line,
+} from 'lucide-react';
 import { documentDir, join } from '@/platform/browser/path';
 import { relaunch } from '@/platform/browser/process';
 import { useEnv } from '@/context/EnvContext';

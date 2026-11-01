@@ -22,7 +22,7 @@ import {
   getShortcutFromKeyboardEvent,
   getShortcutFromMouseEvent,
 } from '@/utils/shortcutKeys';
-import { MdAdd, MdClose, MdRestartAlt } from 'react-icons/md';
+import { Plus as MdAdd, X as MdClose, RotateCcw as MdRestartAlt } from 'lucide-react';
 import SubPageHeader from './SubPageHeader';
 import { BoxedList, SettingsRow } from './primitives';
 

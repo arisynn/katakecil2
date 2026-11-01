@@ -10,6 +10,7 @@ import { eventDispatcher } from '@/utils/event';
 import { getBookDirFromLanguage } from '@/utils/book';
 import { getPanelHorizontalInsetStyle, getPanelTopInset } from '@/utils/insets';
 import { useEnv } from '@/context/EnvContext';
+import { useOverlayNavigation } from '@/hooks/useOverlayNavigation';
 import { useSwipeToDismiss } from '@/hooks/useSwipeToDismiss';
 import { usePanelResize } from '@/hooks/usePanelResize';
 import { useThemeStore } from '@/store/themeStore';
@@ -81,6 +82,10 @@ const SideBar = ({}) => {
       setIsFullHeightInMobile(isMobile);
     },
     (data) => setIsFullHeightInMobile(data.clientY < 44),
+  );
+
+  useOverlayNavigation(sidebarRef, isSideBarVisible && !isSideBarPinned, () =>
+    setSideBarVisible(false),
   );
 
   useEffect(() => {
@@ -194,7 +199,8 @@ const SideBar = ({}) => {
           isSideBarPinned ? 'z-20' : 'z-[45] shadow-2xl',
           !isSideBarPinned && viewSettings?.isEink && 'border-base-content border-e',
         )}
-        role='navigation'
+        role={isSideBarPinned ? 'navigation' : 'dialog'}
+        aria-modal={!isSideBarPinned || undefined}
         aria-label={_('Sidebar')}
         dir={viewSettings?.rtl && languageDir === 'rtl' ? 'rtl' : 'ltr'}
         style={{

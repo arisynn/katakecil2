@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MdAdd, MdDelete, MdRefresh, MdArrowBack } from 'react-icons/md';
+import {
+  Plus as MdAdd,
+  Trash2 as MdDelete,
+  RefreshCw as MdRefresh,
+  ArrowLeft as MdArrowBack,
+} from 'lucide-react';
 import Dialog from '@/components/Dialog';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useEnv } from '@/context/EnvContext';

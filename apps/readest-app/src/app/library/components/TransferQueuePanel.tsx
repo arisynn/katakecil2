@@ -1,17 +1,17 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import {
-  MdClose,
-  MdRefresh,
-  MdPause,
-  MdPlayArrow,
-  MdCloudUpload,
-  MdCloudDownload,
-  MdCheckCircle,
-  MdError,
-  MdCancel,
-  MdDeleteSweep,
-} from 'react-icons/md';
+  X as MdClose,
+  RefreshCw as MdRefresh,
+  Pause as MdPause,
+  Play as MdPlayArrow,
+  CloudUpload as MdCloudUpload,
+  CloudDownload as MdCloudDownload,
+  CircleCheck as MdCheckCircle,
+  CircleAlert as MdError,
+  CircleX as MdCancel,
+  Trash2 as MdDeleteSweep,
+} from 'lucide-react';
 import { useTransferQueue } from '@/hooks/useTransferQueue';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';

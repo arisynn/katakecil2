@@ -1,5 +1,5 @@
 import React from 'react';
-import { RiQuillPenLine } from 'react-icons/ri';
+import { PencilLine as RiQuillPenLine } from 'lucide-react';
 
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';

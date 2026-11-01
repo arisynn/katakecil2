@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { PiSpinner, PiArrowsClockwise } from 'react-icons/pi';
+import { LoaderCircle as PiSpinner, RefreshCw as PiArrowsClockwise } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useCustomTranslatorStore } from '@/store/customTranslatorStore';

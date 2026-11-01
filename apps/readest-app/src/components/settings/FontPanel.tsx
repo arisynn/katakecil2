@@ -28,11 +28,16 @@ import { useResetViewSettings } from '@/hooks/useResetSettings';
 import { useKeyDownActions } from '@/hooks/useKeyDownActions';
 import { saveViewSettings } from '@/helpers/settings';
 import { SettingsPanelPanelProp } from './SettingsDialog';
-import { BoxedList, NavigationRow, SettingLabel, SettingsRow } from './primitives';
+import {
+  BoxedList,
+  NavigationRow,
+  SettingLabel,
+  SettingsRow,
+  SettingsSwitchRow,
+} from './primitives';
 import NumberInput from './NumberInput';
 import FontDropdown from './FontDropDown';
 import CustomFonts from './CustomFonts';
-import { Toggle } from '../primitives/toggle';
 
 const genCJKFontsList = (sysFonts: string[]) => {
   return Array.from(new Set([...sysFonts, ...CJK_SERIF_FONTS, ...CJK_SANS_SERIF_FONTS]))
@@ -97,9 +102,24 @@ const FontPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset 
   const { envConfig, appService } = useEnv();
   const { getView, getViewSettings } = useReaderStore();
   const { settings, fontPanelView, setFontPanelView } = useSettingsStore();
-  const { fonts: allCustomFonts, getFontFamilies } = useCustomFontStore();
+  const {
+    fonts: allCustomFonts,
+    getFontFamilies,
+    getAllFonts,
+    removeFont,
+    saveCustomFonts,
+  } = useCustomFontStore();
   const viewSettings = getViewSettings(bookKey) || settings.globalViewSettings;
   const view = getView(bookKey);
+
+  const [clearRequested, setClearRequested] = useState(false);
+  const clearFonts = () => {
+    for (const font of getAllFonts()) {
+      if (removeFont(font.id)) void appService?.deleteFont(font);
+    }
+    saveCustomFonts(envConfig);
+    setClearRequested(false);
+  };
 
   const fontFamilyOptions = [
     {
@@ -302,13 +322,14 @@ const FontPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset 
 
   return (
     <div className='my-4 w-full space-y-6'>
-      <label
-        data-setting-id='settings.font.overrideBookFont'
-        className='flex cursor-pointer items-center justify-between px-4'
-      >
-        <SettingLabel>{_('Override Book Font')}</SettingLabel>
-        <Toggle checked={overrideFont} onChange={() => setOverrideFont(!overrideFont)} />
-      </label>
+      <BoxedList>
+        <SettingsSwitchRow
+          data-setting-id='settings.font.overrideBookFont'
+          label={_('Override Book Font')}
+          checked={overrideFont}
+          onChange={() => setOverrideFont(!overrideFont)}
+        />
+      </BoxedList>
 
       <BoxedList title={_('Font Size')}>
         <NumberInput
@@ -405,6 +426,30 @@ const FontPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset 
 
       <BoxedList title={_('Custom Fonts')} data-setting-id='settings.font.fonts'>
         <NavigationRow title={_('Manage Fonts')} onClick={handleManageCustomFonts} />
+        <NavigationRow
+          title={_('Clear Custom Fonts')}
+          onClick={() => setClearRequested(true)}
+          disabled={!getAllFonts().length}
+        />
+        {clearRequested && (
+          <div className='py-4 pe-4' role='group' aria-label='Konfirmasi hapus font'>
+            <p className='mb-3 text-sm'>
+              Hapus semua font tambahan dari aplikasi? Font dapat diimpor kembali melalui Kelola
+              Font.
+            </p>
+            <div className='flex gap-2'>
+              <button
+                className='btn btn-ghost eink-bordered min-h-11'
+                onClick={() => setClearRequested(false)}
+              >
+                Batal
+              </button>
+              <button className='btn btn-contrast min-h-11' onClick={clearFonts}>
+                Hapus font
+              </button>
+            </div>
+          </div>
+        )}
       </BoxedList>
     </div>
   );

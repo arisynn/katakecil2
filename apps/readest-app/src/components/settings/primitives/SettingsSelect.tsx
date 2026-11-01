@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdArrowDropDown } from 'react-icons/md';
+import { ChevronDown } from 'lucide-react';
 
 interface SettingsSelectOption {
   value: string;
@@ -19,7 +19,7 @@ interface SettingsSelectProps {
  * Chromeless trailing-edge select for use inside `<SettingsRow>` /
  * `<BoxedList>`. Renders the daisyui `<select>` element with all chrome
  * suppressed (`border-0! bg-transparent! bg-none! focus:outline-hidden! ...`)
- * plus a real `<MdArrowDropDown>` icon at the cell's trailing edge so the
+ * plus a real `<ChevronDown>` icon at the cell's trailing edge so the
  * chevron lands at the same X as toggles in adjacent rows.
  *
  * Hover / focus state is signaled by a wrapper bg-shift
@@ -35,7 +35,7 @@ const SettingsSelect: React.FC<SettingsSelectProps> = ({
 }) => {
   return (
     // The picker's implicit anchor is the <select>, which stops short of the
-    // MdArrowDropDown below -- the chevron the user reads as the edge of the
+    // ChevronDown below -- the chevron the user reads as the edge of the
     // control -- so the popup lines up ~20px inside it. Anchor to the wrapper
     // instead, and scope the name so a page full of these rows resolves each
     // picker to its own wrapper rather than to the last one in tree order.
@@ -52,7 +52,7 @@ const SettingsSelect: React.FC<SettingsSelectProps> = ({
         onKeyDown={(e) => e.stopPropagation()}
         disabled={disabled}
         aria-label={ariaLabel}
-        className='select settings-content h-9 w-auto min-w-0 [field-sizing:content] cursor-pointer truncate border-0! bg-transparent! bg-none! pe-1! ps-2! text-end focus:border-0! focus:shadow-none! focus:outline-hidden! focus:ring-0! open:outline-hidden!'
+        className='select settings-content h-11 w-auto min-w-0 [field-sizing:content] cursor-pointer truncate border-0! bg-transparent! bg-none! pe-1! ps-2! text-end focus:border-0! focus:shadow-none! focus:outline-hidden! focus:ring-0! open:outline-hidden!'
         style={{
           textAlignLast: 'end',
         }}
@@ -63,7 +63,7 @@ const SettingsSelect: React.FC<SettingsSelectProps> = ({
           </option>
         ))}
       </select>
-      <MdArrowDropDown
+      <ChevronDown
         aria-hidden='true'
         className='text-base-content/55 pointer-events-none h-5 w-5 shrink-0'
       />

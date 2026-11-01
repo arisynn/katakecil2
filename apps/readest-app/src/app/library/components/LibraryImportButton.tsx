@@ -1,6 +1,6 @@
 import { useTranslation } from '@/hooks/useTranslation';
 import clsx from 'clsx';
-import { MdAdd } from 'react-icons/md';
+import { Plus as MdAdd } from 'lucide-react';
 
 export default function LibraryImportButton({
   onImport,

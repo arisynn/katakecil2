@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { MdChevronRight } from 'react-icons/md';
+import { ChevronRight } from 'lucide-react';
 import SettingLabel from './SettingLabel';
 
 interface NavigationRowProps {
@@ -45,7 +45,7 @@ const NavigationRow: React.FC<NavigationRowProps> = ({
       disabled={disabled}
       data-setting-id={dataSettingId}
       className={clsx(
-        'group flex w-full items-center gap-3 py-4 pe-4 text-left',
+        'kk-settings-navigation group flex w-full items-center gap-3 py-4 pe-4 text-left',
         'transition-colors duration-150',
         'focus-visible:ring-base-content/15 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset',
         disabled && 'cursor-not-allowed opacity-50',
@@ -62,7 +62,7 @@ const NavigationRow: React.FC<NavigationRowProps> = ({
         {status && <span className='text-base-content/65 truncate text-[0.85em]'>{status}</span>}
       </div>
       {badge && <span className='badge badge-sm badge-ghost shrink-0'>{badge}</span>}
-      <MdChevronRight className='text-base-content/50 h-5 w-5 shrink-0' />
+      <ChevronRight className='text-base-content/50 h-5 w-5 shrink-0' />
     </button>
   );
 };

@@ -1,9 +1,9 @@
 import React from 'react';
-import { MdClose, MdPlayCircleOutline } from 'react-icons/md';
+import { X as MdClose, CirclePlay as MdPlayCircleOutline } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import { BoxedList, ScopeSwitch, SectionTitle, SettingsRow, SettingsSelect } from '../primitives';
-import { PiPlus } from 'react-icons/pi';
+import { Plus as PiPlus } from 'lucide-react';
 import type { BackgroundTextureScope } from '@/helpers/settings';
 
 interface Texture {

@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { PiSun, PiMoon } from 'react-icons/pi';
-import { TbSunMoon } from 'react-icons/tb';
-import { MdOutlineSensors } from 'react-icons/md';
+import { Sun as PiSun, Moon as PiMoon } from 'lucide-react';
+import { SunMoon as TbSunMoon } from 'lucide-react';
+import { SunDim as MdOutlineSensors } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useThemeStore } from '@/store/themeStore';
 import { useTranslation } from '@/hooks/useTranslation';

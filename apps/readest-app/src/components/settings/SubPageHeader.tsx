@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { MdChevronRight } from 'react-icons/md';
+import { ChevronLeft } from 'lucide-react';
 
 interface SubPageHeaderProps {
   /** Label of the parent panel (the "back" target). */
@@ -43,14 +43,10 @@ const SubPageHeader: React.FC<SubPageHeaderProps> = ({
     <div className={clsx(description ? 'mb-6' : 'mb-4', 'px-4')}>
       <div className='mb-1.5 flex w-full items-center justify-between gap-2'>
         <div className='flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight'>
-          <button
-            type='button'
-            onClick={onBack}
-            className='hover:text-primary transition-colors duration-150 focus-visible:underline focus-visible:outline-hidden'
-          >
-            {parentLabel}
+          <button type='button' onClick={onBack} className='kk-settings-back'>
+            <ChevronLeft size={20} aria-hidden='true' /> {parentLabel}
           </button>
-          <MdChevronRight aria-hidden='true' className='text-base-content/40 h-5 w-5 shrink-0' />
+
           <span className='text-base-content/70 truncate'>{currentLabel}</span>
         </div>
         {rightSlot}

@@ -1,7 +1,12 @@
 import clsx from 'clsx';
-import { MdContentPaste, MdLanguage, MdMenuBook, MdRssFeed } from 'react-icons/md';
-import { LuLibrary } from 'react-icons/lu';
-import { IoFileTray } from 'react-icons/io5';
+import {
+  ClipboardPaste as MdContentPaste,
+  Languages as MdLanguage,
+  BookOpen as MdMenuBook,
+  Rss as MdRssFeed,
+} from 'lucide-react';
+import { Library as LuLibrary } from 'lucide-react';
+import { Inbox as IoFileTray } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import MenuItem from '@/components/MenuItem';

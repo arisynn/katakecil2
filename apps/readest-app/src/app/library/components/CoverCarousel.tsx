@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { ChevronLeft as MdChevronLeft, ChevronRight as MdChevronRight } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { Book, BooksGroup } from '@/types/book';
 

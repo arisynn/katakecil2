@@ -1,0 +1,120 @@
+ID lama (tetap kompatibel),Label pencarian lama,Lokasi source lama,Lokasi baru
+settings.ai.enableAssistant,Enable AI Assistant,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.gatewayApiKey,API Key,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.gatewayModel,AI Gateway Model,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.ollamaModel,Ollama Model,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.ollamaUrl,Ollama URL,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.openrouterApiKey,OpenRouter API Key,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.openrouterBaseUrl,OpenRouter Base URL,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.openrouterModel,OpenRouter Model,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.ai.provider,AI Provider,src/services/commandRegistry.ts (pencarian),Tidak aktif di web (tetap gated)
+settings.color.backgroundTexture,Background Image,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.codeHighlighting,Code Highlighting,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.dialogueHighlight,Dialogue Highlighting,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.highlightColors,Highlight Colors,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.invertImageInDarkMode,Invert Image In Dark Mode,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.overrideBookColor,Override Book Color,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.readingRuler,Reading Ruler,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.themeColor,Theme Color,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.color.themeMode,Theme Mode,apps/readest-app/src/components/settings/ThemePanel.tsx,Tema & tampilan / Tema & warna
+settings.control.allowJavascript,Allow JavaScript,apps/readest-app/src/components/settings/ControlPanel.tsx,Data & aplikasi
+settings.control.autoFullRefresh,Auto Full Refresh,apps/readest-app/src/components/settings/ControlPanel.tsx,Tema & tampilan / Layar & material
+settings.control.autohideCursor,Auto-hide Cursor,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.checkUpdates,,apps/readest-app/src/components/settings/ControlPanel.tsx,Data & aplikasi
+settings.control.clickBothSides,Click Both Sides,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.clickToPaginate,Click to Paginate,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.colorEinkMode,Color E-Ink Mode,apps/readest-app/src/components/settings/ControlPanel.tsx,Tema & tampilan / Layar & material
+settings.control.copyToNotebook,Copy to Notebook,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.customizeToolbar,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.device,,apps/readest-app/src/components/settings/ControlPanel.tsx,Tema & tampilan / Layar & material
+settings.control.disableDoubleClick,Disable Double Click,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.disablePullDownToBookmark,Pull-Down to Bookmark,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.einkMode,E-Ink Mode,apps/readest-app/src/components/settings/ControlPanel.tsx,Tema & tampilan / Layar & material
+settings.control.enableQuickActions,Enable Quick Actions,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.gamepadEnabled,Gamepad Support,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.hideBookshelfPageButtons,Hide Bookshelf Buttons,apps/readest-app/src/components/settings/ControlPanel.tsx,Tema & tampilan / Layar & material
+settings.control.keepSelectionAfterLookup,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.keyboardShortcuts,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.nightlyChannel,,apps/readest-app/src/components/settings/ControlPanel.tsx,Data & aplikasi
+settings.control.overlapPixels,Overlap Pixels,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.pageTurnStyle,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.pageTurner,,apps/readest-app/src/components/settings/PageTurnerSettings.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.pagingAnimation,Paging Animation,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.quickAction,Quick Action,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.reverseWheelPaging,Reverse Mouse Wheel,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.screenWakeLock,Keep Screen Awake,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.scroll.hideScrollbar,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.scroll.noContinuousScroll,Single Section Scroll,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.scrolledMode,Scrolled Mode,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.showPaginationButtons,Show Page Navigation Buttons,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.stablePageNumbers,Stable Page Numbers,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.swapClickSides,Swap Click Sides,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.swipeBrightnessGesture,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.swipeToPaginate,,apps/readest-app/src/components/settings/ControlPanel.tsx,Navigasi & kontrol / Gestur & alat baca
+settings.control.telemetry,,apps/readest-app/src/components/settings/ControlPanel.tsx,Data & aplikasi
+settings.custom.contentCss,Custom Content CSS,src/services/commandRegistry.ts (pencarian),Data & aplikasi / CSS khusus
+settings.custom.readerUiCss,Custom Reader UI CSS,src/services/commandRegistry.ts (pencarian),Data & aplikasi / CSS khusus
+settings.font.cjkFont,CJK Font,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.defaultFont,Font Category,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.defaultFontSize,Default Font Size,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.fontWeight,Font Weight,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.fonts,,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.minimumFontSize,Minimum Font Size,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.monospaceFont,Monospace Font,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.overrideBookFont,Override Book Font,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.sansSerifFont,Sans-Serif Font,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.font.serifFont,Serif Font,apps/readest-app/src/components/settings/FontPanel.tsx,Teks & halaman / Huruf
+settings.integrations.catalogs,,apps/readest-app/src/components/settings/IntegrationsPanel.tsx,Tidak aktif di web (tetap gated)
+settings.integrations.cloudSync,,apps/readest-app/src/components/settings/IntegrationsPanel.tsx,Tidak aktif di web (tetap gated)
+settings.integrations.discord,,apps/readest-app/src/components/settings/IntegrationsPanel.tsx,Tidak aktif di web (tetap gated)
+settings.integrations.localsend,,apps/readest-app/src/components/settings/IntegrationsPanel.tsx,Tidak aktif di web (tetap gated)
+settings.integrations.localsend.enabled,,apps/readest-app/src/components/settings/integrations/LocalSendForm.tsx,Tidak aktif di web (tetap gated)
+settings.integrations.sync,,apps/readest-app/src/components/settings/IntegrationsPanel.tsx,Tidak aktif di web (tetap gated)
+settings.language.chineseConversion,Convert Simplified and Traditional Chinese,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.customTranslators,Custom Translators,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.dictionaries,,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.interfaceLanguage,Interface Language,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.quotationMarks,Replace Quotation Marks,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.targetLanguage,Translate To,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.translatedText,,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.translationEnabled,Enable Translation,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.translationPrompt,Translation Prompt,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.translationProvider,Translation Service,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.ttsTextTranslation,TTS Text,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.language.wordlens,,apps/readest-app/src/components/settings/LangPanel.tsx,Suara & bahasa / Bahasa & terjemahan
+settings.layout.borderFrame,Border Frame,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.columnGap,Column Gap (px),apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.fullJustification,Full Justification,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.headerFooterBackground,Background Color,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.headerFooterFontSize,Font Size,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.hyphenation,Hyphenation,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.letterSpacing,Letter Spacing,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.lineSpacing,Line Spacing,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.maxBlockSize,Maximum Column Height,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.maxColumnCount,Maximum Number of Columns,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.maxInlineSize,Maximum Column Width,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.overrideBookLayout,Override Book Layout,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.pageGap,Additional Margin (%),apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.pageMargins,Page Margins,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.paragraphIndent,Text Indent,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.paragraphMargin,Paragraph Margin,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.progressDisplay,Reading Progress Style,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.referencePageCount,,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.showFooter,Show Footer,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.showHeader,Show Header,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.showStickyProgressBar,,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.useBookLayout,Use Book Layout,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.wordSpacing,Word Spacing,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.layout.writingMode,Writing Mode,apps/readest-app/src/components/settings/LayoutPanel.tsx,Teks & halaman / Tata letak halaman
+settings.tts.audioCache,,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.audioCacheEnabled,,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.audioCacheSync,,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.customServices,Custom TTS Services,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.mediaMetadata,TTS Media Info Update Frequency,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.playerStyle,TTS Player Style,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.skipInlineAnnotations,,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.speech,,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.tts.ttsHighlightStyle,TTS Highlighting,apps/readest-app/src/components/settings/TTSPanel.tsx,Suara & bahasa / Suara & pembacaan
+settings.wordlens.enabled,,apps/readest-app/src/components/settings/WordLensPanel.tsx,Suara & bahasa / Bahasa & terjemahan / WordLens
+settings.wordlens.level,,apps/readest-app/src/components/settings/WordLensPanel.tsx,Suara & bahasa / Bahasa & terjemahan / WordLens
+settings.wordlens.main,,apps/readest-app/src/components/settings/WordLensPanel.tsx,Suara & bahasa / Bahasa & terjemahan / WordLens

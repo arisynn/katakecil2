@@ -1,7 +1,11 @@
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { MdClose, MdPauseCircleFilled, MdPlayCircleFilled } from 'react-icons/md';
+import {
+  X as MdClose,
+  CirclePause as MdPauseCircleFilled,
+  CirclePlay as MdPlayCircleFilled,
+} from 'lucide-react';
 import { ttsSessionManager, TTSSession } from '@/services/tts';
 import { asAudiobookController } from '@/services/audiobook/AudiobookController';
 import { resumePlayback } from '@/services/playback/playbackSource';

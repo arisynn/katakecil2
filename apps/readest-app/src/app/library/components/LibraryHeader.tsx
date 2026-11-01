@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { MdClose, MdManageSearch } from 'react-icons/md';
-import { PiDotsThree } from 'react-icons/pi';
+import {
+  Search as FaSearch,
+  X as MdClose,
+  ListFilter as MdManageSearch,
+  Ellipsis as PiDotsThree,
+} from 'lucide-react';
 import { useThemeStore } from '@/store/themeStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { LibrarySearchConfig, LibrarySearchTarget } from '@/types/book';

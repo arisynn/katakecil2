@@ -1,3 +1,4 @@
+import { navigationLabel } from '../../utils/navigationLabel';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BookSearchMatch, BookSearchResult, SearchExcerpt } from '@/types/book';
 import { FoliateView } from '@/types/view';
@@ -241,7 +242,7 @@ const ChapterSection: React.FC<ChapterSectionProps> = ({
             >
               <polygon points='0 0, 8 5, 0 10' />
             </svg>
-            <span className='truncate'>{label}</span>
+            <span className='truncate'>{navigationLabel(label)}</span>
           </span>
           <span className='text-base-content/60 ms-2 shrink-0 whitespace-nowrap text-xs'>
             {matchCount}

@@ -17,7 +17,7 @@ import {
   type StateSnapshot,
   type VirtuosoHandle,
 } from 'react-virtuoso';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { ChevronLeft as MdChevronLeft, ChevronRight as MdChevronRight } from 'lucide-react';
 import type { Book, BooksGroup } from '@/types/book';
 import type { BookshelfDefinition } from '@/types/bookshelf';
 import { bookshelfName } from '@/services/bookshelves/definitions';

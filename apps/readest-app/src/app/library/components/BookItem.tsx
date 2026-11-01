@@ -1,12 +1,16 @@
 import clsx from 'clsx';
 import { useState } from 'react';
-import { MdCheckCircle, MdCheckCircleOutline, MdOutlineOfflinePin } from 'react-icons/md';
 import {
-  LiaCloudUploadAltSolid,
-  LiaCloudDownloadAltSolid,
-  LiaHeadphonesSolid,
-  LiaInfoCircleSolid,
-} from 'react-icons/lia';
+  CircleCheck as MdCheckCircle,
+  CircleCheck as MdCheckCircleOutline,
+  CircleCheck as MdOutlineOfflinePin,
+} from 'lucide-react';
+import {
+  CloudUpload as LiaCloudUploadAltSolid,
+  CloudDownload as LiaCloudDownloadAltSolid,
+  Headphones as LiaHeadphonesSolid,
+  Info as LiaInfoCircleSolid,
+} from 'lucide-react';
 
 import { Book } from '@/types/book';
 import { useEnv } from '@/context/EnvContext';

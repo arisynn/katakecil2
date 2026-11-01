@@ -102,6 +102,8 @@ const Dialog: React.FC<DialogProps> = ({
   const [isContentHeightSheet, setIsContentHeightSheet] = useState(false);
   const [isRtl] = useState(() => getDirFromUILanguage() === 'rtl');
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   // Where the finger sits relative to the sheet's top edge, so the sheet slides
   // with it instead of snapping its top edge under it — the drag handle sits at
   // that edge, the body does not.
@@ -182,12 +184,12 @@ const Dialog: React.FC<DialogProps> = ({
     if (dialogRef.current?.querySelector('dialog[open]')) return false;
     if (event instanceof CustomEvent) {
       if (event.detail.keyName === 'Back') {
-        onClose();
+        onCloseRef.current();
         return true;
       }
     } else {
       if (event.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
       }
       event.stopPropagation();
     }

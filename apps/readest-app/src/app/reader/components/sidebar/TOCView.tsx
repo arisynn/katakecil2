@@ -1,3 +1,5 @@
+import { useTranslation } from '@/hooks/useTranslation';
+import { formatTitle } from '@/utils/book';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
@@ -71,6 +73,7 @@ const TOCView: React.FC<{
   bookDoc: BookDoc;
   toc: TOCItem[];
 }> = ({ bookKey, bookDoc, toc }) => {
+  const _ = useTranslation();
   const { getView, getViewSettings, getProgress } = useReaderStore();
   const { sideBarBookKey, isSideBarVisible } = useSidebarStore();
   const progress = getProgress(bookKey);
@@ -81,6 +84,8 @@ const TOCView: React.FC<{
   // under each TOC item, unless the reader turned them off for this book.
   const showThumbnails = !!bookDoc.getPageThumbnail && viewSettings?.showTOCThumbnails !== false;
   const totalPages = bookDoc.sections.length;
+  const bookTitle = formatTitle(bookDoc.metadata.title);
+  const repeatedBookTitle = toc.filter((item) => item.label === bookTitle).length > 1;
   const pageRanges = useMemo(
     () => (showThumbnails ? computeTOCPageRanges(toc, totalPages) : undefined),
     [showThumbnails, toc, totalPages],
@@ -201,7 +206,7 @@ const TOCView: React.FC<{
         if (parentContainer) {
           const parentRect = parentContainer.getBoundingClientRect();
           const availableHeight = parentRect.height - (rect.top - parentRect.top);
-          setContainerHeight(Math.max(400, availableHeight));
+          setContainerHeight(Math.max(80, availableHeight));
         }
       }
     };
@@ -322,7 +327,10 @@ const TOCView: React.FC<{
     // fix is impossible because scrollTo({ behavior: 'smooth' }) overrides
     // CSS scroll-behavior and is not a CSS transition.
     const distance = Math.abs(idx - visibleCenterRef.current);
-    const behavior = isEink || distance > 16 ? 'auto' : 'smooth';
+    const behavior =
+      isEink || window.matchMedia('(prefers-reduced-motion: reduce)').matches || distance > 16
+        ? 'auto'
+        : 'smooth';
     virtuosoRef.current?.scrollToIndex({ index: idx, align: 'center', behavior });
     // When the current volume auto-expands on open, the list grows by dozens of
     // rows in this same commit. Virtuoso scrolls before measuring the new rows,
@@ -337,7 +345,7 @@ const TOCView: React.FC<{
   }, [displayItems, activeHref, currentPage, isSideBarVisible, isEink]);
 
   return (
-    <div ref={containerRef} className='toc-list rounded-sm' role='tree'>
+    <div ref={containerRef} className='toc-list rounded-sm' aria-label='Daftar isi' role='tree'>
       <div ref={osRootRef} data-overlayscrollbars-initialize='' style={{ height: containerHeight }}>
         <Virtuoso
           ref={virtuosoRef}
@@ -395,6 +403,12 @@ const TOCView: React.FC<{
             return (
               <StaticListRow
                 bookKey={bookKey}
+                fixedPages={!!bookDoc.getPageThumbnail}
+                displayLabel={
+                  repeatedBookTitle && row.item.label === bookTitle
+                    ? _('Bagian {{number}}', { number: row.index + 1 })
+                    : undefined
+                }
                 flatItem={row}
                 activeHref={activeHref}
                 onToggleExpand={handleToggleExpand}

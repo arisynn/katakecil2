@@ -1,6 +1,11 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-import { MdCheckCircle, MdCheckCircleOutline, MdChevronRight, MdChevronLeft } from 'react-icons/md';
+import {
+  CircleCheck as MdCheckCircle,
+  CircleCheck as MdCheckCircleOutline,
+  ChevronRight as MdChevronRight,
+  ChevronLeft as MdChevronLeft,
+} from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';

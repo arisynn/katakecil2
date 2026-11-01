@@ -1,4 +1,4 @@
-import { PiBooks } from 'react-icons/pi';
+import { Library as PiBooks } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function LibraryEmptyState() {

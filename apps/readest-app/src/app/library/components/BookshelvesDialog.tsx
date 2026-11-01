@@ -21,18 +21,18 @@ import {
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
-  MdAdd,
-  MdArrowBackIosNew,
-  MdArrowForwardIos,
-  MdClose,
-  MdCollectionsBookmark,
-  MdEdit,
-  MdHistory,
-  MdHeadphones,
-  MdPodcasts,
-  MdLibraryBooks,
-  MdTaskAlt,
-} from 'react-icons/md';
+  Plus as MdAdd,
+  ChevronLeft as MdArrowBackIosNew,
+  ChevronRight as MdArrowForwardIos,
+  X as MdClose,
+  Library as MdCollectionsBookmark,
+  Pencil as MdEdit,
+  Clock as MdHistory,
+  Headphones as MdHeadphones,
+  Podcast as MdPodcasts,
+  Library as MdLibraryBooks,
+  Check as MdTaskAlt,
+} from 'lucide-react';
 import { OverlayScrollbarsComponent, useOverlayScrollbars } from 'overlayscrollbars-react';
 import Dialog from '@/components/Dialog';
 import BoxedList from '@/components/settings/primitives/BoxedList';

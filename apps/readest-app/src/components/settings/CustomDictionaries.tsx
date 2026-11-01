@@ -1,7 +1,13 @@
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
-import { MdAdd, MdDelete, MdDragIndicator, MdEdit, MdInfoOutline } from 'react-icons/md';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
+import {
+  Plus as MdAdd,
+  Trash2 as MdDelete,
+  GripVertical as MdDragIndicator,
+  Pencil as MdEdit,
+  Info as MdInfoOutline,
+} from 'lucide-react';
+import { CircleX as IoMdCloseCircleOutline } from 'lucide-react';
 import {
   DndContext,
   closestCenter,

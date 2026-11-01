@@ -1,10 +1,11 @@
+import { navigationLabel } from '../../utils/navigationLabel';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css';
 import * as CFI from 'foliate-js/epubcfi.js';
-import { PiMagnifyingGlass, PiNotePencil } from 'react-icons/pi';
-import { RiBookmark3Line, RiBookmarkLine } from 'react-icons/ri';
+import { Search as PiMagnifyingGlass, NotebookPen as PiNotePencil } from 'lucide-react';
+import { Bookmark as RiBookmark3Line, Bookmark as RiBookmarkLine } from 'lucide-react';
 
 import { useBookDataStore } from '@/store/bookDataStore';
 import { useReaderStore } from '@/store/readerStore';
@@ -351,7 +352,7 @@ const BooknoteView: React.FC<{
         return (
           <div className='px-2 pt-2'>
             <h3 className='content font-size-base line-clamp-1 px-2 font-normal'>
-              {row.group.label}
+              {navigationLabel(row.group.label)}
             </h3>
           </div>
         );

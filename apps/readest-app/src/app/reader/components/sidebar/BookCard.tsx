@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useRef } from 'react';
-import { MdInfoOutline } from 'react-icons/md';
+import { Info } from 'lucide-react';
 import { Book } from '@/types/book';
 import { useThemeStore } from '@/store/themeStore';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -59,12 +59,8 @@ const BookCard = ({ book }: { book: Book }) => {
         </h4>
         <p className='truncate text-xs opacity-75'>{formatAuthors(author)}</p>
       </div>
-      <button
-        className='btn btn-ghost hover:bg-base-300 h-6 min-h-6 w-6 rounded-full p-0 transition-colors'
-        aria-label={_('More Info')}
-        onClick={showBookDetails}
-      >
-        <MdInfoOutline size={iconSize18} className='fill-base-content' />
+      <button className='kk-circle-button' aria-label={_('More Info')} onClick={showBookDetails}>
+        <Info size={iconSize18} />
       </button>
     </div>
   );

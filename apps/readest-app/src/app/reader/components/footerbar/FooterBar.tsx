@@ -279,7 +279,7 @@ const FooterBar: React.FC<FooterBarProps> = ({
         onFocus={() =>
           !appService?.isMobile && !isWindowFocusRestore() && setHoveredBookKey(bookKey)
         }
-        onMouseLeave={() => window.innerWidth >= 640 && setHoveredBookKey('')}
+        onMouseLeave={() => !isMobile && setHoveredBookKey('')}
       >
         <MobileFooterBar {...commonProps} />
         <DesktopFooterBar {...commonProps} />

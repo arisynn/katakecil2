@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 
-import { MdCheck } from 'react-icons/md';
+import { Check as MdCheck } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useBookDataStore } from '@/store/bookDataStore';
 import { useReaderStore } from '@/store/readerStore';

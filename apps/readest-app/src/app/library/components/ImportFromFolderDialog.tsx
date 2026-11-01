@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { MdFolderOpen } from 'react-icons/md';
+import { FolderOpen as MdFolderOpen } from 'lucide-react';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useKeyDownActions } from '@/hooks/useKeyDownActions';

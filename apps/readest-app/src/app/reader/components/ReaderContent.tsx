@@ -50,7 +50,6 @@ import SideBar from './sidebar/SideBar';
 import Notebook from './notebook/Notebook';
 import LocalSendManager from '@/components/localsend/LocalSendManager';
 import BooksGrid from './BooksGrid';
-import SettingsDialog from '@/components/settings/SettingsDialog';
 import AudiobookPairingDialog from './audiobook/AudiobookPairingDialog';
 import HardcoverLinkDialog from './hardcover/HardcoverLinkDialog';
 import PageboundLinkDialog from './pagebound/PageboundLinkDialog';
@@ -80,7 +79,6 @@ const ReaderContent: React.FC<{ ids?: string; settings: SystemSettings }> = ({ i
   const { getConfig, setConfig, getBookData, saveConfig } = useBookDataStore();
   const { getView, setBookKeys, getViewSettings } = useReaderStore();
   const { initViewState, getViewState, clearViewState } = useReaderStore();
-  const { isSettingsDialogOpen, settingsDialogBookKey } = useSettingsStore();
   const [showDetailsBook, setShowDetailsBook] = useState<Book | null>(null);
   const [audiobookBookKey, setAudiobookBookKey] = useState<string | null>(null);
   const [hardcoverLinkBookKey, setHardcoverLinkBookKey] = useState<string | null>(null);
@@ -463,7 +461,6 @@ const ReaderContent: React.FC<{ ids?: string; settings: SystemSettings }> = ({ i
         onCloseBook={handleCloseBook}
         onGoToLibrary={handleCloseBooksToLibrary}
       />
-      {isSettingsDialogOpen && <SettingsDialog bookKey={settingsDialogBookKey} />}
       {audiobookBookKey && getBookData(audiobookBookKey)?.bookDoc && (
         <AudiobookPairingDialog
           bookKey={audiobookBookKey}

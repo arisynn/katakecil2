@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { MdOutlineAutoMode, MdOutlineScreenRotation } from 'react-icons/md';
-import { MdOutlineTextRotationNone, MdTextRotateVertical } from 'react-icons/md';
-import { IoPhoneLandscapeOutline, IoPhonePortraitOutline } from 'react-icons/io5';
-import { TbTextDirectionRtl } from 'react-icons/tb';
+import { RotateCw as MdOutlineAutoMode, RotateCw as MdOutlineScreenRotation } from 'lucide-react';
+import {
+  TextCursor as MdOutlineTextRotationNone,
+  CaseUpper as MdTextRotateVertical,
+} from 'lucide-react';
+import {
+  RectangleHorizontal as IoPhoneLandscapeOutline,
+  Smartphone as IoPhonePortraitOutline,
+} from 'lucide-react';
+import { PilcrowRight as TbTextDirectionRtl } from 'lucide-react';
 
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';
@@ -28,7 +34,6 @@ import {
 } from './primitives';
 import NumberInput from './NumberInput';
 import ColorInput from './theme/ColorInput';
-import { Toggle } from '../primitives/toggle';
 
 const LayoutPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }) => {
   const _ = useTranslation();
@@ -541,13 +546,14 @@ const LayoutPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterRese
 
   return (
     <div className='my-4 w-full space-y-6'>
-      <div
-        data-setting-id='settings.layout.overrideBookLayout'
-        className='flex items-center justify-between px-4'
-      >
-        <SettingLabel>{_('Override Book Layout')}</SettingLabel>
-        <Toggle checked={overrideLayout} onChange={() => setOverrideLayout(!overrideLayout)} />
-      </div>
+      <BoxedList>
+        <SettingsSwitchRow
+          data-setting-id='settings.layout.overrideBookLayout'
+          label={_('Override Book Layout')}
+          checked={overrideLayout}
+          onChange={() => setOverrideLayout(!overrideLayout)}
+        />
+      </BoxedList>
       {mightBeRTLBook && (
         <div
           data-setting-id='settings.layout.writingMode'

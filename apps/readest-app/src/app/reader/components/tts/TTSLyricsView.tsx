@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { MdPlayArrow } from 'react-icons/md';
+import { Play as MdPlayArrow } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
 import { PageInfo } from '@/types/book';

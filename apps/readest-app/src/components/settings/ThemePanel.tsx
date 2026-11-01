@@ -35,7 +35,7 @@ import { PREDEFINED_TEXTURES } from '@/styles/textures';
 import { useAtmosphereStore } from '@/store/atmosphereStore';
 import { DefaultHighlightColor, HighlightColor, UserHighlightColor } from '@/types/book';
 import clsx from 'clsx';
-import { ScopeSwitch, SectionTitle, SettingLabel } from './primitives';
+import { ScopeSwitch, SectionTitle, BoxedList, SettingsSwitchRow } from './primitives';
 import { HIGHLIGHT_COLOR_HEX } from '@/services/constants';
 import ThemeEditor from './theme/ThemeEditor';
 import ThemeModeSelector from './theme/ThemeModeSelector';
@@ -45,7 +45,6 @@ import HighlightColorsEditor from './theme/HighlightColorsEditor';
 import CodeHighlightingSettings from './theme/CodeHighlightingSettings';
 import DialogueHighlightSettings from './theme/DialogueHighlightSettings';
 import ReadingRulerSettings from './theme/ReadingRulerSettings';
-import { Toggle } from '../primitives/toggle';
 
 const ThemePanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }) => {
   const _ = useTranslation();
@@ -549,29 +548,21 @@ const ThemePanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset
             />
           </div>
 
-          <label
-            data-setting-id='settings.color.invertImageInDarkMode'
-            className={clsx(
-              'flex items-center justify-between px-4',
-              !isDarkMode && 'cursor-not-allowed opacity-50',
-              isDarkMode && 'cursor-pointer',
-            )}
-          >
-            <SettingLabel>{_('Invert Image In Dark Mode')}</SettingLabel>
-            <Toggle
+          <BoxedList title='Warna isi buku'>
+            <SettingsSwitchRow
+              data-setting-id='settings.color.invertImageInDarkMode'
+              label={_('Invert Image In Dark Mode')}
               checked={invertImgColorInDark}
               disabled={!isDarkMode}
               onChange={() => setInvertImgColorInDark(!invertImgColorInDark)}
             />
-          </label>
-
-          <label
-            data-setting-id='settings.color.overrideBookColor'
-            className='flex cursor-pointer items-center justify-between px-4'
-          >
-            <SettingLabel>{_('Override Book Color')}</SettingLabel>
-            <Toggle checked={overrideColor} onChange={() => setOverrideColor(!overrideColor)} />
-          </label>
+            <SettingsSwitchRow
+              data-setting-id='settings.color.overrideBookColor'
+              label={_('Override Book Color')}
+              checked={overrideColor}
+              onChange={() => setOverrideColor(!overrideColor)}
+            />
+          </BoxedList>
 
           <BackgroundTextureSelector
             predefinedTextures={PREDEFINED_TEXTURES}

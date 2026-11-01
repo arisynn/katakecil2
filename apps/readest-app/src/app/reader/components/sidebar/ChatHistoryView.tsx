@@ -3,7 +3,14 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React, { useEffect, useState, useCallback } from 'react';
-import { LuMessageSquare, LuTrash2, LuPencil, LuCheck, LuX, LuPlus } from 'react-icons/lu';
+import {
+  MessageSquare as LuMessageSquare,
+  Trash2 as LuTrash2,
+  Pencil as LuPencil,
+  Check as LuCheck,
+  X as LuX,
+  Plus as LuPlus,
+} from 'lucide-react';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useBookDataStore } from '@/store/bookDataStore';

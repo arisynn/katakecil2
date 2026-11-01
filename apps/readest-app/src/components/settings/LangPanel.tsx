@@ -35,7 +35,7 @@ import CustomDictionaries from './CustomDictionaries';
 import CustomTranslators from './CustomTranslators';
 import WordLensPanel from './WordLensPanel';
 import ColorInput from './theme/ColorInput';
-import { PiTranslate } from 'react-icons/pi';
+import { Languages as PiTranslate } from 'lucide-react';
 
 const LangPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }) => {
   const _ = useTranslation();

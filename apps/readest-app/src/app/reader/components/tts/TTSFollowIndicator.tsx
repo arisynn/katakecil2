@@ -2,7 +2,7 @@
 
 import React from 'react';
 import clsx from 'clsx';
-import { IoVolumeHigh, IoSync } from 'react-icons/io5';
+import { Volume2 as IoVolumeHigh, RefreshCw as IoSync } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // The derived states both reader modes expose (slice 5, #3235). idle and

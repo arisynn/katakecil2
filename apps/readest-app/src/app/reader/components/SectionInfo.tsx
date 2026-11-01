@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { navigationLabel } from '../utils/navigationLabel';
 import React from 'react';
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
@@ -180,7 +181,7 @@ const SectionInfo: React.FC<SectionInfoProps> = ({
         }}
       >
         <span
-          aria-label={section ? _('Section Title') + `: ${section}` : ''}
+          aria-label={section ? _('Section Title') + `: ${navigationLabel(section)}` : ''}
           className={clsx(
             'text-center',
             isVertical ? '' : 'line-clamp-1',
@@ -194,7 +195,7 @@ const SectionInfo: React.FC<SectionInfoProps> = ({
           )}
           style={chip?.kind === 'custom' && section ? { backgroundColor: chip.color } : undefined}
         >
-          {section || ''}
+          {navigationLabel(section)}
         </span>
       </div>
     </>

@@ -1,8 +1,11 @@
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
-import { TbBoxMargin } from 'react-icons/tb';
-import { RxLineHeight } from 'react-icons/rx';
-import { PiGear } from 'react-icons/pi';
+import {
+  RectangleHorizontal as TbBoxMargin,
+  MoveVertical as RxLineHeight,
+  Settings as PiGear,
+} from 'lucide-react';
+import QuickFontPicker from './QuickFontPicker';
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -98,7 +101,7 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
   const handleOpenSettings = useCallback(() => {
     setHoveredBookKey('');
     setSettingsDialogBookKey(bookKey);
-    setRequestedPanel('Font');
+    setRequestedPanel(null);
     setSettingsDialogOpen(true);
   }, [
     bookKey,
@@ -148,6 +151,7 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
           </button>
         )}
       </div>
+      <QuickFontPicker bookKey={bookKey} />
       <div className='kk-slider-group'>
         <span>{_('Font Size')}</span>
         <Slider
@@ -194,11 +198,11 @@ export const FontLayoutPanel: React.FC<FontLayoutPanelProps> = ({
           tucked closer. `self-end` follows `dir`, so it mirrors in RTL. */}
       <button
         type='button'
-        className='btn btn-ghost btn-sm text-base-content/70 -mt-4 h-8 min-h-8 gap-1.5 self-end px-2 font-normal'
+        className='btn btn-ghost btn-sm text-base-content/70 -mt-4 h-11 min-h-11 gap-1.5 self-end px-2 font-normal'
         onClick={handleOpenSettings}
       >
         <PiGear size={16} />
-        {_('Font family & more')}
+        Semua pengaturan
       </button>
     </div>
   );

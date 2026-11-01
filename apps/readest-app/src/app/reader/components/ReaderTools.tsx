@@ -1,4 +1,11 @@
-import { MdBookmarkBorder, MdOutlineSearch, MdOutlineNotes, MdClose } from 'react-icons/md';
+import {
+  ChevronsRight,
+  MoveDown,
+  Bookmark as MdBookmarkBorder,
+  Search as MdOutlineSearch,
+  NotebookPen as MdOutlineNotes,
+  X as MdClose,
+} from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useBookDataStore } from '@/store/bookDataStore';
 import { useReaderStore } from '@/store/readerStore';
@@ -47,6 +54,29 @@ export default function ReaderTools({
           <MdClose size={20} />
         </button>
       </div>
+      <button
+        className='kk-tool-row'
+        disabled={!viewSettings?.scrolled}
+        onClick={() => {
+          setIsDropdownOpen?.(false);
+          eventDispatcher.dispatch('autoscroll-toggle', { bookKey });
+        }}
+      >
+        <MoveDown />
+        {_('Gulir otomatis')}
+      </button>
+      {!useBookDataStore.getState().getBookData(bookKey)?.isFixedLayout && (
+        <button
+          className='kk-tool-row'
+          onClick={() => {
+            setIsDropdownOpen?.(false);
+            eventDispatcher.dispatch('rsvp-start', { bookKey });
+          }}
+        >
+          <ChevronsRight />
+          {_('Baca cepat')}
+        </button>
+      )}
       <button className='kk-tool-row' onClick={() => openSidebar('toc', true)}>
         <MdOutlineSearch />
         {_('Search in Book')}

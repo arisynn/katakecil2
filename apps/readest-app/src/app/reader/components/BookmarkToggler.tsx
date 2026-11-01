@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RiBookmarkLine, RiBookmarkFill } from 'react-icons/ri';
+import { Bookmark as RiBookmarkLine, BookmarkCheck as RiBookmarkFill } from 'lucide-react';
 
 import { useSettingsStore } from '@/store/settingsStore';
 import { useBookDataStore } from '@/store/bookDataStore';

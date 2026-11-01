@@ -1,5 +1,6 @@
 @import 'tailwindcss' source('../');
 @import './katakecil-glass.css';
+@import './katakecil-settings.css';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui' {
   themes:

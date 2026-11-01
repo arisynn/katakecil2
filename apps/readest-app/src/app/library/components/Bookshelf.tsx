@@ -1,6 +1,6 @@
 import LibraryEmptyState from './LibraryEmptyState';
 import clsx from 'clsx';
-import { MdManageSearch } from 'react-icons/md';
+import { ListFilter as MdManageSearch } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOverlayScrollbars } from 'overlayscrollbars-react';

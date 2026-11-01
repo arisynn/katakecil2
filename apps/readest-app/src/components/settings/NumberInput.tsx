@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
-import { FiMinus, FiPlus } from 'react-icons/fi';
+import { Minus, Plus } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { SettingLabel } from './primitives';
 
@@ -66,7 +66,10 @@ const NumberInput: React.FC<NumberInputProps> = ({
 
   return (
     <div
-      className={clsx('flex h-14 items-center justify-between pe-4', className)}
+      className={clsx(
+        'kk-settings-number flex min-h-14 items-center justify-between gap-2 pe-4',
+        className,
+      )}
       data-setting-id={settingId}
     >
       <SettingLabel>{label}</SettingLabel>
@@ -76,6 +79,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
           <input
             type='text'
             inputMode='decimal'
+            aria-label={label}
             disabled={disabled}
             value={displayValue}
             onChange={handleChange}
@@ -91,19 +95,21 @@ const NumberInput: React.FC<NumberInputProps> = ({
         </form>
         <button
           tabIndex={disabled ? -1 : 0}
-          aria-label={_('Decrease')}
+          aria-label={`${_('Decrease')} ${label}`}
+          disabled={disabled || currentNumericValue <= min}
           onClick={decrement}
           className={`btn btn-circle btn-sm ${currentNumericValue <= min || disabled ? 'btn-disabled bg-neutral/5!' : ''}`}
         >
-          <FiMinus className='h-4 w-4' />
+          <Minus className='h-4 w-4' />
         </button>
         <button
           tabIndex={disabled ? -1 : 0}
-          aria-label={_('Increase')}
+          aria-label={`${_('Increase')} ${label}`}
+          disabled={disabled || currentNumericValue >= max}
           onClick={increment}
           className={`btn btn-circle btn-sm ${currentNumericValue >= max || disabled ? 'btn-disabled bg-neutral/5!' : ''}`}
         >
-          <FiPlus className='h-4 w-4' />
+          <Plus className='h-4 w-4' />
         </button>
       </div>
     </div>

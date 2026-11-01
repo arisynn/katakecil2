@@ -1,25 +1,30 @@
+import { navigationLabel } from '../../utils/navigationLabel';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  MdAlarm,
-  MdArrowBackIosNew,
-  MdCheck,
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowRight,
-  MdKeyboardDoubleArrowLeft,
-  MdKeyboardDoubleArrowRight,
-  MdOutlinePause,
-  MdPlayArrow,
-  MdOutlineFileDownload,
-  MdChevronRight,
-  MdExpandMore,
-  MdSkipNext,
-  MdSkipPrevious,
-  MdTextDecrease,
-  MdTextIncrease,
-} from 'react-icons/md';
-import { RiForward30Line, RiReplay15Line, RiVoiceAiFill } from 'react-icons/ri';
-import { TbArrowBarToRight } from 'react-icons/tb';
+  AlarmClock as MdAlarm,
+  ChevronLeft as MdArrowBackIosNew,
+  Check as MdCheck,
+  ChevronLeft as MdKeyboardArrowLeft,
+  ChevronRight as MdKeyboardArrowRight,
+  ChevronsLeft as MdKeyboardDoubleArrowLeft,
+  ChevronsRight as MdKeyboardDoubleArrowRight,
+  Pause as MdOutlinePause,
+  Play as MdPlayArrow,
+  Download as MdOutlineFileDownload,
+  ChevronRight as MdChevronRight,
+  ChevronDown as MdExpandMore,
+  SkipForward as MdSkipNext,
+  SkipBack as MdSkipPrevious,
+  AArrowDown as MdTextDecrease,
+  AArrowUp as MdTextIncrease,
+} from 'lucide-react';
+import {
+  RotateCw as RiForward30Line,
+  RotateCcw as RiReplay15Line,
+  AudioLines as RiVoiceAiFill,
+} from 'lucide-react';
+import { ArrowRightToLine as TbArrowBarToRight } from 'lucide-react';
 import { TTSVoicesGroup } from '@/services/tts';
 import { MEDIA_OVERLAY_VOICE_ID } from '@/services/tts/mediaOverlay';
 import type { TTSLoopState } from '@/services/tts/TTSController';
@@ -480,7 +485,7 @@ const TTSPlayerSheet = ({
               <span className='line-clamp-1 w-full font-semibold'>{book?.title ?? ''}</span>
               {sectionLabel && (
                 <span className='text-base-content/70 line-clamp-1 w-full text-sm'>
-                  {sectionLabel}
+                  {navigationLabel(sectionLabel)}
                 </span>
               )}
             </div>

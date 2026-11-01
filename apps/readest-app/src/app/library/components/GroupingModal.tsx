@@ -1,8 +1,12 @@
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { MdCheck, MdChevronRight, MdEdit } from 'react-icons/md';
-import { HiOutlineFolder, HiOutlineFolderAdd, HiOutlineFolderRemove } from 'react-icons/hi';
-import { IoMdArrowBack } from 'react-icons/io';
+import { Check as MdCheck, ChevronRight as MdChevronRight, Pencil as MdEdit } from 'lucide-react';
+import {
+  Folder as HiOutlineFolder,
+  FolderPlus as HiOutlineFolderAdd,
+  FolderMinus as HiOutlineFolderRemove,
+} from 'lucide-react';
+import { ArrowLeft as IoMdArrowBack } from 'lucide-react';
 
 import { Book, BookGroupType } from '@/types/book';
 import { isMd5 } from '@/utils/md5';

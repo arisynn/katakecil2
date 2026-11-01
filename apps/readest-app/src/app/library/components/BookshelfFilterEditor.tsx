@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
-import { MdInfoOutline } from 'react-icons/md';
+import { CircleX as IoMdCloseCircleOutline } from 'lucide-react';
+import { Info as MdInfoOutline } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import type { BookshelfFilterGroup, BookshelfRule, BookshelfOperator } from '@/types/bookshelf';
 import {

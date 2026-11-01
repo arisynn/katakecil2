@@ -14,7 +14,6 @@ import { SettingsPanelPanelProp } from './SettingsDialog';
 import { annotationToolQuickActions } from '@/app/reader/components/annotator/AnnotationTools';
 import { applyPageTurnAttributes } from '@/app/reader/hooks/useCapturedTurn';
 import { isTauriAppPlatform } from '@/services/environment';
-import { DEFAULT_SYSTEM_SETTINGS } from '@/services/constants';
 import {
   BoxedList,
   NavigationRow,
@@ -31,7 +30,9 @@ import { useEinkRefreshSupported } from '@/hooks/useEinkRefreshSupported';
 import { optInTelemetry, optOutTelemetry } from '@/utils/telemetry';
 import KeyboardShortcutsSettings from './KeyboardShortcutsSettings';
 
-const ControlPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterReset }) => {
+const ControlPanel: React.FC<
+  SettingsPanelPanelProp & { section?: 'navigation' | 'appearance' | 'application' }
+> = ({ bookKey, onRegisterReset, section = 'navigation' }) => {
   const _ = useTranslation();
   const { envConfig, appService } = useEnv();
   const { getView, getViews, getViewSettings, recreateViewer } = useReaderStore();
@@ -134,6 +135,18 @@ const ControlPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterRes
     ? einkAutoRefreshIntervalOptions
     : [...einkAutoRefreshIntervalOptions, { value: currentInterval, label: currentInterval }];
   const handleReset = () => {
+    if (section === 'appearance') {
+      resetToDefaults({
+        isEink: setIsEink,
+        isColorEink: setIsColorEink,
+        einkAutoRefreshInterval: setEinkAutoRefreshInterval,
+      });
+      return;
+    }
+    if (section === 'application') {
+      resetToDefaults({ allowScript: setAllowScript });
+      return;
+    }
     resetToDefaults({
       scrolled: setScrolledMode,
       noContinuousScroll: setNoContinuousScroll,
@@ -147,9 +160,6 @@ const ControlPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterRes
       swapClickArea: setSwapClickArea,
       animated: setAnimated,
       pageTurnStyle: setPageTurnStyle,
-      isEink: setIsEink,
-      einkAutoRefreshInterval: setEinkAutoRefreshInterval,
-      allowScript: setAllowScript,
       fullscreenClickArea: setFullscreenClickArea,
       disableDoubleClick: setIsDisableDoubleClick,
       enableAnnotationQuickActions: setEnableAnnotationQuickActions,
@@ -164,13 +174,6 @@ const ControlPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterRes
       false,
       true,
     );
-    if (appService?.hasUpdater) {
-      const { autoCheckUpdates = true, updateChannel = 'stable' } = DEFAULT_SYSTEM_SETTINGS;
-      saveSysSettings(envConfig, 'autoCheckUpdates', autoCheckUpdates);
-      saveSysSettings(envConfig, 'updateChannel', updateChannel);
-      setIsAutoCheckUpdates(autoCheckUpdates);
-      setIsNightlyChannel(updateChannel === 'nightly');
-    }
     pageTurnerResetRef.current();
     // Keyboard/mouse bindings are NOT reset here — they are device-local and
     // have their own "Reset all" inside the Keyboard Shortcuts sub-page.
@@ -474,290 +477,310 @@ const ControlPanel: React.FC<SettingsPanelPanelProp> = ({ bookKey, onRegisterRes
 
   return (
     <div className='my-4 w-full space-y-6'>
-      <BoxedList title={_('Scroll')} data-setting-id='settings.control.scrolledMode'>
-        <SettingsSwitchRow
-          label={_('Scrolled Mode')}
-          checked={isScrolledMode}
-          onChange={() => setScrolledMode(!isScrolledMode)}
-        />
-        <SettingsSwitchRow
-          label={_('Single Section Scroll')}
-          checked={noContinuousScroll}
-          disabled={!viewSettings.scrolled}
-          onChange={() => setNoContinuousScroll(!noContinuousScroll)}
-          data-setting-id='settings.control.scroll.noContinuousScroll'
-        />
-        {bookData?.isFixedLayout && (
-          <NumberInput
-            label={_('Overlap Pixels')}
-            value={scrollingOverlap}
-            onChange={setScrollingOverlap}
-            disabled={!viewSettings.scrolled}
-            min={0}
-            max={200}
-            step={10}
-            data-setting-id='settings.control.overlapPixels'
-          />
-        )}
-        <SettingsSwitchRow
-          label={_('Hide Scrollbar')}
-          checked={hideScrollbar}
-          disabled={!viewSettings.scrolled}
-          onChange={() => setHideScrollbar(!hideScrollbar)}
-          data-setting-id='settings.control.scroll.hideScrollbar'
-        />
-      </BoxedList>
-
-      <BoxedList title={_('Pagination')} data-setting-id='settings.control.clickToPaginate'>
-        <SettingsSwitchRow
-          label={appService?.isMobileApp ? _('Tap to Paginate') : _('Click to Paginate')}
-          checked={!isDisableClick}
-          onChange={() => setIsDisableClick(!isDisableClick)}
-        />
-        <SettingsSwitchRow
-          label={_('Swipe to Paginate')}
-          checked={!isDisableSwipe}
-          onChange={() => setIsDisableSwipe(!isDisableSwipe)}
-          data-setting-id='settings.control.swipeToPaginate'
-        />
-        <SettingsSwitchRow
-          label={appService?.isMobileApp ? _('Tap Both Sides') : _('Click Both Sides')}
-          checked={fullscreenClickArea}
-          disabled={isDisableClick}
-          onChange={() => setFullscreenClickArea(!fullscreenClickArea)}
-          data-setting-id='settings.control.clickBothSides'
-        />
-        <SettingsSwitchRow
-          label={appService?.isMobileApp ? _('Swap Tap Sides') : _('Swap Click Sides')}
-          checked={swapClickArea}
-          disabled={isDisableClick || fullscreenClickArea}
-          onChange={() => setSwapClickArea(!swapClickArea)}
-          data-setting-id='settings.control.swapClickSides'
-        />
-        <SettingsSwitchRow
-          label={appService?.isMobileApp ? _('Disable Double Tap') : _('Disable Double Click')}
-          checked={isDisableDoubleClick}
-          onChange={() => setIsDisableDoubleClick(!isDisableDoubleClick)}
-          data-setting-id='settings.control.disableDoubleClick'
-        />
-        <SettingsSwitchRow
-          label={_('Show Page Navigation Buttons')}
-          checked={showPaginationButtons}
-          onChange={() => setShowPaginationButtons(!showPaginationButtons)}
-          data-setting-id='settings.control.showPaginationButtons'
-        />
-        <SettingsSwitchRow
-          label={_('Stable Page Numbers')}
-          description={_('Turn off to count pages by the screens of this device')}
-          checked={stablePageNumbers}
-          onChange={() => setStablePageNumbers(!stablePageNumbers)}
-          data-setting-id='settings.control.stablePageNumbers'
-        />
-      </BoxedList>
-
-      <PageTurnerSettings
-        bookKey={bookKey}
-        onRegisterReset={(fn) => {
-          pageTurnerResetRef.current = fn;
-        }}
-      />
-
-      <BoxedList title={_('Shortcuts')} data-setting-id='settings.control.keyboardShortcuts'>
-        <NavigationRow
-          title={_('Keyboard Shortcuts')}
-          status={_('Customize keyboard and mouse controls')}
-          onClick={() => setShowKeyboardShortcuts(true)}
-        />
-      </BoxedList>
-
-      <BoxedList
-        title={_('Annotation Tools')}
-        data-setting-id='settings.control.enableQuickActions'
-      >
-        <SettingsSwitchRow
-          label={_('Pull-Down to Bookmark')}
-          checked={!disablePullDownToBookmark}
-          onChange={() => setDisablePullDownToBookmark(!disablePullDownToBookmark)}
-          data-setting-id='settings.control.disablePullDownToBookmark'
-        />
-        <SettingsSwitchRow
-          label={_('Enable Quick Actions')}
-          checked={enableAnnotationQuickActions}
-          onChange={() => setEnableAnnotationQuickActions(!enableAnnotationQuickActions)}
-        />
-        <SettingsRow label={_('Quick Action')} data-setting-id='settings.control.quickAction'>
-          <SettingsSelect
-            value={annotationQuickAction || ''}
-            onChange={handleSelectAnnotationQuickAction}
-            ariaLabel={_('Quick Action')}
-            options={getQuickActionOptions()}
-            disabled={!enableAnnotationQuickActions}
-          />
-        </SettingsRow>
-        {annotationQuickAction === 'dictionary' && (
-          <SettingsSwitchRow
-            label={_('Keep Text Selected After Lookup')}
-            checked={keepSelectionAfterLookup}
-            disabled={!enableAnnotationQuickActions}
-            onChange={() => setKeepSelectionAfterLookup(!keepSelectionAfterLookup)}
-            data-setting-id='settings.control.keepSelectionAfterLookup'
-          />
-        )}
-        <SettingsSwitchRow
-          label={_('Copy to Notebook')}
-          checked={copyToNotebook}
-          onChange={() => setCopyToNotebook(!copyToNotebook)}
-          data-setting-id='settings.control.copyToNotebook'
-        />
-        <NavigationRow
-          title={_('Customize Toolbar')}
-          onClick={() => setShowToolbarCustomizer(true)}
-          data-setting-id='settings.control.customizeToolbar'
-        />
-      </BoxedList>
-
-      <BoxedList title={_('Animation')} data-setting-id='settings.control.pagingAnimation'>
-        <SettingsSwitchRow
-          label={_('Paging Animation')}
-          checked={animated}
-          onChange={() => setAnimated(!animated)}
-        />
-        <SettingsRow label={_('Animation Style')} data-setting-id='settings.control.pageTurnStyle'>
-          <SettingsSelect
-            // A synced slide/curl setting from another device still reads as
-            // push here when this engine cannot animate it.
-            value={
-              turnStyleOptions.some((opt) => opt.value === pageTurnStyle) ? pageTurnStyle : 'push'
-            }
-            onChange={(e) => setPageTurnStyle(e.target.value as PageTurnStyle)}
-            ariaLabel={_('Animation Style')}
-            options={turnStyleOptions}
-            disabled={!animated}
-          />
-        </SettingsRow>
-      </BoxedList>
-
-      <BoxedList title={_('Device')} data-setting-id='settings.control.device'>
-        <SettingsSwitchRow
-          label={_('E-Ink Mode')}
-          checked={isEink}
-          onChange={() => setIsEink(!isEink)}
-          data-setting-id='settings.control.einkMode'
-        />
-        {appService?.isAndroidApp && einkRefreshSupported && (
-          <SettingsRow
-            label={_('Auto Full Refresh')}
-            disabled={!isEink}
-            data-setting-id='settings.control.autoFullRefresh'
-          >
-            <SettingsSelect
-              value={String(einkAutoRefreshInterval)}
-              onChange={(e) => setEinkAutoRefreshInterval(Number(e.target.value))}
-              ariaLabel={_('Auto Full Refresh')}
-              disabled={!isEink}
-              options={einkAutoRefreshIntervalChoices}
+      {section === 'navigation' && (
+        <>
+          <BoxedList title={_('Scroll')} data-setting-id='settings.control.scrolledMode'>
+            <SettingsSwitchRow
+              label={_('Scrolled Mode')}
+              checked={isScrolledMode}
+              onChange={() => setScrolledMode(!isScrolledMode)}
             />
-          </SettingsRow>
-        )}
-        <SettingsSwitchRow
-          label={_('Color E-Ink Mode')}
-          checked={isColorEink}
-          disabled={!isEink}
-          onChange={() => setIsColorEink(!isColorEink)}
-          data-setting-id='settings.control.colorEinkMode'
-        />
-        <SettingsSwitchRow
-          label={_('Hide Bookshelf Buttons')}
-          description={_('Previous and Next in the library')}
-          checked={hideBookshelfPageButtons}
-          // The library follows the global E-Ink setting, not this book's.
-          disabled={!settings.globalViewSettings?.isEink}
-          onChange={() => setHideBookshelfPageButtons(!hideBookshelfPageButtons)}
-          data-setting-id='settings.control.hideBookshelfPageButtons'
-        />
-        {appService?.isMobileApp && (
-          <SettingsSwitchRow
-            label={_('System Screen Brightness')}
-            checked={autoScreenBrightness}
-            onChange={() => setAutoScreenBrightness(!autoScreenBrightness)}
-          />
-        )}
-        {appService?.hasScreenBrightness && (
-          <SettingsSwitchRow
-            label={_('Swipe for Brightness')}
-            description={_('Slide along the left edge')}
-            checked={swipeBrightnessGesture}
-            onChange={() => setSwipeBrightnessGesture(!swipeBrightnessGesture)}
-            data-setting-id='settings.control.swipeBrightnessGesture'
-          />
-        )}
-        <SettingsSwitchRow
-          label={_('Keep Screen Awake')}
-          description={_('Only while reading')}
-          checked={screenWakeLock}
-          onChange={() => setScreenWakeLock(!screenWakeLock)}
-          data-setting-id='settings.control.screenWakeLock'
-        />
-        {!appService?.isMobile && (
-          <SettingsSwitchRow
-            label={_('Auto-hide Cursor')}
-            description={_('After a moment of inactivity')}
-            checked={autohideCursor}
-            onChange={() => setAutohideCursor(!autohideCursor)}
-            data-setting-id='settings.control.autohideCursor'
-          />
-        )}
-        <SettingsSwitchRow
-          label={_('Reverse Mouse Wheel')}
-          description={_('Scroll up for the next page')}
-          checked={reverseWheelPaging}
-          onChange={() => setReverseWheelPaging(!reverseWheelPaging)}
-          data-setting-id='settings.control.reverseWheelPaging'
-        />
-        <SettingsSwitchRow
-          label={_('Gamepad Support')}
-          description={_('Navigate with a connected controller')}
-          checked={gamepadEnabled}
-          onChange={() => setGamepadEnabled(!gamepadEnabled)}
-          data-setting-id='settings.control.gamepadEnabled'
-        />
-      </BoxedList>
+            <SettingsSwitchRow
+              label={_('Single Section Scroll')}
+              checked={noContinuousScroll}
+              disabled={!viewSettings.scrolled}
+              onChange={() => setNoContinuousScroll(!noContinuousScroll)}
+              data-setting-id='settings.control.scroll.noContinuousScroll'
+            />
+            {bookData?.isFixedLayout && (
+              <NumberInput
+                label={_('Overlap Pixels')}
+                value={scrollingOverlap}
+                onChange={setScrollingOverlap}
+                disabled={!viewSettings.scrolled}
+                min={0}
+                max={200}
+                step={10}
+                data-setting-id='settings.control.overlapPixels'
+              />
+            )}
+            <SettingsSwitchRow
+              label={_('Hide Scrollbar')}
+              checked={hideScrollbar}
+              disabled={!viewSettings.scrolled}
+              onChange={() => setHideScrollbar(!hideScrollbar)}
+              data-setting-id='settings.control.scroll.hideScrollbar'
+            />
+          </BoxedList>
 
-      {appService?.hasUpdater && (
-        <BoxedList title={_('Update')} data-setting-id='settings.control.checkUpdates'>
+          <BoxedList title={_('Pagination')} data-setting-id='settings.control.clickToPaginate'>
+            <SettingsSwitchRow
+              label={appService?.isMobileApp ? _('Tap to Paginate') : _('Click to Paginate')}
+              checked={!isDisableClick}
+              onChange={() => setIsDisableClick(!isDisableClick)}
+            />
+            <SettingsSwitchRow
+              label={_('Swipe to Paginate')}
+              checked={!isDisableSwipe}
+              onChange={() => setIsDisableSwipe(!isDisableSwipe)}
+              data-setting-id='settings.control.swipeToPaginate'
+            />
+            <SettingsSwitchRow
+              label={appService?.isMobileApp ? _('Tap Both Sides') : _('Click Both Sides')}
+              checked={fullscreenClickArea}
+              disabled={isDisableClick}
+              onChange={() => setFullscreenClickArea(!fullscreenClickArea)}
+              data-setting-id='settings.control.clickBothSides'
+            />
+            <SettingsSwitchRow
+              label={appService?.isMobileApp ? _('Swap Tap Sides') : _('Swap Click Sides')}
+              checked={swapClickArea}
+              disabled={isDisableClick || fullscreenClickArea}
+              onChange={() => setSwapClickArea(!swapClickArea)}
+              data-setting-id='settings.control.swapClickSides'
+            />
+            <SettingsSwitchRow
+              label={appService?.isMobileApp ? _('Disable Double Tap') : _('Disable Double Click')}
+              checked={isDisableDoubleClick}
+              onChange={() => setIsDisableDoubleClick(!isDisableDoubleClick)}
+              data-setting-id='settings.control.disableDoubleClick'
+            />
+            <SettingsSwitchRow
+              label={_('Show Page Navigation Buttons')}
+              checked={showPaginationButtons}
+              onChange={() => setShowPaginationButtons(!showPaginationButtons)}
+              data-setting-id='settings.control.showPaginationButtons'
+            />
+            <SettingsSwitchRow
+              label={_('Stable Page Numbers')}
+              description={_('Turn off to count pages by the screens of this device')}
+              checked={stablePageNumbers}
+              onChange={() => setStablePageNumbers(!stablePageNumbers)}
+              data-setting-id='settings.control.stablePageNumbers'
+            />
+          </BoxedList>
+
+          <PageTurnerSettings
+            bookKey={bookKey}
+            onRegisterReset={(fn) => {
+              pageTurnerResetRef.current = fn;
+            }}
+          />
+
+          <BoxedList title={_('Shortcuts')} data-setting-id='settings.control.keyboardShortcuts'>
+            <NavigationRow
+              title={_('Keyboard Shortcuts')}
+              status={_('Customize keyboard and mouse controls')}
+              onClick={() => setShowKeyboardShortcuts(true)}
+            />
+          </BoxedList>
+
+          <BoxedList
+            title={_('Annotation Tools')}
+            data-setting-id='settings.control.enableQuickActions'
+          >
+            <SettingsSwitchRow
+              label={_('Pull-Down to Bookmark')}
+              checked={!disablePullDownToBookmark}
+              onChange={() => setDisablePullDownToBookmark(!disablePullDownToBookmark)}
+              data-setting-id='settings.control.disablePullDownToBookmark'
+            />
+            <SettingsSwitchRow
+              label={_('Enable Quick Actions')}
+              checked={enableAnnotationQuickActions}
+              onChange={() => setEnableAnnotationQuickActions(!enableAnnotationQuickActions)}
+            />
+            <SettingsRow label={_('Quick Action')} data-setting-id='settings.control.quickAction'>
+              <SettingsSelect
+                value={annotationQuickAction || ''}
+                onChange={handleSelectAnnotationQuickAction}
+                ariaLabel={_('Quick Action')}
+                options={getQuickActionOptions()}
+                disabled={!enableAnnotationQuickActions}
+              />
+            </SettingsRow>
+            {annotationQuickAction === 'dictionary' && (
+              <SettingsSwitchRow
+                label={_('Keep Text Selected After Lookup')}
+                checked={keepSelectionAfterLookup}
+                disabled={!enableAnnotationQuickActions}
+                onChange={() => setKeepSelectionAfterLookup(!keepSelectionAfterLookup)}
+                data-setting-id='settings.control.keepSelectionAfterLookup'
+              />
+            )}
+            <SettingsSwitchRow
+              label={_('Copy to Notebook')}
+              checked={copyToNotebook}
+              onChange={() => setCopyToNotebook(!copyToNotebook)}
+              data-setting-id='settings.control.copyToNotebook'
+            />
+            <NavigationRow
+              title={_('Customize Toolbar')}
+              onClick={() => setShowToolbarCustomizer(true)}
+              data-setting-id='settings.control.customizeToolbar'
+            />
+          </BoxedList>
+
+          <BoxedList title={_('Animation')} data-setting-id='settings.control.pagingAnimation'>
+            <SettingsSwitchRow
+              label={_('Paging Animation')}
+              checked={animated}
+              onChange={() => setAnimated(!animated)}
+            />
+            <SettingsRow
+              label={_('Animation Style')}
+              data-setting-id='settings.control.pageTurnStyle'
+            >
+              <SettingsSelect
+                // A synced slide/curl setting from another device still reads as
+                // push here when this engine cannot animate it.
+                value={
+                  turnStyleOptions.some((opt) => opt.value === pageTurnStyle)
+                    ? pageTurnStyle
+                    : 'push'
+                }
+                onChange={(e) => setPageTurnStyle(e.target.value as PageTurnStyle)}
+                ariaLabel={_('Animation Style')}
+                options={turnStyleOptions}
+                disabled={!animated}
+              />
+            </SettingsRow>
+          </BoxedList>
+        </>
+      )}
+      {section === 'appearance' && (
+        <>
+          <BoxedList title={_('Device')} data-setting-id='settings.control.device'>
+            <SettingsSwitchRow
+              label={_('E-Ink Mode')}
+              checked={isEink}
+              onChange={() => setIsEink(!isEink)}
+              data-setting-id='settings.control.einkMode'
+            />
+            {appService?.isAndroidApp && einkRefreshSupported && (
+              <SettingsRow
+                label={_('Auto Full Refresh')}
+                disabled={!isEink}
+                data-setting-id='settings.control.autoFullRefresh'
+              >
+                <SettingsSelect
+                  value={String(einkAutoRefreshInterval)}
+                  onChange={(e) => setEinkAutoRefreshInterval(Number(e.target.value))}
+                  ariaLabel={_('Auto Full Refresh')}
+                  disabled={!isEink}
+                  options={einkAutoRefreshIntervalChoices}
+                />
+              </SettingsRow>
+            )}
+            <SettingsSwitchRow
+              label={_('Color E-Ink Mode')}
+              checked={isColorEink}
+              disabled={!isEink}
+              onChange={() => setIsColorEink(!isColorEink)}
+              data-setting-id='settings.control.colorEinkMode'
+            />
+            <SettingsSwitchRow
+              label={_('Hide Bookshelf Buttons')}
+              description={_('Previous and Next in the library')}
+              checked={hideBookshelfPageButtons}
+              // The library follows the global E-Ink setting, not this book's.
+              disabled={!settings.globalViewSettings?.isEink}
+              onChange={() => setHideBookshelfPageButtons(!hideBookshelfPageButtons)}
+              data-setting-id='settings.control.hideBookshelfPageButtons'
+            />
+          </BoxedList>
+        </>
+      )}
+      {section === 'navigation' && (
+        <BoxedList title={_('Device')}>
+          {appService?.isMobileApp && (
+            <SettingsSwitchRow
+              label={_('System Screen Brightness')}
+              checked={autoScreenBrightness}
+              onChange={() => setAutoScreenBrightness(!autoScreenBrightness)}
+            />
+          )}
+          {appService?.hasScreenBrightness && (
+            <SettingsSwitchRow
+              label={_('Swipe for Brightness')}
+              description={_('Slide along the left edge')}
+              checked={swipeBrightnessGesture}
+              onChange={() => setSwipeBrightnessGesture(!swipeBrightnessGesture)}
+              data-setting-id='settings.control.swipeBrightnessGesture'
+            />
+          )}
           <SettingsSwitchRow
-            label={_('Check Updates on Start')}
-            checked={isAutoCheckUpdates}
-            onChange={toggleAutoCheckUpdates}
+            label={_('Keep Screen Awake')}
+            description={_('Only while reading')}
+            checked={screenWakeLock}
+            onChange={() => setScreenWakeLock(!screenWakeLock)}
+            data-setting-id='settings.control.screenWakeLock'
+          />
+          {!appService?.isMobile && (
+            <SettingsSwitchRow
+              label={_('Auto-hide Cursor')}
+              description={_('After a moment of inactivity')}
+              checked={autohideCursor}
+              onChange={() => setAutohideCursor(!autohideCursor)}
+              data-setting-id='settings.control.autohideCursor'
+            />
+          )}
+          <SettingsSwitchRow
+            label={_('Reverse Mouse Wheel')}
+            description={_('Scroll up for the next page')}
+            checked={reverseWheelPaging}
+            onChange={() => setReverseWheelPaging(!reverseWheelPaging)}
+            data-setting-id='settings.control.reverseWheelPaging'
           />
           <SettingsSwitchRow
-            label={_('Nightly Builds')}
-            description={isNightlyChannel ? _('Early daily builds') : ''}
-            checked={isNightlyChannel}
-            onChange={toggleNightlyChannel}
-            data-setting-id='settings.control.nightlyChannel'
+            label={_('Gamepad Support')}
+            description={_('Navigate with a connected controller')}
+            checked={gamepadEnabled}
+            onChange={() => setGamepadEnabled(!gamepadEnabled)}
+            data-setting-id='settings.control.gamepadEnabled'
           />
         </BoxedList>
       )}
 
-      <BoxedList title={_('Security')} data-setting-id='settings.control.allowJavascript'>
-        <SettingsSwitchRow
-          label={_('Allow JavaScript')}
-          description={_('Enable only if you trust the file.')}
-          checked={allowScript}
-          disabled={bookData?.book?.format !== 'EPUB'}
-          onChange={() => setAllowScript(!allowScript)}
-        />
-      </BoxedList>
+      {section === 'application' && (
+        <>
+          {appService?.hasUpdater && (
+            <BoxedList title={_('Update')} data-setting-id='settings.control.checkUpdates'>
+              <SettingsSwitchRow
+                label={_('Check Updates on Start')}
+                checked={isAutoCheckUpdates}
+                onChange={toggleAutoCheckUpdates}
+              />
+              <SettingsSwitchRow
+                label={_('Nightly Builds')}
+                description={isNightlyChannel ? _('Early daily builds') : ''}
+                checked={isNightlyChannel}
+                onChange={toggleNightlyChannel}
+                data-setting-id='settings.control.nightlyChannel'
+              />
+            </BoxedList>
+          )}
 
-      <BoxedList title={_('Privacy')} data-setting-id='settings.control.telemetry'>
-        <SettingsSwitchRow
-          label={_('Help improve Readest')}
-          description={isTelemetryEnabled ? _('Sharing anonymized statistics') : ''}
-          checked={isTelemetryEnabled}
-          onChange={toggleTelemetry}
-        />
-      </BoxedList>
+          <BoxedList title={_('Security')} data-setting-id='settings.control.allowJavascript'>
+            <SettingsSwitchRow
+              label={_('Allow JavaScript')}
+              description={_('Enable only if you trust the file.')}
+              checked={allowScript}
+              disabled={bookData?.book?.format !== 'EPUB'}
+              onChange={() => setAllowScript(!allowScript)}
+            />
+          </BoxedList>
+
+          <BoxedList title={_('Privacy')} data-setting-id='settings.control.telemetry'>
+            <SettingsSwitchRow
+              label={_('Help improve Readest')}
+              description={isTelemetryEnabled ? _('Sharing anonymized statistics') : ''}
+              checked={isTelemetryEnabled}
+              onChange={toggleTelemetry}
+            />
+          </BoxedList>
+        </>
+      )}
     </div>
   );
 };

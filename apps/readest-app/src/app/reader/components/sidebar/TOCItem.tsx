@@ -1,8 +1,9 @@
 import clsx from 'clsx';
-import React, { useCallback } from 'react';
-import { FiBookOpen } from 'react-icons/fi';
-import { TOCItem } from '@/libs/document';
 import { useTranslation } from '@/hooks/useTranslation';
+import React, { useCallback } from 'react';
+import { BookOpen } from 'lucide-react';
+import { navigationLabel, splitNavigationLabel, tocPageNumber } from '../../utils/navigationLabel';
+import { TOCItem } from '@/libs/document';
 import { getContentMd5 } from '@/utils/misc';
 
 const createExpanderIcon = (isExpanded: boolean) => {
@@ -87,22 +88,20 @@ const TOCItemView = React.memo<{
   flatItem: FlatTOCItem;
   itemSize?: number;
   isActive: boolean;
+  fixedPages?: boolean;
+  displayLabel?: string;
   onToggleExpand: (item: TOCItem) => void;
   onItemClick: (item: TOCItem) => void;
-}>(({ flatItem, itemSize, isActive, onToggleExpand, onItemClick }) => {
+}>(({ flatItem, itemSize, isActive, onToggleExpand, onItemClick, fixedPages, displayLabel }) => {
+  const _ = useTranslation();
   const { item, depth } = flatItem;
   const expandable = !!item.subitems || !!flatItem.hasPages;
 
-  const pageNumber = item.location
-    ? item.location.current + 1
-    : item.index !== undefined
-      ? item.index + 1
-      : null;
-  const ariaLabel = item.label
-    ? pageNumber !== null
-      ? `${item.label}, ${pageNumber}`
-      : item.label
-    : undefined;
+  const pageNumber = tocPageNumber(item, fixedPages);
+  const { caption, title } = splitNavigationLabel(displayLabel ?? item.label);
+  const ariaLabel =
+    navigationLabel(item.label) +
+    (pageNumber !== null ? `, ${fixedPages ? 'halaman' : 'lokasi'} ${pageNumber}` : '');
 
   const handleToggleExpand = useCallback(
     (event: React.MouseEvent) => {
@@ -126,14 +125,17 @@ const TOCItemView = React.memo<{
       tabIndex={0}
       role='treeitem'
       onClick={item.href ? handleClickItem : undefined}
-      onKeyDown={item.href ? (e) => e.key === 'Enter' && handleClickItem(e) : undefined}
+      onKeyDown={
+        item.href ? (e) => ['Enter', ' '].includes(e.key) && handleClickItem(e) : undefined
+      }
       aria-label={ariaLabel}
       aria-current={isActive ? 'page' : undefined}
       aria-expanded={expandable ? (flatItem.isExpanded ? 'true' : 'false') : undefined}
       aria-selected={isActive ? 'true' : 'false'}
       data-href={item.href ? getContentMd5(item.href) : undefined}
       className={clsx(
-        'flex w-full cursor-pointer items-center rounded-md py-4 sm:py-2 sm:hover:bg-base-300/75',
+        'kk-toc-entry flex w-full cursor-pointer items-center rounded-md py-4 sm:py-2 sm:hover:bg-base-300/75',
+        isActive && 'kk-toc-active',
       )}
       style={{
         height: itemSize ? `${itemSize}px` : 'auto',
@@ -156,14 +158,15 @@ const TOCItemView = React.memo<{
           {createExpanderIcon(flatItem.isExpanded || false)}
         </button>
       )}
-      <div className='ms-2 min-w-0 break-words'>{item.label}</div>
-      {(item.location || item.index !== undefined) && (
-        <div
-          aria-hidden='true'
-          className='text-base-content/50 ms-auto shrink-0 ps-1 text-xs sm:pe-1'
-        >
-          {item.location ? item.location.current + 1 : item.index + 1}
-        </div>
+      <div className='kk-toc-label ms-2 min-w-0 break-words'>
+        {caption && <span className='kk-toc-caption'>{caption}</span>}
+        <span className='kk-toc-title'>{title}</span>
+        {isActive && <span className='kk-toc-reading'>{_('Sedang dibaca')}</span>}
+      </div>
+      {pageNumber !== null && (
+        <span aria-hidden='true' className='kk-toc-location'>
+          {fixedPages ? 'Hlm.' : 'Lok.'} {pageNumber}
+        </span>
       )}
     </div>
   );
@@ -172,6 +175,8 @@ const TOCItemView = React.memo<{
 TOCItemView.displayName = 'TOCItemView';
 
 interface ListRowProps {
+  fixedPages?: boolean;
+  displayLabel?: string;
   bookKey: string;
   flatItem: FlatTOCItem;
   itemSize?: number;
@@ -187,6 +192,8 @@ export const StaticListRow: React.FC<ListRowProps> = ({
   activeHref,
   onToggleExpand,
   onItemClick,
+  fixedPages,
+  displayLabel,
 }) => {
   const isActive = activeHref === flatItem.item.href;
 
@@ -200,6 +207,8 @@ export const StaticListRow: React.FC<ListRowProps> = ({
     >
       <TOCItemView
         bookKey={bookKey}
+        fixedPages={fixedPages}
+        displayLabel={displayLabel}
         flatItem={flatItem}
         itemSize={itemSize}
         isActive={isActive}
@@ -214,9 +223,9 @@ export const CurrentPositionRow: React.FC<{
   depth: number;
   page: number;
   onClick?: () => void;
-}> = ({ depth, page, onClick }) => {
+}> = ({ depth, onClick }) => {
   const _ = useTranslation();
-  const label = _('Current position');
+  const label = _('Posisi Saat Ini');
 
   const handleClick = useCallback(
     (event: React.MouseEvent | React.KeyboardEvent) => {
@@ -238,9 +247,9 @@ export const CurrentPositionRow: React.FC<{
         tabIndex={onClick ? 0 : undefined}
         role='treeitem'
         aria-current='true'
-        aria-label={`${label}, ${page}`}
+        aria-label={label}
         onClick={onClick ? handleClick : undefined}
-        onKeyDown={onClick ? (e) => e.key === 'Enter' && handleClick(e) : undefined}
+        onKeyDown={onClick ? (e) => ['Enter', ' '].includes(e.key) && handleClick(e) : undefined}
         className={clsx(
           'flex w-full items-center rounded-md py-4 sm:py-2',
           'text-bold-in-eink sm:bg-base-300/65 sm:text-base-content text-blue-500',
@@ -248,15 +257,12 @@ export const CurrentPositionRow: React.FC<{
         )}
         style={{ paddingInlineStart: `${depth * 12 + 8}px` }}
       >
-        <FiBookOpen className='h-4 w-4 shrink-0' aria-hidden='true' />
+        <BookOpen className='h-4 w-4 shrink-0' aria-hidden='true' />
         <div
           className='ms-2 truncate text-ellipsis'
           style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
         >
           {label}
-        </div>
-        <div aria-hidden='true' className='text-base-content/50 ms-auto ps-1 text-xs sm:pe-1'>
-          {page}
         </div>
       </div>
     </div>

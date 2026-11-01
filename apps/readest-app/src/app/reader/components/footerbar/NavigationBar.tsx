@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import React from 'react';
-import { IoIosList as TOCIcon } from 'react-icons/io';
-import { RxSlider as SliderIcon } from 'react-icons/rx';
-import { RiFontFamily as FontIcon } from 'react-icons/ri';
-import { MdOutlineHeadphones as TTSIcon } from 'react-icons/md';
+import { List as TOCIcon } from 'lucide-react';
+import { SlidersHorizontal as SliderIcon } from 'lucide-react';
+import { Type as FontIcon } from 'lucide-react';
+import { Headphones as TTSIcon } from 'lucide-react';
 import { useReaderStore } from '@/store/readerStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSidebarStore } from '@/store/sidebarStore';

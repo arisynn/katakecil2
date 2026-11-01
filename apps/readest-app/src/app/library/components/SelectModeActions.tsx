@@ -1,18 +1,18 @@
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import {
-  MdDelete,
-  MdOpenInNew,
-  MdOutlineCancel,
-  MdInfoOutline,
-  MdCheckCircleOutline,
-  MdOutlineCloudDownload,
-  MdWifiTethering,
-  MdLabelOutline,
-  MdOutlineArchive,
-} from 'react-icons/md';
-import { IoShareSocialOutline } from 'react-icons/io5';
-import { LuFolderPlus } from 'react-icons/lu';
+  Trash2 as MdDelete,
+  ExternalLink as MdOpenInNew,
+  CircleX as MdOutlineCancel,
+  Info as MdInfoOutline,
+  CircleCheck as MdCheckCircleOutline,
+  CloudDownload as MdOutlineCloudDownload,
+  Radio as MdWifiTethering,
+  Tag as MdLabelOutline,
+  Archive as MdOutlineArchive,
+} from 'lucide-react';
+import { Share2 as IoShareSocialOutline } from 'lucide-react';
+import { FolderPlus as LuFolderPlus } from 'lucide-react';
 import { useKeyDownActions } from '@/hooks/useKeyDownActions';
 import { useTranslation } from '@/hooks/useTranslation';
 import { isMd5 } from '@/utils/md5';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TbLayoutSidebar, TbLayoutSidebarFilled } from 'react-icons/tb';
+import { PanelLeft as TbLayoutSidebar, PanelLeftClose as TbLayoutSidebarFilled } from 'lucide-react';
 
 import { useSidebarStore } from '@/store/sidebarStore';
 import { useTranslation } from '@/hooks/useTranslation';

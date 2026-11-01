@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { MdCheck } from 'react-icons/md';
+import { Check as MdCheck } from 'lucide-react';
 import { BookSearchConfig, SearchMode } from '@/types/book';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useDefaultIconSize } from '@/hooks/useResponsiveSize';

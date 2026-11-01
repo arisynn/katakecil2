@@ -174,10 +174,12 @@ describe('Catalog settings hydration', () => {
     expect(saveViewSettings).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Library Menu' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }));
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Settings' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Semua pengaturan' }));
     expect(screen.getByRole('dialog')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Huruf' }));
     expect(screen.getByDisplayValue('23')).toBeTruthy();
     expect(useSettingsStore.getState().settings.globalViewSettings.defaultFontSize).toBe(23);
+    fireEvent.click(screen.getByRole('button', { name: 'Kembali ke pengaturan' }));
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss settings' }));
     expect(screen.queryByRole('dialog')).toBeNull();
   });
@@ -234,7 +236,7 @@ describe('Catalog settings hydration', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Library Menu' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }));
     expect(screen.queryByText('Sign In')).toBeNull();
-    expect(screen.getByRole('menuitem', { name: 'Settings' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Semua pengaturan' })).toBeTruthy();
     fireEvent.click(screen.getByRole('tab', { name: 'View' }));
     await act(async () => {
       fireEvent.click(screen.getByText('List', { exact: true }));

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import clsx from 'clsx';
-import { MdGraphicEq } from 'react-icons/md';
+import { AudioLines as MdGraphicEq } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { formatBytes } from '@/utils/book';
 import { DAILY_QUOTA_EXCEEDED } from '@/services/tts/providers/types';

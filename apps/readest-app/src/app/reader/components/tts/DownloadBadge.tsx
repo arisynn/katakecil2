@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  MdDownloadForOffline,
-  MdOfflinePin,
-  MdOutlineFileDownload,
-  MdOutlineSchedule,
-  MdStop,
-} from 'react-icons/md';
+  Download as MdDownloadForOffline,
+  CircleCheck as MdOfflinePin,
+  Download as MdOutlineFileDownload,
+  Clock as MdOutlineSchedule,
+  Square as MdStop,
+} from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';

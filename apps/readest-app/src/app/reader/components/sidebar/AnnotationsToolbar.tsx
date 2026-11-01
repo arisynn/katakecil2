@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
-import { FaSearch, FaTimes } from 'react-icons/fa';
-import { MdFilterList } from 'react-icons/md';
+import { Search as FaSearch, X as FaTimes } from 'lucide-react';
+import { ListFilter as MdFilterList } from 'lucide-react';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useResponsiveSize } from '@/hooks/useResponsiveSize';
@@ -282,7 +282,7 @@ const AnnotationsToolbar: React.FC<AnnotationsToolbarProps> = ({
         containerClassName='h-8 pt-1'
         toggleButton={
           <span className='relative inline-flex'>
-            <MdFilterList className='fill-base-content' />
+            <MdFilterList className='' />
           </span>
         }
       >

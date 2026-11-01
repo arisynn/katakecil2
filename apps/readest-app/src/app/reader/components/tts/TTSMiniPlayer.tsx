@@ -1,20 +1,21 @@
+import { navigationLabel } from '../../utils/navigationLabel';
 import clsx from 'clsx';
 import { useLayoutEffect, useState } from 'react';
 import {
-  MdAlarm,
-  MdClose,
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowRight,
-  MdKeyboardDoubleArrowLeft,
-  MdKeyboardDoubleArrowRight,
-  MdOutlinePause,
-  MdPauseCircleFilled,
-  MdPlayArrow,
-  MdPlayCircleFilled,
-  MdSkipNext,
-  MdSkipPrevious,
-} from 'react-icons/md';
-import { RiForward30Line, RiReplay15Line } from 'react-icons/ri';
+  AlarmClock as MdAlarm,
+  X as MdClose,
+  ChevronLeft as MdKeyboardArrowLeft,
+  ChevronRight as MdKeyboardArrowRight,
+  ChevronsLeft as MdKeyboardDoubleArrowLeft,
+  ChevronsRight as MdKeyboardDoubleArrowRight,
+  Pause as MdOutlinePause,
+  CirclePause as MdPauseCircleFilled,
+  Play as MdPlayArrow,
+  CirclePlay as MdPlayCircleFilled,
+  SkipForward as MdSkipNext,
+  SkipBack as MdSkipPrevious,
+} from 'lucide-react';
+import { RotateCw as RiForward30Line, RotateCcw as RiReplay15Line } from 'lucide-react';
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';
@@ -127,7 +128,7 @@ const TTSMiniPlayer = ({
   const iconSize40 = useResponsiveSize(40);
 
   const book = getBookData(bookKey)?.book;
-  const sectionLabel = progress?.sectionLabel;
+  const sectionLabel = navigationLabel(progress?.sectionLabel);
 
   // Stack above whatever occupies the bottom edge: the bottom bar (or its
   // expanded action panel) while it is shown, the footer info band once it is

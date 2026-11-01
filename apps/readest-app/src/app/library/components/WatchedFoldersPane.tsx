@@ -1,6 +1,6 @@
 import React from 'react';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
-import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import { CircleX as IoMdCloseCircleOutline } from 'lucide-react';
+import { ChevronLeft as MdArrowBackIosNew, ChevronRight as MdArrowForwardIos } from 'lucide-react';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { getDirFromUILanguage } from '@/utils/rtl';

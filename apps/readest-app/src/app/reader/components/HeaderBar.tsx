@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { VscLibrary } from 'react-icons/vsc';
-import { MdArrowBack, MdMoreHoriz, MdOutlineMenu } from 'react-icons/md';
+import { Library as VscLibrary, ArrowLeft as MdArrowBack, Ellipsis as MdMoreHoriz, Menu as MdOutlineMenu } from 'lucide-react';
 
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
@@ -301,7 +300,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
               className='btn btn-ghost hidden h-8 min-h-8 w-8 p-0 sm:flex'
               onClick={onGoToLibrary}
             >
-              <VscLibrary size={iconSize18} className='fill-base-content' />
+              <VscLibrary size={iconSize18} />
             </button>
             <BookmarkToggler bookKey={bookKey} />
             {!isMobile && <TranslationToggler bookKey={bookKey} />}
@@ -350,7 +349,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
           className={clsx(
             'header-title z-15 bg-base-100 pointer-events-none hidden flex-1 items-center justify-center sm:flex',
             !windowButtonVisible && 'absolute inset-0',
-            isHeaderCompact && 'hidden!',
+            (isHeaderCompact || isMobile) && 'hidden!',
           )}
           {...getBookDataAttributes(bookTitle, bookData?.book?.metadata)}
         >

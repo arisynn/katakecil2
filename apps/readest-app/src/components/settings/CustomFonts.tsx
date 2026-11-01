@@ -1,7 +1,11 @@
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { MdAdd, MdDelete, MdOutlineCloudDownload } from 'react-icons/md';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
+import {
+  Plus as MdAdd,
+  Trash2 as MdDelete,
+  CloudDownload as MdOutlineCloudDownload,
+} from 'lucide-react';
+import { CircleX as IoMdCloseCircleOutline } from 'lucide-react';
 import { useEnv } from '@/context/EnvContext';
 import { useReaderStore } from '@/store/readerStore';
 import { useTranslation } from '@/hooks/useTranslation';
