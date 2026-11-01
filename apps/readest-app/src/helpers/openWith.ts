@@ -1,6 +1,6 @@
 import { isWebAppPlatform, hasCli } from '@/services/environment';
 import { AppService } from '@/types/system';
-import { getCurrent } from '@tauri-apps/plugin-deep-link';
+import { getCurrent } from '@/platform/browser/deep-link';
 
 declare global {
   interface Window {
@@ -20,7 +20,7 @@ const parseWindowOpenWithFiles = () => {
 };
 
 const parseCLIOpenWithFiles = async () => {
-  const { getMatches } = await import('@tauri-apps/plugin-cli');
+  const { getMatches } = await import('@/platform/browser/cli');
   let matches;
   try {
     matches = await getMatches();

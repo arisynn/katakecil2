@@ -1,7 +1,7 @@
 import { md5 } from 'js-md5';
 import { Book } from '@/types/book';
 import { KOSyncSettings } from '@/types/settings';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { KoSyncProxyPayload } from '@/types/kosync';
 import { isLanAddress } from '@/utils/network';
 import { getUserLang, makeSafeFilename } from '@/utils/misc';

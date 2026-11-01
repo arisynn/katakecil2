@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { Inflate } from 'fflate';
 import type { Entry } from '@zip.js/zip.js';
 

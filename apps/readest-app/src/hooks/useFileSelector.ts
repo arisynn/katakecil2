@@ -1,7 +1,7 @@
 import { AppService } from '@/types/system';
 import { isTauriAppPlatform } from '@/services/environment';
-import { invoke } from '@tauri-apps/api/core';
-import { basename } from '@tauri-apps/api/path';
+import { invoke } from '@/platform/browser/core';
+import { basename } from '@/platform/browser/path';
 import { isContentURI, isFileURI, stubTranslation as _ } from '@/utils/misc';
 import { getFileExtension, getFilename } from '@/utils/path';
 import type { TranslationFunc } from '@/hooks/useTranslation';

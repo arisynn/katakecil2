@@ -23,10 +23,10 @@
  * Adapted from ratatabananana-bit/Readest-google-drive-mod-patcher (AGPL-3.0),
  * used with the author's explicit permission.
  */
-import { invoke } from '@tauri-apps/api/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { invoke } from '@/platform/browser/core';
+import { getCurrentWindow } from '@/platform/browser/window';
+import { onOpenUrl } from '@/platform/browser/deep-link';
+import { openUrl } from '@/platform/browser/opener';
 import { createPkcePair } from './pkce';
 import { runOAuthFlow, type OAuthClientConfig } from './oauthFlow';
 import { exchangeCode, type FetchFn, type TokenSet } from './tokenEndpoint';

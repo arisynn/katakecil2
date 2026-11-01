@@ -1,4 +1,4 @@
-import { invoke, Channel } from '@tauri-apps/api/core';
+import { invoke, Channel } from '@/platform/browser/core';
 
 export type UploadMethod = 'POST' | 'PUT';
 

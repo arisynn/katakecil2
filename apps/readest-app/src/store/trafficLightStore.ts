@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { AppService } from '@/types/system';
 
 // Matches readest's standard `h-11` header (44px). Used as a fallback
@@ -39,7 +39,7 @@ export const useTrafficLightStore = create<TrafficLightState>((set, get) => {
     },
 
     setTrafficLightVisibility: async (visible: boolean, headerHeight?: number) => {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const { getCurrentWindow } = await import('@/platform/browser/window');
       const currentWindow = getCurrentWindow();
       const isFullscreen = await currentWindow.isFullscreen();
       const nextHeight = headerHeight ?? get().headerHeight;
@@ -58,7 +58,7 @@ export const useTrafficLightStore = create<TrafficLightState>((set, get) => {
     },
 
     initializeTrafficLightListeners: async () => {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const { getCurrentWindow } = await import('@/platform/browser/window');
       const currentWindow = getCurrentWindow();
 
       const unlistenEnterFullScreen = await currentWindow.listen(

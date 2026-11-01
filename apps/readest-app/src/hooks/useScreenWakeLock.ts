@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { isTauriAppPlatform, isWebAppPlatform } from '@/services/environment';
 import { setScreenWakeLock } from '@/utils/bridge';
 

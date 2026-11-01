@@ -1,6 +1,6 @@
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
-import { type as osType } from '@tauri-apps/plugin-os';
+import { invoke } from '@/platform/browser/core';
+import { listen } from '@/platform/browser/event';
+import { type as osType } from '@/platform/browser/os';
 
 export type Scope = 'fullName' | 'email';
 export interface AppleIDAuthorizationRequest {

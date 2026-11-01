@@ -1,8 +1,8 @@
-import { getAllWindows, getCurrentWindow } from '@tauri-apps/api/window';
-import { invoke } from '@tauri-apps/api/core';
-import { emitTo, TauriEvent } from '@tauri-apps/api/event';
-import { exit } from '@tauri-apps/plugin-process';
-import { type as osType, version as osVersion } from '@tauri-apps/plugin-os';
+import { getAllWindows, getCurrentWindow } from '@/platform/browser/window';
+import { invoke } from '@/platform/browser/core';
+import { emitTo, TauriEvent } from '@/platform/browser/event';
+import { exit } from '@/platform/browser/process';
+import { type as osType, version as osVersion } from '@/platform/browser/os';
 import { AppService } from '@/types/system';
 import { useTrafficLightStore } from '@/store/trafficLightStore';
 import { eventDispatcher } from './event';

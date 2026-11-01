@@ -78,7 +78,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       // Windows: the main window is created hidden and only mapped once the
       // themed page is painted (the shell listens for this event) — see
       // lib.rs. Other platforms ignore it.
-      import('@tauri-apps/api/event')
+      import('@/platform/browser/event')
         .then(({ emit }) => {
           // Emit only after the themed frame has actually been painted
           // (two rAFs = one full render). Hidden windows never fire rAF,

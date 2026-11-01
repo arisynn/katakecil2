@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MdArrowBack, MdChevronRight, MdSettings, MdVolumeUp } from 'react-icons/md';
 import clsx from 'clsx';
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { openUrl } from '@/platform/browser/opener';
 
 import { useTranslation } from '@/hooks/useTranslation';
 import { useEnv } from '@/context/EnvContext';

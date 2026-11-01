@@ -8,7 +8,7 @@
 // Keep them identical: the service reports its CONTRACT_VERSION and a
 // mismatch switches Readest Voice off here instead of misreading replies.
 
-import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { getCloudflareContext } from '@/platform/browser/worker-context';
 
 export const CONTRACT_VERSION = 1;
 

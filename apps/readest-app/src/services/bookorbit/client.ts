@@ -10,7 +10,7 @@
 // CORS headers, so the browser refuses to load it cross-origin whatever
 // credentials are attached — which is why `fetchAsset` exists and both the
 // player and read-along narration play BookOrbit audio from blobs.
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { withOriginSuppressed } from '@/app/opds/utils/opdsReq';
 import { isTauriAppPlatform } from '@/services/environment';
 import { normalizeCustomHeaders } from '@/utils/customHeaders';

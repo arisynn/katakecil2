@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCurrent } from '@tauri-apps/plugin-deep-link';
+import { getCurrent } from '@/platform/browser/deep-link';
 import { useEnv } from '@/context/EnvContext';
 import { useLibraryStore } from '@/store/libraryStore';
 import { isTauriAppPlatform } from '@/services/environment';

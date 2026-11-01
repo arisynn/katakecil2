@@ -10,7 +10,7 @@
  * is authenticated headlessly.
  */
 
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import type { AppService } from '@/types/system';
 import { eventDispatcher } from '@/utils/event';
 import { getClipOptions } from './clipOptions';

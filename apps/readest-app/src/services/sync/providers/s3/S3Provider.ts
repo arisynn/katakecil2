@@ -34,7 +34,7 @@
  */
 
 import { AwsClient } from 'aws4fetch';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { isTauriAppPlatform } from '@/services/environment';
 import { tauriDownload, tauriUpload } from '@/utils/transfer';
 import type { ProgressHandler } from '@/utils/transfer';

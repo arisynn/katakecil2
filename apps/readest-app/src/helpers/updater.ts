@@ -1,9 +1,9 @@
 import semver from 'semver';
-import { check } from '@tauri-apps/plugin-updater';
-import { type as osType, arch as osArch } from '@tauri-apps/plugin-os';
-import { fetch } from '@tauri-apps/plugin-http';
-import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
-import { ScrollBarStyle } from '@tauri-apps/api/window';
+import { check } from '@/platform/browser/updater';
+import { type as osType, arch as osArch } from '@/platform/browser/os';
+import { fetch } from '@/platform/browser/http';
+import { WebviewWindow } from '@/platform/browser/webviewWindow';
+import { ScrollBarStyle } from '@/platform/browser/window';
 import { TranslationFunc } from '@/hooks/useTranslation';
 import { setUpdaterWindowVisible } from '@/components/UpdaterWindow';
 import { isTauriAppPlatform } from '@/services/environment';

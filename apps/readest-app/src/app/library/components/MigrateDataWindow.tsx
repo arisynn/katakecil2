@@ -6,12 +6,12 @@ import {
   RiErrorWarningFill,
   RiLoader2Line,
 } from 'react-icons/ri';
-import { documentDir, join } from '@tauri-apps/api/path';
-import { relaunch } from '@tauri-apps/plugin-process';
+import { documentDir, join } from '@/platform/browser/path';
+import { relaunch } from '@/platform/browser/process';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettingsStore } from '@/store/settingsStore';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { DATA_SUBDIR } from '@/services/constants';
 import { FileItem } from '@/types/system';
 import { getDirPath } from '@/utils/path';

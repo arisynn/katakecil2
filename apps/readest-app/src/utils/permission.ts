@@ -1,4 +1,4 @@
-import { invoke, PermissionState } from '@tauri-apps/api/core';
+import { invoke, PermissionState } from '@/platform/browser/core';
 
 interface Permissions {
   manageStorage: PermissionState;

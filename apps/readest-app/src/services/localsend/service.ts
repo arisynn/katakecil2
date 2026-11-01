@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import type { LocalSendDevice, LocalSendStatus, SendFileInput } from './types';
 
 export async function startLocalSend(alias: string, deviceModel: string): Promise<LocalSendStatus> {

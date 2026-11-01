@@ -1,4 +1,4 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { getCloudflareContext } from '@/platform/browser/worker-context';
 
 // Minimal local typing for the Analytics Engine binding (the project does not
 // depend on @cloudflare/workers-types). Mirrors the pattern in

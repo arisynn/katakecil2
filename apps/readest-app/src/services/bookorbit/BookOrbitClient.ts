@@ -1,4 +1,4 @@
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import type { BookOrbitProxyPayload } from '@/types/bookorbit';
 import type { BookOrbitSettings } from '@/types/settings';
 import { isLanAddress } from '@/utils/network';

@@ -8,7 +8,7 @@
 // Idempotent: reopening the same book hash while its session is still alive
 // reuses it instead of claiming a second one.
 
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { convertFileSrc } from '@/platform/browser/core';
 import { AudiobookController, type AudiobookSource } from './AudiobookController';
 import { BlobAudioClock, HtmlAudioClock } from './AudiobookClock';
 import { NativeAudiobookClock } from './NativeAudiobookClock';

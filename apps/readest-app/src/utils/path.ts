@@ -1,4 +1,4 @@
-import { join } from '@tauri-apps/api/path';
+import { join } from '@/platform/browser/path';
 import { isContentURI, isFileURI, isValidURL } from './misc';
 
 export const getFilename = (fileOrUri: string) => {

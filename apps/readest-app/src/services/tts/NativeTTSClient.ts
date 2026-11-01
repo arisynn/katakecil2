@@ -1,5 +1,5 @@
-import { invoke } from '@tauri-apps/api/core';
-import { addPluginListener, PluginListener } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
+import { addPluginListener, PluginListener } from '@/platform/browser/core';
 import { getUserLocale } from '@/utils/misc';
 import { isSameLang } from '@/utils/lang';
 import { parseSSMLMarks } from '@/utils/ssml';

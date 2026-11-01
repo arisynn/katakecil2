@@ -1,38 +1,25 @@
 ## Project Overview
 
-Readest is a cross-platform ebook reader built as a **Next.js 16 + Tauri v2** hybrid app. It's part of a pnpm monorepo at `/apps/readest-app/`. The app runs on web (CloudFlare Workers), desktop (macOS/Windows/Linux via Tauri), and mobile (iOS/Android via Tauri).
+Kata Kecil is a web-only Next.js 16/PWA reader derived from Readest. Preserve the
+Readest library and reader UI, glass palettes, Supabase catalog, local bookmarks,
+and reading settings. Native application targets and SDK dependencies are removed.
+Shared legacy capability signatures are implemented in `src/platform/browser`.
+Do not reintroduce Tauri, APK/desktop builds, or native plugin dependencies.
 
 ## Common Commands
 
 ```bash
-# Development
-pnpm dev-web               # Web-only dev server (no Rust compilation needed)
-pnpm tauri dev             # Desktop dev with Tauri (compiles Rust backend); on Linux this is the CEF runtime (needs Rust >= 1.95)
-
-# Building
-pnpm build                 # Build Next.js for Tauri
-pnpm build-web             # Build Next.js for web deployment
-
-# Testing (see [docs/testing.md](docs/testing.md) for full details)
-pnpm test                  # Unit tests (vitest + jsdom)
-pnpm test --run src/__tests__/utils/misc.test.ts  # Run only these files (no `--`: it would run more than them)
-pnpm test --watch          # Watch mode
-pnpm test:browser          # Browser tests (Chromium via Playwright)
-pnpm tauri:dev:test        # Start Tauri app with webdriver
-pnpm test:tauri            # Run Tauri integration tests
-
-# Linting & Formatting
-pnpm lint                  # Biome (linter) + tsc (type check)
-pnpm format                # Biome formatter (runs from monorepo root)
-pnpm format:check          # Check formatting without writing (Biome)
-
-# Rust
-pnpm fmt:check             # Check formatting Rust code (src-tauri)
-pnpm clippy:check          # Lint Rust code (src-tauri)
-
-# Dictionary tooling
-pnpm dictionary:yomitan:convert <input.zip> [output.rdict]  # Build a portable Yomitan dictionary
+pnpm dev-web
+pnpm setup-vendors
+pnpm build-web
+pnpm start-web
+pnpm test --run
+pnpm lint
 ```
+
+From the repository root, use `pnpm dev`, `pnpm build`, `pnpm test --run`,
+`pnpm lint`, and `pnpm test:publisher`. The standalone Python publisher is in
+`tools/katakecil-publisher`; never add its private activation file to Git.
 
 ### Source Layout
 
@@ -49,25 +36,18 @@ pnpm dictionary:yomitan:convert <input.zip> [output.rdict]  # Build a portable Y
 | `src/types/`      | TypeScript type definitions                                   |
 | `src/context/`    | React Context providers (Auth, Env, Sync, etc.)               |
 | `src/workers/`    | Web Workers for background tasks                              |
-| `src-tauri/`      | Rust backend: Tauri plugins, platform-specific code           |
 
 ### Path Aliases (tsconfig)
 
 - `@/*` → `./src/*`
 - `@/components/ui/*` → `./src/components/primitives/*`
 
-### Rust Backend (`src-tauri/`)
-
-Platform-specific code lives in `src-tauri/src/{macos,windows,android,ios}/`. Custom Tauri plugins are in `src-tauri/plugins/`.
-
 ## Git Worktrees
 
-Always use `pnpm worktree:new <branch-name|pr-number>` to create worktrees. Never use `git worktree add` directly — the script handles submodule initialization (simplecc WASM, foliate-js), dependency installation, `.env` copying, vendor assets, and Tauri gen symlinks that are required for lint and tests to pass.
-
-```bash
-pnpm worktree:new feat/my-feature   # New branch from origin/main
-pnpm worktree:new 3837              # Checkout PR #3837 with push access to fork
-```
+When an isolated checkout is needed, use a normal Git worktree, install with
+`pnpm install --frozen-lockfile`, and run `pnpm --filter @readest/readest-app
+setup-vendors`. Source and browser WASM are vendored; no native submodule setup
+is needed. The former native worktree helper is not part of this web-only repo.
 
 ## Agent Workspace
 

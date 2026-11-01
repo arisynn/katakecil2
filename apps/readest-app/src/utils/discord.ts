@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { Book } from '@/types/book';
 import { AppService } from '@/types/system';
 import { getCoverFilename } from './book';

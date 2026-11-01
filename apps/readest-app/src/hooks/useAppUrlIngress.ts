@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { addPluginListener, PluginListener } from '@tauri-apps/api/core';
-import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { addPluginListener, PluginListener } from '@/platform/browser/core';
+import { onOpenUrl } from '@/platform/browser/deep-link';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { useEnv } from '@/context/EnvContext';
 import { isTauriAppPlatform } from '@/services/environment';
 import { eventDispatcher } from '@/utils/event';

@@ -1,4 +1,4 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { getCloudflareContext } from '@/platform/browser/worker-context';
 
 /**
  * Reading-statistics archive: page events older than the hot window leave

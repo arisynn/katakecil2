@@ -6,7 +6,7 @@ import {
   RiErrorWarningFill,
   RiLoader2Line,
 } from 'react-icons/ri';
-import { documentDir, join } from '@tauri-apps/api/path';
+import { documentDir, join } from '@/platform/browser/path';
 import { useEnv } from '@/context/EnvContext';
 import { useLibraryStore } from '@/store/libraryStore';
 import { useTranslation } from '@/hooks/useTranslation';

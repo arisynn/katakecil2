@@ -5,7 +5,6 @@ import { isSameLang } from '@/utils/lang';
 import { genSSMLRaw } from '@/utils/ssml';
 import { TTSClient } from './TTSClient';
 import { TTSUtils } from './TTSUtils';
-import { NativeTTSClient } from './NativeTTSClient';
 import { WebSpeechClient } from './WebSpeechClient';
 import { WebAudioPlayer } from './WebAudioPlayer';
 import type { TTSAudioContext } from './WebAudioPlayer';
@@ -101,15 +100,13 @@ const fetchEdgeAudio = async (payload: EdgeTTSPayload): Promise<ArrayBuffer> => 
 const speakViaFallback = async (
   word: string,
   lang: string,
-  options: PronounceWordOptions,
+  _options: PronounceWordOptions,
   token: number,
   emit: (status: PronounceStatus) => void,
 ): Promise<void> => {
   // Web Speech is the reader's built-in engine on desktop/web; on the mobile
   // app the native TTS plugin is what actually produces audio.
-  const client: TTSClient = options.appService?.isMobile
-    ? new NativeTTSClient()
-    : new WebSpeechClient();
+  const client: TTSClient = new WebSpeechClient();
   fallbackClient = client;
   const controller = new AbortController();
   fallbackAbort = controller;

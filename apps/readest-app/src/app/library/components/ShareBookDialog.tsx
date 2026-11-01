@@ -184,7 +184,7 @@ const ShareBookDialog: React.FC<ShareBookDialogProps> = ({ isOpen, book, cfi, on
     if (appService?.isMobileApp || appService?.hasWindow) {
       let sharekitWorked = false;
       try {
-        const { shareText } = await import('@choochmeque/tauri-plugin-sharekit-api');
+        const { shareText } = await import('@/platform/browser/share');
         await shareText(`${title}\n${url}`, { position: sharePosition });
         sharekitWorked = true;
       } catch (err) {

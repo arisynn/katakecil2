@@ -20,7 +20,7 @@ export const writeTextToClipboard = async (text: string): Promise<boolean> => {
 
   if (isTauriAppPlatform()) {
     try {
-      const { writeText } = await import('@tauri-apps/plugin-clipboard-manager');
+      const { writeText } = await import('@/platform/browser/clipboard');
       await writeText(text);
       return true;
     } catch (err) {
@@ -65,7 +65,7 @@ export const writeTextToClipboard = async (text: string): Promise<boolean> => {
 export const readTextFromClipboard = async (): Promise<string | null> => {
   if (isTauriAppPlatform()) {
     try {
-      const { readText } = await import('@tauri-apps/plugin-clipboard-manager');
+      const { readText } = await import('@/platform/browser/clipboard');
       return await readText();
     } catch (err) {
       console.warn('[clipboard] tauri readText failed, falling back', err);

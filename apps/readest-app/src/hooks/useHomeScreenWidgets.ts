@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { addPluginListener, type PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, type PluginListener } from '@/platform/browser/core';
 import { useEnv } from '@/context/EnvContext';
 import { useLibraryStore } from '@/store/libraryStore';
 import { refreshBookshelfWidget } from '@/services/widget/bookshelfWidget';

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { addPluginListener, type PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, type PluginListener } from '@/platform/browser/core';
 import { AppService } from '@/types/system';
 import { getThemeCode, ThemeCode } from '@/utils/style';
 import {
@@ -14,7 +14,7 @@ import {
   resolveAmbientIsDarkMode,
   resolveThemeIsDarkMode,
 } from '@/utils/ambientLight';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { CustomTheme, Palette, ThemeMode, ThemeScope } from '@/styles/themes';
 import { EnvConfigType, isWebAppPlatform } from '@/services/environment';
 import { SystemSettings } from '@/types/settings';

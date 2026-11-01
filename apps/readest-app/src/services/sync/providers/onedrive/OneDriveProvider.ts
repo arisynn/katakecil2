@@ -7,7 +7,7 @@
  * transports are retried with Retry-After-aware backoff. Auth + fetch + sleep
  * are injected so the provider is unit-testable against a mocked Graph.
  */
-import { stat } from '@tauri-apps/plugin-fs';
+import { stat } from '@/platform/browser/fs';
 import { isTauriAppPlatform } from '@/services/environment';
 import {
   FileEntry,

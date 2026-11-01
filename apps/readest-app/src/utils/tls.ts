@@ -1,4 +1,4 @@
-import type { ClientOptions } from '@tauri-apps/plugin-http';
+import type { ClientOptions } from '@/platform/browser/http';
 
 /**
  * Per-server choice to accept self-signed or mismatched TLS certificates on

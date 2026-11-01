@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getAllWindows, getCurrentWindow } from '@tauri-apps/api/window';
+import { getAllWindows, getCurrentWindow } from '@/platform/browser/window';
 import { useEnv } from '@/context/EnvContext';
 import { ensureMainLibraryWindow } from '@/utils/nav';
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useEnv } from '@/context/EnvContext';
-import { getBatteryInfo } from 'tauri-plugin-device-info-api';
+import { getBatteryInfo } from '@/platform/browser/device-info';
 import { isTauriAppPlatform } from '@/services/environment';
 
 interface BatteryManager extends EventTarget {

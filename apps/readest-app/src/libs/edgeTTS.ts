@@ -1,6 +1,6 @@
 import { md5 } from 'js-md5';
 import WebSocket from 'isomorphic-ws';
-import type TauriWebSocketConnection from '@tauri-apps/plugin-websocket';
+import type TauriWebSocketConnection from '@/platform/browser/websocket';
 import { randomMd5 } from '@/utils/misc';
 import { LRUCache } from '@/utils/lru';
 import { genSSML } from '@/utils/ssml';
@@ -569,7 +569,7 @@ export class EdgeSpeechTTS {
           }, WS_INACTIVITY_TIMEOUT_MS);
         };
         try {
-          const TauriWebSocket = (await import('@tauri-apps/plugin-websocket')).default;
+          const TauriWebSocket = (await import('@/platform/browser/websocket')).default;
           ws = await TauriWebSocket.connect(url, { headers: baseHeaders });
           let audioData = new ArrayBuffer(0);
           const boundaries: TTSWordBoundary[] = [];

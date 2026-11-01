@@ -1,4 +1,4 @@
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import type { Book, BookConfig, PageboundBookLink } from '@/types/book';
 
 // Pagebound has no public API. These are the endpoints and public client keys

@@ -8,8 +8,8 @@
  * outcome back to the browser chrome through `setWebBrowserStatus`.
  */
 
-import { addPluginListener, invoke } from '@tauri-apps/api/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { addPluginListener, invoke } from '@/platform/browser/core';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { SUPPORTED_BOOK_EXTS } from '@/services/constants';
 import type { WebBrowserOptions } from './webBrowserOptions';
 

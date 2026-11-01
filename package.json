@@ -1,22 +1,19 @@
 {
-  "name": "@readest/monorepo",
+  "name": "katakecil-web",
   "private": true,
-  "repository": "readest/readest",
+  "repository": "arisynn/katakecil2",
   "scripts": {
     "test": "pnpm --filter @readest/readest-app test",
-    "test:lua": "pnpm --filter @readest/readest-app test:lua",
     "lint": "pnpm --filter @readest/readest-app lint",
-    "lint:lua": "pnpm --filter @readest/readest-app lint:lua",
     "check:eink-identity": "node scripts/check-eink-identity-sync.mjs",
-    "tauri": "pnpm --filter @readest/readest-app tauri",
     "dev-web": "pnpm --filter @readest/readest-app dev-web",
     "prepare": "husky",
-    "fmt:check": "pnpm --filter @readest/readest-app fmt:check",
-    "clippy:check": "pnpm --filter @readest/readest-app clippy:check",
-    "worktree:new": "pnpm --filter @readest/readest-app worktree:new",
-    "worktree:rm": "pnpm --filter @readest/readest-app worktree:rm",
     "format": "biome format --write .",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "dev": "pnpm --filter @readest/readest-app dev-web",
+    "build": "pnpm --filter @readest/readest-app setup-vendors && pnpm --filter @readest/readest-app build-web",
+    "start": "pnpm --filter @readest/readest-app start-web",
+    "test:publisher": "python3 -m unittest discover -s tools/katakecil-publisher/tests -v"
   },
   "packageManager": "pnpm@11.1.1",
   "devDependencies": {

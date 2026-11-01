@@ -1,7 +1,7 @@
 import { getInitializedAppService, isTauriAppPlatform } from '@/services/environment';
 import { getOSPlatform } from '@/utils/misc';
-import { invoke } from '@tauri-apps/api/core';
-import { addPluginListener, PluginListener, PermissionState } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
+import { addPluginListener, PluginListener, PermissionState } from '@/platform/browser/core';
 
 export interface MediaMetadata {
   title?: string;

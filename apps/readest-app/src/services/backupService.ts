@@ -432,7 +432,7 @@ async function invokeZipCommand(
   args: Record<string, unknown>,
   onProgress?: ProgressCallback,
 ): Promise<void> {
-  const { Channel, invoke } = await import('@tauri-apps/api/core');
+  const { Channel, invoke } = await import('@/platform/browser/core');
   const channel = new Channel<ZipProgress>();
   channel.onmessage = ({ current, total, name }) => onProgress?.(current, total, name);
   await invoke(cmd, { ...args, onProgress: channel });
@@ -498,7 +498,7 @@ export async function createBackupZipToFile(
 
   await configureZip(ZIP_WRITE_CONFIG);
   const { ZipWriter } = await import('@zip.js/zip.js');
-  const { writeFile } = await import('@tauri-apps/plugin-fs');
+  const { writeFile } = await import('@/platform/browser/fs');
 
   await writeFile(filePath, new Uint8Array());
   let stream!: TransformStreamDefaultController<Uint8Array>;
@@ -803,7 +803,7 @@ export async function saveBackupFile(
     const stagedPath = await appService.resolveFilePath(stagedName, 'Temp');
     try {
       await createBackupZipToFile(appService, stagedPath, options, onProgress);
-      const { shareFile } = await import('@choochmeque/tauri-plugin-sharekit-api');
+      const { shareFile } = await import('@/platform/browser/share');
       await shareFile(stagedPath, { mimeType: 'application/zip' });
       return true;
     } catch (error) {
@@ -814,7 +814,7 @@ export async function saveBackupFile(
     }
   } else if (isTauriAppPlatform()) {
     // Tauri: stream directly to the chosen file path
-    const { save: saveDialog } = await import('@tauri-apps/plugin-dialog');
+    const { save: saveDialog } = await import('@/platform/browser/dialog');
     const ext = filename.split('.').pop() || 'zip';
     const filePath = await saveDialog({
       defaultPath: filename,

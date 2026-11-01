@@ -4,7 +4,7 @@ import { READWISE_API_BASE_URL } from '@/services/constants';
 import { isTauriAppPlatform } from '@/services/environment';
 import { isPublicImageUrl } from '@/utils/cover';
 import { buildAnnotationWebUrl } from '@/utils/deeplink';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 
 const READEST_TO_READWISE_COLOR: Record<HighlightColor, string> = {
   red: 'pink',

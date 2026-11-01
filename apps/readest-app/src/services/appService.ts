@@ -46,7 +46,7 @@ import type { RssFeed } from '@/types/rss';
 
 export abstract class BaseAppService implements AppService {
   osPlatform: OsPlatform = getOSPlatform();
-  appPlatform: AppPlatform = 'tauri';
+  appPlatform: AppPlatform = 'web';
   localBooksDir = '';
   unavailableRootDir: string | null = null;
   isMobile = false;

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { impactFeedback } from '@tauri-apps/plugin-haptics';
+import { impactFeedback } from '@/platform/browser/haptics';
 import { useEnv } from '@/context/EnvContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -128,7 +128,7 @@ const LocalSendManager: React.FC = () => {
       return translateRef.current(DEFAULT_ALIAS_NAMED_KEY, { name });
     }
     try {
-      const { hostname } = await import('@tauri-apps/plugin-os');
+      const { hostname } = await import('@/platform/browser/os');
       const name = await hostname();
       if (name) return name;
     } catch {
@@ -373,7 +373,7 @@ const LocalSendManager: React.FC = () => {
     let disposed = false;
     const unlisteners: Promise<() => void>[] = [];
     const subscribe = async () => {
-      const { listen } = await import('@tauri-apps/api/event');
+      const { listen } = await import('@/platform/browser/event');
       if (disposed) return;
       const store = () => useLocalSendStore.getState();
       unlisteners.push(

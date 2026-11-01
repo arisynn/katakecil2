@@ -2,7 +2,7 @@ import posthog from 'posthog-js';
 import Stripe from 'stripe';
 import { loadStripe, Stripe as StripeClient } from '@stripe/stripe-js';
 import { getAPIBaseUrl, isTauriAppPlatform, isWebAppPlatform } from '@/services/environment';
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { openUrl } from '@/platform/browser/opener';
 import { getAccessToken } from '@/utils/access';
 import { StripeProductMetadata } from '@/types/payment';
 import { AvailablePlan, PlanType } from '@/types/quota';

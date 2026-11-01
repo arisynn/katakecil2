@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { useEnv } from '@/context/EnvContext';
 import { windowNeedsClientOutline } from '@/utils/window';
 

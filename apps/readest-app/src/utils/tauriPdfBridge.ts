@@ -5,7 +5,7 @@
 // the page tree, and potentially every source range. This bridge keeps the
 // source file native: Rust reads the catalog through a memory map, while
 // Android renders page one from a seekable file descriptor.
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { isTauriAppPlatform } from '@/services/environment';
 import type { BookDoc, BookMetadata } from '@/libs/document';
 import type { OsPlatform } from '@/types/system';

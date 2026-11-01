@@ -28,8 +28,8 @@
  * rather than throwing — the worst case is a non-event from the user's
  * perspective.
  */
-import { invoke } from '@tauri-apps/api/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { invoke } from '@/platform/browser/core';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { getInitializedAppService, isTauriAppPlatform } from '@/services/environment';
 import type { Rect } from '@/utils/sel';
 

@@ -1,4 +1,4 @@
-import { addPluginListener, type PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, type PluginListener } from '@/platform/browser/core';
 import { useEffect, useState } from 'react';
 
 interface GamepadConnectionPayload {

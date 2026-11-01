@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { md5 } from 'js-md5';
-import { type as osType } from '@tauri-apps/plugin-os';
+import { type as osType } from '@/platform/browser/os';
 import { useEnv } from '@/context/EnvContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettingsStore } from '@/store/settingsStore';

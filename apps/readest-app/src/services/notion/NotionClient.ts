@@ -1,4 +1,4 @@
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { marked, type Token } from 'marked';
 import {
   NOTION_API_BASE_URL,

@@ -60,18 +60,18 @@ export const setTTSCacheConfig = (config: TTSCacheConfig): void => {
 // plugin modules load lazily so the web bundle never pulls them in.
 const createNativePackFs = (dir: string): TTSPackFs => ({
   async write(name, data) {
-    const { writeFile, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+    const { writeFile, BaseDirectory } = await import('@/platform/browser/fs');
     await writeFile(`${dir}/${name}`, data, { baseDir: BaseDirectory.AppCache });
   },
   async rename(from, to) {
-    const { rename, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+    const { rename, BaseDirectory } = await import('@/platform/browser/fs');
     await rename(`${dir}/${from}`, `${dir}/${to}`, {
       oldPathBaseDir: BaseDirectory.AppCache,
       newPathBaseDir: BaseDirectory.AppCache,
     });
   },
   async readRange(name, offset, length) {
-    const { open, BaseDirectory, SeekMode } = await import('@tauri-apps/plugin-fs');
+    const { open, BaseDirectory, SeekMode } = await import('@/platform/browser/fs');
     const file = await open(`${dir}/${name}`, { read: true, baseDir: BaseDirectory.AppCache });
     try {
       await file.seek(offset, SeekMode.Start);
@@ -90,7 +90,7 @@ const createNativePackFs = (dir: string): TTSPackFs => ({
   },
   async readSidecar(name) {
     try {
-      const { readTextFile, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+      const { readTextFile, BaseDirectory } = await import('@/platform/browser/fs');
       const text = await readTextFile(`${dir}/${name}`, { baseDir: BaseDirectory.AppCache });
       const parsed = JSON.parse(text);
       return parsed && Array.isArray(parsed.entries) ? parsed : null;
@@ -99,11 +99,11 @@ const createNativePackFs = (dir: string): TTSPackFs => ({
     }
   },
   async remove(name) {
-    const { remove, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+    const { remove, BaseDirectory } = await import('@/platform/browser/fs');
     await remove(`${dir}/${name}`, { baseDir: BaseDirectory.AppCache });
   },
   async list() {
-    const { readDir, BaseDirectory } = await import('@tauri-apps/plugin-fs');
+    const { readDir, BaseDirectory } = await import('@/platform/browser/fs');
     const entries = await readDir(dir, { baseDir: BaseDirectory.AppCache });
     return entries.filter((entry) => entry.isFile).map((entry) => entry.name);
   },

@@ -31,7 +31,7 @@ export class BooxHandwritingBackend {
   ) {
     this.toPage = toPage;
     if (!this.unlisten) {
-      const { addPluginListener } = await import('@tauri-apps/api/core');
+      const { addPluginListener } = await import('@/platform/browser/core');
       const handle = await addPluginListener<PenStrokeBatch>(
         'native-bridge',
         'pen-stroke-batch',

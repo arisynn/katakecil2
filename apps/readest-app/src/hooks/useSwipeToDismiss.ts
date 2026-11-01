@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import { impactFeedback } from '@tauri-apps/plugin-haptics';
+import { impactFeedback } from '@/platform/browser/haptics';
 import { useEnv } from '@/context/EnvContext';
 import { useDrag } from '@/hooks/useDrag';
 

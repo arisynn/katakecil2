@@ -1,4 +1,4 @@
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import type { Book } from '@/types/book';
 import type { AppService } from '@/types/system';
 import { useLibraryStore } from '@/store/libraryStore';

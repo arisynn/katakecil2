@@ -1,4 +1,4 @@
-import { invoke, Channel } from '@tauri-apps/api/core';
+import { invoke, Channel } from '@/platform/browser/core';
 import { getOSPlatform } from '@/utils/misc';
 
 /** Android and iOS native paper renderer; only metadata crosses this command. */

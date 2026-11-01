@@ -22,7 +22,7 @@
 //                      catalog almost never sends, and the element cannot
 //                      authenticate. Callers surface this rather than falling
 //                      back to the proxy; see canStreamOpdsAudio.
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import {
   createBasicAuth,
   needsProxy,

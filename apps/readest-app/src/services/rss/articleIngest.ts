@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import type { ConvertInput } from '@/services/send/conversion/convertToEpub';
 import type { ConvertedBook } from '@/services/send/conversion/types';
 import { convertToEpubWithWorker } from '@/services/send/conversion/conversionWorker';

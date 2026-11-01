@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useEnv } from '@/context/EnvContext';
-import { impactFeedback } from '@tauri-apps/plugin-haptics';
+import { impactFeedback } from '@/platform/browser/haptics';
 import { eventDispatcher } from '@/utils/event';
 import { SelectedFile } from '@/hooks/useFileSelector';
 import { isTauriAppPlatform } from '@/services/environment';
-import { getCurrentWebview } from '@tauri-apps/api/webview';
+import { getCurrentWebview } from '@/platform/browser/webview';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettingsStore } from '@/store/settingsStore';
 import { LibraryGroupByType } from '@/types/settings';

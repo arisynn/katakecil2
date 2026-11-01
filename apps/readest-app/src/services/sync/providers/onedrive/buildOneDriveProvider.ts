@@ -9,7 +9,7 @@
  * Callers treat `null` as "this backend is unavailable" rather than surfacing a
  * half-built provider that would fail on first use.
  */
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { isTauriAppPlatform, isWebAppPlatform } from '@/services/environment';
 import type { FileSyncProvider } from '@/services/sync/file/provider';
 import { createOneDriveProvider, type FetchFn } from './OneDriveProvider';

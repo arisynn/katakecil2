@@ -5,7 +5,7 @@
  * one call per animation frame. Coordinates are physical pixels; pointer
  * positions come in CSS pixels (`screenX`/`screenY`) and are scaled.
  */
-import { getCurrentWindow, PhysicalPosition, PhysicalSize } from '@tauri-apps/api/window';
+import { getCurrentWindow, PhysicalPosition, PhysicalSize } from '@/platform/browser/window';
 
 export type ResizeEdge = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 

@@ -1,6 +1,6 @@
 import { mergeBookshelfStates } from '@/services/bookshelves/state';
-import { emit, listen, type UnlistenFn } from '@tauri-apps/api/event';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { emit, listen, type UnlistenFn } from '@/platform/browser/event';
+import { getCurrentWindow } from '@/platform/browser/window';
 import { isTauriAppPlatform } from '@/services/environment';
 import type { SystemSettings } from '@/types/settings';
 

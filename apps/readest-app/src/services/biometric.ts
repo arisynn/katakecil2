@@ -1,4 +1,4 @@
-import { authenticate, checkStatus, BiometryType } from '@tauri-apps/plugin-biometric';
+import { authenticate, checkStatus, BiometryType } from '@/platform/browser/biometric';
 
 import type { AppService } from '@/types/system';
 import { stubTranslation as _ } from '@/utils/misc';

@@ -7,9 +7,9 @@
 // stages container blobs to a temp file, while paired audiobooks can hand the
 // native player their existing path directly.
 
-import { addPluginListener, invoke, PluginListener } from '@tauri-apps/api/core';
-import { appCacheDir, join } from '@tauri-apps/api/path';
-import { BaseDirectory, remove, writeFile } from '@tauri-apps/plugin-fs';
+import { addPluginListener, invoke, PluginListener } from '@/platform/browser/core';
+import { appCacheDir, join } from '@/platform/browser/path';
+import { BaseDirectory, remove, writeFile } from '@/platform/browser/fs';
 
 interface PlayoutPosition {
   session: number;

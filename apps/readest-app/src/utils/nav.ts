@@ -1,6 +1,6 @@
 import { redirect, useRouter } from 'next/navigation';
-import { getCurrentWindow, ScrollBarStyle } from '@tauri-apps/api/window';
-import { getAllWebviewWindows, WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { getCurrentWindow, ScrollBarStyle } from '@/platform/browser/window';
+import { getAllWebviewWindows, WebviewWindow } from '@/platform/browser/webviewWindow';
 import { isPWA, isTauriAppPlatform, isWebAppPlatform } from '@/services/environment';
 import { BOOK_IDS_SEPARATOR } from '@/services/constants';
 import { AppService } from '@/types/system';

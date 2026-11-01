@@ -55,13 +55,13 @@ const WindowResizeHandles: React.FC = () => {
     let unlisten: (() => void) | undefined;
     let disposed = false;
     const update = async () => {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const { getCurrentWindow } = await import('@/platform/browser/window');
       const win = getCurrentWindow();
       const [maximized, fullscreen] = await Promise.all([win.isMaximized(), win.isFullscreen()]);
       if (!disposed) setActive(!maximized && !fullscreen);
     };
     update();
-    import('@tauri-apps/api/window').then(({ getCurrentWindow }) =>
+    import('@/platform/browser/window').then(({ getCurrentWindow }) =>
       getCurrentWindow()
         .onResized(update)
         .then((fn) => {

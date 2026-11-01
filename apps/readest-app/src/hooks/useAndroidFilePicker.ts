@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { addPluginListener, PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, PluginListener } from '@/platform/browser/core';
 import { AppService } from '@/types/system';
 import {
   FILE_SELECTION_PRESETS,

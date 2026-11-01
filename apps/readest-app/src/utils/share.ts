@@ -88,7 +88,7 @@ export const shareSelectedText = async (
 
   if (appService?.isMobileApp || appService?.isMacOSApp) {
     try {
-      const { shareText } = await import('@choochmeque/tauri-plugin-sharekit-api');
+      const { shareText } = await import('@/platform/browser/share');
       await shareText(text, { position });
       return;
     } catch (err) {

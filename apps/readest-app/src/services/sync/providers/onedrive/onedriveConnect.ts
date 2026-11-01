@@ -4,8 +4,8 @@
  * single call. The runner is platform-resolved (desktop deep-link, Android Custom
  * Tab, iOS web-auth session); see {@link resolveOAuthRunner}.
  */
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
-import { type as osType } from '@tauri-apps/plugin-os';
+import { fetch as tauriFetch } from '@/platform/browser/http';
+import { type as osType } from '@/platform/browser/os';
 import { isTauriAppPlatform, isWebAppPlatform } from '@/services/environment';
 import { getMicrosoftClientId } from './buildOneDriveProvider';
 import { createOneDriveTokenPersistence } from './onedriveTokenStore';

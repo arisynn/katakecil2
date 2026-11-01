@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { addPluginListener, invoke, type PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, invoke, type PluginListener } from '@/platform/browser/core';
 import type { Book } from '@/types/book';
 import { useAppLockStore } from '@/store/appLockStore';
 import { useLibraryStore } from '@/store/libraryStore';

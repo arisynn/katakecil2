@@ -1,5 +1,5 @@
 import { stubTranslation as _ } from '@/utils/misc';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { fetch as tauriFetch } from '@/platform/browser/http';
 import { isTauriAppPlatform } from '@/services/environment';
 import { TranslationProvider } from '../types';
 import { splitTextIntoChunks } from '../utils';

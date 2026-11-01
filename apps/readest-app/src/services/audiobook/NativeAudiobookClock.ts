@@ -8,7 +8,7 @@
 // plugin the remote track URL (with its `?token=` query) directly as the
 // "path" argument, and AVPlayer streams it over HTTP.
 
-import { addPluginListener, invoke, PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, invoke, PluginListener } from '@/platform/browser/core';
 import type { AudiobookClock } from './AudiobookClock';
 
 interface PlayoutPosition {

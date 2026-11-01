@@ -10,7 +10,7 @@ export type ActiveCallback = (isActive: boolean) => void;
 
 type Cleanup = () => void;
 async function activeChangedDesktop(onChange: ActiveCallback): Promise<Cleanup> {
-  const { getCurrentWindow } = await import('@tauri-apps/api/window');
+  const { getCurrentWindow } = await import('@/platform/browser/window');
   const appWindow = getCurrentWindow();
 
   const unlisten = await appWindow.onFocusChanged(({ payload: isActive }) => onChange(isActive));

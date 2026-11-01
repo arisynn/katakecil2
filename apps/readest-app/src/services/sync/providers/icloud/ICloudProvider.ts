@@ -10,7 +10,7 @@ import {
   stat,
   writeFile,
   writeTextFile,
-} from '@tauri-apps/plugin-fs';
+} from '@/platform/browser/fs';
 import { icloudEnsureDownloaded } from '@/utils/bridge';
 import {
   FileEntry,

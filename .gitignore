@@ -3,6 +3,7 @@ docker/.env
 
 # dependencies
 /node_modules
+**/node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -62,3 +63,10 @@ apps/readest.koplugin/native/localsend-bin/target/
 
 # scripts/tauri.mjs parks the wry Cargo.lock here during a Linux CEF build
 /Cargo.lock.wry
+
+# Private terminal publisher activation and Python cache
+**/aktivasi-kk.json
+**/__pycache__/
+*.pyc
+/katakecil2-update-*.zip
+/katakecil2-update-*.patch

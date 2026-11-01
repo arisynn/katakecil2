@@ -1,4 +1,4 @@
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { openUrl } from '@/platform/browser/opener';
 import { isTauriAppPlatform } from '@/services/environment';
 
 /**

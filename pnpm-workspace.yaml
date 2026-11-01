@@ -1,19 +1,16 @@
 packages:
-  - apps/*
-  - apps/readest-app/workers/send-email
-  - apps/readest-app/workers/iap-reconcile
-  - apps/readest-app/extensions/*
+  - apps/readest-app
   - packages/foliate-js
 
 allowBuilds:
-  '@sentry/cli': true
+  '@sentry/cli': false
   core-js: true
-  edgedriver: true
+  edgedriver: false
   esbuild: true
-  geckodriver: true
+  geckodriver: false
   protobufjs: true
   sharp: true
-  workerd: true
+  workerd: false
 
 onlyBuiltDependencies:
   - sharp

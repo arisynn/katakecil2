@@ -31,7 +31,7 @@
 //
 // Avoids ferrying multi-MB blobs across the JS<->Rust IPC boundary
 // and is a no-op on the web platform.
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { isTauriAppPlatform } from '@/services/environment';
 import type { BookDoc, BookMetadata, SectionItem } from '@/libs/document';
 

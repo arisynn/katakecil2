@@ -1,4 +1,4 @@
-import { FileHandle, open, BaseDirectory, SeekMode } from '@tauri-apps/plugin-fs';
+import { FileHandle, open, BaseDirectory, SeekMode } from '@/platform/browser/fs';
 import { getOSPlatform } from './misc';
 
 class DeferredBlob extends Blob {

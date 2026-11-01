@@ -16,8 +16,8 @@
 // secret cannot make it an open relay; the origins are re-sent on every call so
 // a server added mid-session becomes reachable without restarting the proxy.
 
-import { invoke } from '@tauri-apps/api/core';
-import { stat } from '@tauri-apps/plugin-fs';
+import { invoke } from '@/platform/browser/core';
+import { stat } from '@/platform/browser/fs';
 import { getInitializedAppService, isTauriAppPlatform } from '@/services/environment';
 import { useABSServerStore } from '@/store/absServerStore';
 import type { ABSServer } from '@/types/audiobookshelf';

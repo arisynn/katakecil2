@@ -141,7 +141,7 @@ export const foliateProvider: AnnotationImportProvider = {
   importAnnotations: async (appService, identifier, config) => {
     if (config.foliateImportedAt) return config;
     try {
-      const { dataDir } = await import('@tauri-apps/api/path');
+      const { dataDir } = await import('@/platform/browser/path');
       const dir = await dataDir();
       const path = getFoliateDataPath(dir, identifier);
 

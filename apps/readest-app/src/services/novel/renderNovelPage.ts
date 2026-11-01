@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from '@/platform/browser/core';
 import { stubTranslation as _ } from '@/utils/misc';
 import { getClipOptions } from '@/services/send/clipOptions';
 import { isBlockedHost } from '@/utils/network';

@@ -1,5 +1,5 @@
 import { isTauriAppPlatform } from '@/services/environment';
-import { openUrl } from '@tauri-apps/plugin-opener';
+import { openUrl } from '@/platform/browser/opener';
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;

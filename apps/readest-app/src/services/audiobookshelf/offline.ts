@@ -8,7 +8,7 @@
 // half-written file is never mistaken for a finished one, and a retry after a
 // failure or cancel skips every file that already landed.
 
-import { rename } from '@tauri-apps/plugin-fs';
+import { rename } from '@/platform/browser/fs';
 import { createAbsClient } from '@/services/audiobookshelf/createClient';
 import { downloadFile } from '@/libs/storage';
 import { findABSServerById } from '@/store/absServerStore';

@@ -13,7 +13,7 @@
 // path's rate-1.0 media time) is unaffected by the playback rate because
 // AVPlayer.currentTime reports item time, not wall time.
 
-import { addPluginListener, invoke, PluginListener } from '@tauri-apps/api/core';
+import { addPluginListener, invoke, PluginListener } from '@/platform/browser/core';
 import type { TTSAudioPlayer } from './TTSAudioPlayer';
 import type { WebAudioPlayerEvent } from './WebAudioPlayer';
 

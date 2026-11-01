@@ -124,7 +124,7 @@ async function tryWriteFullCoverFromBook(
   const command = pickFullCoverCommand(book.format);
   if (!command) return false;
   try {
-    const { invoke } = await import('@tauri-apps/api/core');
+    const { invoke } = await import('@/platform/browser/core');
     // In-place books point at a file the user owns elsewhere (Downloads,
     // an external SD card, …) — resolve against (filePath, 'None'). Hash-
     // copy books live under Books/<hash>/ with a name derived from their
