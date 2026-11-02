@@ -1,6 +1,11 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Library as VscLibrary, ArrowLeft as MdArrowBack, Ellipsis as MdMoreHoriz, Menu as MdOutlineMenu } from 'lucide-react';
+import {
+  Library as VscLibrary,
+  ArrowLeft as MdArrowBack,
+  Ellipsis as MdMoreHoriz,
+  Menu as MdOutlineMenu,
+} from 'lucide-react';
 
 import { Insets } from '@/types/misc';
 import { useEnv } from '@/context/EnvContext';
@@ -20,7 +25,6 @@ import { annotationToolQuickActions } from './annotator/AnnotationTools';
 import { AnnotationToolType } from '@/types/annotator';
 import { saveViewSettings } from '@/helpers/settings';
 import { getHeaderTriggerHeight, getHorizontalInsetStyle } from '@/utils/insets';
-import { getBookDataAttributes } from '@/utils/book';
 import { isForcedMobileLayout } from '../utils/mobileLayout';
 import { HighlighterIcon } from '@/components/HighlighterIcon';
 import Dropdown from '@/components/Dropdown';
@@ -34,6 +38,7 @@ import TranslationToggler from './TranslationToggler';
 import ViewMenu from './ViewMenu';
 import SyncInfoDialog from './SyncInfoDialog';
 import ReaderTools from './ReaderTools';
+import ReaderTitle from './ReaderTitle';
 
 interface HeaderBarProps {
   bookKey: string;
@@ -86,7 +91,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMetaHashDialogOpen, setIsMetaHashDialogOpen] = useState(false);
-  const [headerWidth, setHeaderWidth] = useState(0);
   const view = getView(bookKey);
   const iconSize18 = useResponsiveSize(18);
 
@@ -139,16 +143,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appService, hoveredBookKey]);
 
-  useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry) setHeaderWidth(entry.contentRect.width);
-    });
-    observer.observe(header);
-    return () => observer.disconnect();
-  }, []);
-
   // Check if mouse is outside header area to avoid false positive event of MouseLeave when clicking inside header on Windows
   // The top edge itself counts as inside: a pointer pushed against the top of a
   // maximized window sits at y=0 and can't leave upward (#7015).
@@ -161,7 +155,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
     );
   }, []);
 
-  const isHeaderCompact = headerWidth > 0 && headerWidth < 350;
   const insets = window.innerWidth < 640 ? screenInsets : gridInsets;
   const isHeaderVisible = hoveredBookKey === bookKey || isDropdownOpen;
   const isMobile = appService?.isMobile || window.innerWidth < 640;
@@ -186,7 +179,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         window.innerWidth < 640 ? 'fixed z-20' : 'absolute',
       )}
       style={{
-        paddingTop: appService?.hasSafeAreaInset ? `${insets.top}px` : '0px',
+        paddingTop: `max(${appService?.hasSafeAreaInset ? insets.top : 0}px, env(safe-area-inset-top, 0px))`,
       }}
     >
       {/*
@@ -243,9 +236,8 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
           isDropdownOpen && 'header-bar-pinned',
         )}
         style={{
-          marginTop: systemUIVisible
-            ? `${Math.max(insets.top, statusBarHeight)}px`
-            : `${insets.top}px`,
+          // Browser/PWA cutouts can expose CSS insets without a native bridge.
+          marginTop: `max(${systemUIVisible ? Math.max(insets.top, statusBarHeight) : insets.top}px, env(safe-area-inset-top, 0px))`,
           // iPhone Duo's status-bar strip reports as a large left/right inset
           // (#6307); clear it without losing the header's own ps-4/pr-4 padding.
           ...getHorizontalInsetStyle(insets, isIPhoneDuo, 16),
@@ -260,7 +252,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         }}
       >
         {isMobile && (
-          <div className='kk-reader-heading'>
+          <div className='kk-reader-heading' data-title-start>
             <button
               className='kk-circle-button'
               aria-label={_('Go to Library')}
@@ -268,10 +260,10 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
             >
               <MdArrowBack size={22} className='rtl:rotate-180' />
             </button>
-            <span>{bookTitle}</span>
           </div>
         )}
         <div
+          data-title-start={isMobile ? undefined : ''}
           className={clsx(
             isMobile && 'hidden!',
             'header-tools-start bg-base-100 sidebar-bookmark-toggler z-20 flex h-full min-w-0 items-center gap-x-4 pe-2 max-[350px]:gap-x-2',
@@ -343,28 +335,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
           )}
         </div>
 
-        <div
-          role='contentinfo'
-          aria-label={_('Title') + ' - ' + bookTitle}
-          className={clsx(
-            'header-title z-15 bg-base-100 pointer-events-none hidden flex-1 items-center justify-center sm:flex',
-            !windowButtonVisible && 'absolute inset-0',
-            (isHeaderCompact || isMobile) && 'hidden!',
-          )}
-          {...getBookDataAttributes(bookTitle, bookData?.book?.metadata)}
-        >
-          <div
-            aria-hidden='true'
-            className={clsx(
-              'line-clamp-1 text-center text-xs font-semibold',
-              !windowButtonVisible && 'max-w-[50%]',
-            )}
-          >
-            {bookTitle}
-          </div>
-        </div>
+        <ReaderTitle title={bookTitle} headerRef={headerRef} />
 
-        <div className='header-tools-end bg-base-100 z-20 ms-auto flex h-full min-w-max items-center gap-x-4 ps-2 max-[350px]:gap-x-2'>
+        <div
+          data-title-end
+          className='header-tools-end bg-base-100 z-20 ms-auto flex h-full min-w-max items-center gap-x-4 ps-2 max-[350px]:gap-x-2'
+        >
           {!isMobile && <NotebookToggler bookKey={bookKey} />}
           {isMobile && (
             <Dropdown

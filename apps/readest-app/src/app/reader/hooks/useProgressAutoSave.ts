@@ -32,7 +32,8 @@ export const useProgressAutoSave = (bookKey: string) => {
   const persistProgress = useCallback(async () => {
     // Skip while previewing a deep-link target — the user's actual
     // last-read position should not be overwritten by a transient view.
-    if (useReaderStore.getState().getViewState(bookKey)?.previewMode) return;
+    const viewState = useReaderStore.getState().getViewState(bookKey);
+    if (viewState?.previewMode || (viewState?.loadPhase && viewState.loadPhase !== 'ready')) return;
     const config = getConfig(bookKey);
     if (!config) return;
     const currentLocation = config.location ?? null;

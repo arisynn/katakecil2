@@ -38,7 +38,10 @@ import { clearBookProgress, getBookProgress, setBookProgress } from './readerPro
 import { uniqueId } from '@/utils/misc';
 import { getWidePages, type WidePagesOptions } from '@/utils/spread';
 
+export type ReaderLoadPhase = 'preparing' | 'opening' | 'restoring' | 'ready' | 'error';
+
 interface ViewState {
+  loadPhase?: ReaderLoadPhase;
   /* Unique key for each book view */
   key: string;
   view: FoliateView | null;
@@ -88,6 +91,7 @@ interface ReaderStore {
   setDrawingEnabled: (key: string, enabled: boolean) => void;
   setAutoScrollEnabled: (key: string, enabled: boolean) => void;
   setIsLoading: (key: string, loading: boolean) => void;
+  setLoadPhase: (key: string, phase: ReaderLoadPhase, error?: string) => void;
   setIsSyncing: (key: string, syncing: boolean) => void;
   setProgress: (
     key: string,
@@ -186,15 +190,18 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
   ) => {
     const booksData = useBookDataStore.getState().booksData;
     const bookData = booksData[id];
+    const sessionId = `${key}-${uniqueId()}`;
+    const isCurrent = () => get().viewStates[key]?.viewerKey === sessionId;
     set((state) => ({
       viewStates: {
         ...state.viewStates,
         [key]: {
           key: '',
           view: null,
-          viewerKey: '',
+          viewerKey: sessionId,
           isPrimary: false,
           loading: true,
+          loadPhase: 'preparing',
           inited: false,
           error: null,
           ribbonVisible: false,
@@ -210,6 +217,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     }));
     try {
       const appService = await envConfig.getAppService();
+      if (!isCurrent()) return;
       const { settings } = useSettingsStore.getState();
       const { getBookByHash, library } = useLibraryStore.getState();
       const book = getBookByHash(id);
@@ -270,6 +278,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
           ]);
           file = content.file;
           const config = await configPromise;
+          if (!isCurrent()) return;
           const doc = await new DocumentLoader(file, {
             nativeFilePath: nativeFilePath ?? undefined,
             widePages: makeWidePages(config),
@@ -280,6 +289,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
         }
       }
       const config = await configPromise;
+      if (!isCurrent()) return;
       // Import annotations from third-party readers on first open. The
       // module import was already kicked off above; providers still run
       // here so the merged config lands before the first render.
@@ -305,10 +315,12 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
       // Feed manifests grow between opens, so feed books always recompute instead.
       if (book.format === 'EPUB' && bookDoc.rendition?.layout !== 'pre-paginated') {
         const cachedNav = isFeed ? null : await appService.loadBookNav(book);
+        if (!isCurrent()) return;
         if (isBookNavCacheCurrent(cachedNav) && process.env.NODE_ENV === 'production') {
           hydrateBookNav(bookDoc, cachedNav);
         } else {
           const freshNav = await computeBookNav(bookDoc);
+          if (!isCurrent()) return;
           hydrateBookNav(bookDoc, freshNav);
           if (!isFeed) {
             try {
@@ -324,6 +336,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
         config.viewSettings?.sortedTOC ?? false,
         config.viewSettings?.convertChineseVariant ?? 'none',
       );
+      if (!isCurrent()) return;
       if (!bookDoc.metadata.title && file) {
         bookDoc.metadata.title = getBaseFilename(file.name);
       }
@@ -377,9 +390,10 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
             ...state.viewStates[key],
             key,
             view: null,
-            viewerKey: `${key}-${uniqueId()}`,
+            viewerKey: sessionId,
             isPrimary,
-            loading: false,
+            loading: true,
+            loadPhase: 'opening',
             inited: false,
             error: null,
             ribbonVisible: false,
@@ -394,6 +408,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
         },
       }));
     } catch (error) {
+      if (!isCurrent()) return;
       console.error(error);
       set((state) => ({
         viewStates: {
@@ -402,11 +417,12 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
             ...state.viewStates[key],
             key: '',
             view: null,
-            viewerKey: '',
+            viewerKey: sessionId,
             isPrimary: false,
             loading: false,
             inited: false,
             error: 'Failed to load book.',
+            loadPhase: 'error',
             ribbonVisible: false,
             ttsEnabled: false,
             autoScrollEnabled: false,
@@ -478,7 +494,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     const id = key.split('-')[0]!;
     const bookData = useBookDataStore.getState().booksData[id];
     const viewState = get().viewStates[key];
-    if (!viewState || !bookData) return;
+    if (!viewState || !bookData || (viewState.loadPhase && viewState.loadPhase !== 'ready')) return;
 
     const pageInfo = bookData.isFixedLayout ? section : pageinfo;
     const progress: [number, number] = [pageInfo.current + 1, pageInfo.total];
@@ -487,7 +503,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     // Lightweight library update — O(1) lookup, no array copy, no refreshGroups
     const { getBookByHash, updateBookProgress } = useLibraryStore.getState();
     const existingBook = getBookByHash(id);
-    if (existingBook) {
+    if (existingBook && !viewState.previewMode) {
       let newReadingStatus = existingBook.readingStatus;
       if (existingBook.readingStatus === 'unread') {
         newReadingStatus = undefined;
@@ -502,7 +518,7 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     // config — secondary views in a parallel layout shouldn't overwrite
     // it. Skip the bookDataStore write entirely when not primary to spare
     // its subscribers a re-render.
-    if (viewState.isPrimary) {
+    if (viewState.isPrimary && !viewState.previewMode) {
       useBookDataStore.setState((state) => {
         const existing = state.booksData[id];
         if (!existing) return state;
@@ -621,15 +637,37 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     })),
 
   setViewInited: (key: string, inited: boolean) =>
-    set((state) => ({
-      viewStates: {
-        ...state.viewStates,
-        [key]: {
-          ...state.viewStates[key]!,
-          inited,
+    set((state) => {
+      if (!state.viewStates[key]) return state;
+      return {
+        viewStates: {
+          ...state.viewStates,
+          [key]: {
+            ...state.viewStates[key]!,
+            inited,
+            ...(inited ? { loading: false, loadPhase: 'ready' as const, error: null } : {}),
+          },
         },
-      },
-    })),
+      };
+    }),
+
+  setLoadPhase: (key, loadPhase, error) =>
+    set((state) => {
+      if (!state.viewStates[key]) return state;
+      return {
+        viewStates: {
+          ...state.viewStates,
+          [key]: {
+            ...state.viewStates[key]!,
+            loadPhase,
+            loading: loadPhase !== 'ready' && loadPhase !== 'error',
+            inited: loadPhase === 'ready',
+            ...(loadPhase === 'error' ? { view: null } : {}),
+            error: loadPhase === 'error' ? error || 'Failed to load book.' : null,
+          },
+        },
+      };
+    }),
 
   setPreviewMode: (key: string, previewMode: boolean) =>
     set((state) => ({
@@ -653,6 +691,10 @@ export const useReaderStore = create<ReaderStore>((set, get) => ({
     // transform chain twice. A twice-transformed stylesheet lost all its
     // font-family declarations, and the book fell back to the app font
     // (readest#5277).
-    void get().initViewState(envConfig, id, key, true, true);
+    void get()
+      .initViewState(envConfig, id, key, true, true)
+      .catch(() => {
+        // The current session exposes its error and retry action in the reader.
+      });
   },
 }));

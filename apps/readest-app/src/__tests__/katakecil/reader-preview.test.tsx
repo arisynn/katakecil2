@@ -1,12 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ReaderPageFrame from '@/app/reader/components/ReaderPageFrame';
 
 vi.mock('@/hooks/useTranslation', () => ({ useTranslation: () => (text: string) => text }));
-vi.mock('@/app/reader/utils/pagePreview', () => ({
-  mirrorReaderPage: () => ({ element: document.createElement('div'), ready: Promise.resolve() }),
-}));
+const { snapshot } = vi.hoisted(() => ({ snapshot: vi.fn() }));
+vi.mock('@/app/reader/utils/pagePreview', () => ({ mirrorReaderPage: snapshot }));
 beforeEach(() => {
+  snapshot.mockReset().mockImplementation(() => ({
+    element: document.createElement('div'),
+    ready: Promise.resolve(),
+  }));
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -30,15 +33,16 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
-const shell = (active: boolean, panel: boolean, onResume = vi.fn()) => (
+const shell = (active: boolean, panel: boolean, onResume = vi.fn(), captureKey = 'page-one') => (
   <div>
     <div className='header-bar' />
     <ReaderPageFrame
       active={active}
       panelKey={panel ? 'font' : ''}
-      captureKey='page-one'
+      captureKey={captureKey}
       onResume={onResume}
     >
       <div data-testid='live-page'>The same live EPUB page</div>
@@ -87,4 +91,55 @@ describe('Reader page overview', () => {
     );
     expect(screen.getByTestId('live-page')).toBe(livePage);
   });
+});
+
+describe('Preview loading recovery', () => {
+  it('shows the live page instead of a stale chapter while its next snapshot loads', async () => {
+    const { container, rerender } = render(shell(true, false));
+    const stage = container.querySelector('.kk-reader-preview-stage')!;
+    await waitFor(() => expect(stage.getAttribute('data-preview-ready')).toBe('true'));
+    snapshot.mockImplementation(() => ({
+      element: document.createElement('div'),
+      ready: new Promise(() => {}),
+    }));
+    rerender(shell(true, false, vi.fn(), 'page-two'));
+    expect(stage.getAttribute('data-preview-ready')).toBe('false');
+  });
+  it('falls back to the live page when an embedded snapshot fails', async () => {
+    snapshot.mockImplementation(() => ({
+      element: document.createElement('div'),
+      ready: Promise.reject(new Error('frame failed')),
+    }));
+    const { container } = render(shell(true, false));
+    await waitFor(() => expect(snapshot).toHaveBeenCalled());
+    expect(
+      container.querySelector('.kk-reader-preview-stage')!.getAttribute('data-preview-ready'),
+    ).toBe('false');
+    expect(screen.getByTestId('live-page').textContent).toContain('same live EPUB');
+  });
+});
+
+it('abandons a snapshot that never loads and ignores a late completion', async () => {
+  vi.useFakeTimers();
+  let finish!: () => void;
+  snapshot.mockImplementation(() => ({
+    element: document.createElement('div'),
+    ready: new Promise<void>((resolve) => {
+      finish = resolve;
+    }),
+  }));
+  const { container } = render(shell(true, false));
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(0);
+  });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(2500);
+  });
+  const stage = container.querySelector('.kk-reader-preview-stage')!;
+  expect(stage.getAttribute('data-preview-ready')).toBe('false');
+  expect(container.querySelector('.kk-reader-page-frame')!.childElementCount).toBe(0);
+  await act(async () => {
+    finish();
+  });
+  expect(stage.getAttribute('data-preview-ready')).toBe('false');
 });

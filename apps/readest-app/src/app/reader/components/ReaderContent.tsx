@@ -23,11 +23,7 @@ import { splitLibraryOpenIds } from '@/utils/audiobook';
 import { uniqueId } from '@/utils/misc';
 import { eventDispatcher } from '@/utils/event';
 import { transitionAway } from '@/utils/viewTransition';
-import {
-  closeReaderWindowOrGoToLibrary,
-  ensureMainLibraryWindow,
-  navigateToLibrary,
-} from '@/utils/nav';
+import { ensureMainLibraryWindow, navigateToLibrary } from '@/utils/nav';
 import { clearDiscordPresence } from '@/utils/discord';
 import { getLockedPanX } from '../utils/lockedPan';
 import { BOOK_IDS_SEPARATOR } from '@/services/constants';
@@ -45,7 +41,7 @@ import { writeTextToClipboard } from '@/utils/clipboard';
 
 import useBooksManager from '../hooks/useBooksManager';
 import useBookShortcuts from '../hooks/useBookShortcuts';
-import Spinner from '@/components/Spinner';
+import ReaderLoadScreen from './ReaderLoadScreen';
 import SideBar from './sidebar/SideBar';
 import Notebook from './notebook/Notebook';
 import LocalSendManager from '@/components/localsend/LocalSendManager';
@@ -89,7 +85,6 @@ const ReaderContent: React.FC<{ ids?: string; settings: SystemSettings }> = ({ i
   } | null>(null);
   const { user } = useAuth();
   const isInitiating = useRef(false);
-  const [loading, setLoading] = useState(false);
   const [errorLoading, setErrorLoading] = useState(false);
   const [blockedNotebookBookKey, setBlockedNotebookBookKey] = useState<string | null>(null);
   const pendingNotebookTransitionRef = useRef<(() => Promise<void>) | null>(null);
@@ -145,15 +140,6 @@ const ReaderContent: React.FC<{ ids?: string; settings: SystemSettings }> = ({ i
         initViewState(envConfig, id, key, isPrimary).catch((error) => {
           console.log('Error initializing book', key, error);
           setErrorLoading(true);
-          eventDispatcher.dispatch('toast', {
-            message: _('Unable to open book'),
-            callback: async () => {
-              const service = await envConfig.getAppService();
-              await closeReaderWindowOrGoToLibrary(service, router);
-            },
-            timeout: 2000,
-            type: 'error',
-          });
         });
         if (index === 0) setSideBarBookKey(key);
       }
@@ -442,14 +428,20 @@ const ReaderContent: React.FC<{ ids?: string; settings: SystemSettings }> = ({ i
   const bookData = getBookData(bookKeys[0]!);
   const viewSettings = getViewSettings(bookKeys[0]!);
   if (!bookData || !bookData.book || !bookData.bookDoc || !viewSettings) {
-    setTimeout(() => setLoading(true), 200);
+    const key = bookKeys[0]!;
+    const state = getViewState(key);
+    const id = key.split('-')[0]!;
     return (
-      loading &&
-      !errorLoading && (
-        <div className='hero hero-content full-height'>
-          <Spinner loading={true} />
-        </div>
-      )
+      <ReaderLoadScreen
+        key={state?.viewerKey ?? key}
+        title={useLibraryStore.getState().getBookByHash(id)?.title || 'Kata Kecil'}
+        error={state?.loadPhase === 'error' || errorLoading}
+        onRetry={() => {
+          setErrorLoading(false);
+          void initViewState(envConfig, id, key, true, true).catch(() => setErrorLoading(true));
+        }}
+        onBack={handleCloseBooksToLibrary}
+      />
     );
   }
 

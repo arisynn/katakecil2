@@ -121,6 +121,7 @@ import AutoscrollIndicator from './AutoscrollIndicator';
 import AutoScrollControl from './AutoScrollControl';
 import AutoScrollSpeedOverlay from './AutoScrollSpeedOverlay';
 import Spinner from '@/components/Spinner';
+import ReaderLoadScreen from './ReaderLoadScreen';
 import KOSyncConflictResolver from './KOSyncResolver';
 import ImageViewer from './ImageViewer';
 import ImageContextMenu from './ImageContextMenu';
@@ -138,10 +139,22 @@ declare global {
 const FoliateViewer: React.FC<{
   bookKey: string;
   bookDoc: BookDoc;
+  bookTitle: string;
+  onRetry: () => void;
+  onBack: () => void;
   config: BookConfig;
   gridInsets: Insets;
   contentInsets: Insets;
-}> = ({ bookKey, bookDoc, config, gridInsets, contentInsets: insets }) => {
+}> = ({
+  bookKey,
+  bookDoc,
+  bookTitle,
+  onRetry,
+  onBack,
+  config,
+  gridInsets,
+  contentInsets: insets,
+}) => {
   const _ = useTranslation();
   const searchParams = useSearchParams();
   const { appService, envConfig } = useEnv();
@@ -153,6 +166,7 @@ const FoliateViewer: React.FC<{
   const getView = useReaderStore((s) => s.getView);
   const setFoliateView = useReaderStore((s) => s.setView);
   const setViewInited = useReaderStore((s) => s.setViewInited);
+  const setLoadPhase = useReaderStore((s) => s.setLoadPhase);
   const setProgress = useReaderStore((s) => s.setProgress);
   const setPreviewMode = useReaderStore((s) => s.setPreviewMode);
   const getViewState = useReaderStore((s) => s.getViewState);
@@ -168,7 +182,7 @@ const FoliateViewer: React.FC<{
   const { registerBrightnessListeners, overlayVisible, overlayLevel } =
     useBrightnessGesture(bookKey);
   const bookData = getBookData(bookKey);
-  const viewState = getViewState(bookKey);
+  const viewState = useReaderStore((s) => s.viewStates[bookKey]);
   const viewSettings = getViewSettings(bookKey);
   // PDF theme colors reach the canvas through CanvasRenderingContext2D.filter,
   // which WebKit lacks, so a setting synced from another device can't apply here.
@@ -180,12 +194,10 @@ const FoliateViewer: React.FC<{
   const isViewCreated = useRef(false);
   const doubleClickDisabled = useRef(!!viewSettings?.disableDoubleClick);
   const [toastMessage, setToastMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   const [navigating, setNavigating] = useState(false);
   const navSpinnerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const librarySearchHighlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [scrollMargins, setScrollMargins] = useState({ top: 0, bottom: 0 });
-  const docLoaded = useRef(false);
 
   const autoScroll = useAutoScroll(bookKey, viewRef);
   const { registerSpeedListeners, overlayVisible: speedOverlayVisible } =
@@ -268,6 +280,9 @@ const FoliateViewer: React.FC<{
   const commitRelocate = useCallback(() => {
     cancelRelocateScheduled();
     const event = pendingRelocateRef.current;
+    // Initial relocation events can point to the cover before resume completes.
+    const phase = getViewState(bookKey)?.loadPhase;
+    if (phase && phase !== 'ready') return;
     pendingRelocateRef.current = null;
     if (!event) return;
     const detail = event.detail;
@@ -528,10 +543,6 @@ const FoliateViewer: React.FC<{
   }, [bookKey]);
 
   const docLoadHandler = (event: Event) => {
-    docLoaded.current = true;
-    if (bookDoc.rendition?.layout === 'pre-paginated') {
-      setLoading(false); // Fixed layout doesn't emit 'stabilized' event
-    }
     const detail = (event as CustomEvent).detail;
     console.log('doc index loaded:', detail.index);
     if (detail.doc) {
@@ -731,7 +742,6 @@ const FoliateViewer: React.FC<{
   }, []);
 
   const stabilizedHandler = useCallback(() => {
-    setLoading(false);
     // Layout/relayout warichu after paginator has set column-width via columnize()
     const contents = viewRef.current?.renderer?.getContents?.() || [];
     const vs = getViewSettings(bookKey);
@@ -758,6 +768,7 @@ const FoliateViewer: React.FC<{
 
   const docRelocateHandler = (event: Event) => {
     const detail = (event as CustomEvent).detail;
+    if (getViewState(bookKey)?.loadPhase !== 'ready') return;
     if (detail.reason !== 'scroll' && detail.reason !== 'page') return;
 
     // First user-initiated navigation after a deep-link landing — promote
@@ -906,12 +917,20 @@ const FoliateViewer: React.FC<{
     if (isViewCreated.current) return;
     isViewCreated.current = true;
 
-    setTimeout(() => setLoading(true), 200);
+    const session = getViewState(bookKey)?.viewerKey;
+    const isCurrent = () => !unmountedRef.current && getViewState(bookKey)?.viewerKey === session;
+    let openingView: FoliateView | null = null;
+    const dispose = () => {
+      openingView?.close?.();
+      openingView?.remove();
+    };
 
     const openBook = async () => {
       console.log('Opening book', bookKey);
       await import('foliate-js/view.js');
+      if (!isCurrent()) return;
       const view = wrappedFoliateView(document.createElement('foliate-view') as FoliateView);
+      openingView = view;
       view.id = `foliate-view-${bookKey}`;
       containerRef.current?.appendChild(view);
 
@@ -933,6 +952,10 @@ const FoliateViewer: React.FC<{
       }
 
       await view.open(bookDoc);
+      if (!isCurrent()) {
+        dispose();
+        return;
+      }
       // make sure we can listen renderer events after opening book
       viewRef.current = view;
       setFoliateView(bookKey, view);
@@ -1047,21 +1070,29 @@ const FoliateViewer: React.FC<{
       const overrideLocation = cfiParam && primaryId === thisId ? cfiParam : null;
 
       const lastLocation = overrideLocation ?? config.location;
+      if (!isCurrent()) {
+        dispose();
+        return;
+      }
+      setLoadPhase(bookKey, 'restoring');
+      // Protect the saved CFI before init emits any transient relocation events.
+      if (overrideLocation) setPreviewMode(bookKey, true);
       if (lastLocation) {
         await view.init({ lastLocation });
       } else {
         await view.goToFraction(0);
       }
-      // The reader is showing a deep-link target, not the user's actual reading
-      // position. Mark the view as a preview so progress writers (auto-save,
-      // cloud sync, kosync) skip until the user takes a reading action. The
-      // flag clears on the first user-initiated relocate (page / scroll) in
-      // docRelocateHandler below. Set before `inited` so everything that starts
-      // reading on init (e.g. Auto Scroll resume) already sees the preview.
-      if (overrideLocation) {
-        setPreviewMode(bookKey, true);
+      if (!isCurrent()) {
+        dispose();
+        return;
       }
       setViewInited(bookKey, true);
+      // The first load can finish before React installs the event subscription.
+      // Commit the engine's resolved location, never its intermediate cover CFI.
+      if (view.lastLocation?.cfi) {
+        pendingRelocateRef.current = new CustomEvent('relocate', { detail: view.lastLocation });
+      }
+      commitRelocate();
       if (overrideLocation && searchParams?.get('highlight') === 'search') {
         librarySearchHighlightTimerRef.current = await showTransientHighlight(
           view,
@@ -1070,7 +1101,17 @@ const FoliateViewer: React.FC<{
       }
     };
 
-    openBook();
+    void openBook().catch((error: unknown) => {
+      dispose();
+      if (!isCurrent()) return;
+      console.error('Unable to render book', error);
+      removeTransformListenersRef.current?.();
+      cancelRelocateScheduled();
+      pendingRelocateRef.current = null;
+      viewRef.current = null;
+      setLoadPhase(bookKey, 'error');
+    });
+    return dispose;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1438,10 +1479,19 @@ const FoliateViewer: React.FC<{
         <AutoScrollSpeedOverlay visible={speedOverlayVisible} speed={autoScroll.speed} />
       )}
       <ParagraphControl bookKey={bookKey} viewRef={viewRef} gridInsets={gridInsets} />
-      {((!docLoaded.current && loading) || navigating || viewState?.loading) && (
+      {navigating && viewState?.inited && (
         <div className='absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center'>
           <Spinner loading={true} />
         </div>
+      )}
+      {!viewState?.inited && (
+        <ReaderLoadScreen
+          title={bookTitle}
+          error={viewState?.loadPhase === 'error'}
+          restoring={viewState?.loadPhase === 'restoring'}
+          onRetry={onRetry}
+          onBack={onBack}
+        />
       )}
       {syncState === 'conflict' && conflictDetails && (
         <KOSyncConflictResolver

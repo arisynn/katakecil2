@@ -535,11 +535,11 @@ html[data-eink='true']
 .kk-reader-heading {
   display: flex;
   align-items: center;
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   gap: 4px;
 }
-.kk-reader-heading > span {
+.kk-reader-centered-title > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -847,4 +847,68 @@ html[data-eink='true'] [data-preview-active='true'] > .kk-reader-page-frame {
 }
 [data-preview-ready='true'] > .kk-reader-page-frame {
   opacity: 1;
+}
+
+/* One title, centered in its book pane, with measured space for both tool groups. */
+.kk-reader-centered-title {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+.kk-reader-centered-title > span {
+  display: block;
+  text-align: center;
+  font-weight: 600;
+}
+.kk-reader-load {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+}
+.kk-reader-load-header {
+  position: absolute;
+  inset-inline: 0;
+  top: env(safe-area-inset-top, 0px);
+  height: 56px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px))
+    max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+}
+.kk-reader-load-content {
+  position: absolute;
+  inset: 80px 24px max(32px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+}
+.kk-reader-load-content h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.kk-reader-load-content p {
+  font-size: 14px;
+  max-width: 320px;
+  opacity: 0.75;
+  line-height: 1.6;
+}
+.kk-reader-load-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.kk-reader-load-actions .btn {
+  min-height: 44px;
+  border-radius: 16px;
 }

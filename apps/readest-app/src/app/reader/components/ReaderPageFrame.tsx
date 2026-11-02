@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import type { FoliateView } from '@/types/view';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useThemeStore } from '@/store/themeStore';
 import { mirrorReaderPage } from '../utils/pagePreview';
@@ -24,6 +25,24 @@ export default function ReaderPageFrame({
   const theme = useThemeStore((state) => state.themeCode);
   const [ready, setReady] = useState(false);
   const [viewport, setViewport] = useState('');
+  const [revision, setRevision] = useState(0);
+
+  useLayoutEffect(() => {
+    const view = live.current?.querySelector<FoliateView>('foliate-view');
+    if (!active || !view) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const refresh = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setRevision((value) => value + 1), 100);
+    };
+    view.addEventListener('load', refresh);
+    view.renderer?.addEventListener('stabilized', refresh);
+    return () => {
+      clearTimeout(timer);
+      view.removeEventListener('load', refresh);
+      view.renderer?.removeEventListener('stabilized', refresh);
+    };
+  }, [active]);
 
   useLayoutEffect(() => {
     const target = mirror.current;
@@ -33,8 +52,19 @@ export default function ReaderPageFrame({
       setReady(false);
       return;
     }
+    // Never leave a previous chapter hiding the current live page.
+    setReady(false);
+    target.replaceChildren();
     let cancelled = false;
     let captured: HTMLElement | undefined;
+    const fail = () => {
+      if (cancelled) return;
+      cancelled = true;
+      target.replaceChildren();
+      setReady(false);
+    };
+    // Some embedded documents never emit load. Keep the live view usable.
+    const deadline = window.setTimeout(fail, 2500);
     const timer = window.setTimeout(
       () => {
         try {
@@ -43,19 +73,21 @@ export default function ReaderPageFrame({
           captured.dataset['pending'] = 'true';
           captured.style.opacity = '0';
           target.append(captured);
-          void snapshot.ready.then(() => {
-            if (cancelled || !captured) return;
-            captured.dataset['pending'] = 'false';
-            captured.style.opacity = '1';
-            [...target.children].forEach((child) => {
-              if (child !== captured) child.remove();
-            });
-            setReady(true);
-          });
+          void snapshot.ready
+            .then(() => {
+              if (cancelled || !captured) return;
+              clearTimeout(deadline);
+              captured.dataset['pending'] = 'false';
+              captured.style.opacity = '1';
+              [...target.children].forEach((child) => {
+                if (child !== captured) child.remove();
+              });
+              setReady(true);
+            })
+            .catch(fail);
         } catch {
           // An inaccessible embedded document keeps the original full-size view.
-          target.replaceChildren();
-          setReady(false);
+          fail();
         }
       },
       target.children.length ? 100 : 0,
@@ -63,9 +95,10 @@ export default function ReaderPageFrame({
     return () => {
       cancelled = true;
       clearTimeout(timer);
+      clearTimeout(deadline);
       if (captured?.dataset['pending'] === 'true') captured.remove();
     };
-  }, [active, captureKey, theme, viewport]);
+  }, [active, captureKey, theme, viewport, revision]);
   const [preview, setPreview] = useState({ scale: 0.82, offset: 0 });
 
   useLayoutEffect(() => {

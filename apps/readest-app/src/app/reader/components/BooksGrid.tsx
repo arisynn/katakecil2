@@ -110,6 +110,7 @@ const BookCellInner: React.FC<BookCellProps> = ({
 }) => {
   // Per-field selectors — see store/readerProgressStore.ts header for the
   // "destructure-subscribes-the-whole-store" rationale.
+  const { envConfig } = useEnv();
   const getConfig = useBookDataStore((s) => s.getConfig);
   const getBookData = useBookDataStore((s) => s.getBookData);
 
@@ -189,7 +190,8 @@ const BookCellInner: React.FC<BookCellProps> = ({
   const columnGap = getSpreadColumnGap(viewSettings, getView(bookKey)?.renderer?.columnCount ?? 1);
   const showHeader = viewSettings.showHeader;
   const showFooter = viewSettings.showFooter;
-  const previewActive = hoveredBookKey === bookKey || isDropdownOpen;
+  const ready = !!viewState.inited;
+  const previewActive = ready && (hoveredBookKey === bookKey || isDropdownOpen);
 
   return (
     <div
@@ -203,17 +205,19 @@ const BookCellInner: React.FC<BookCellProps> = ({
         appServiceHasRoundedWindow && 'rounded-window',
       )}
     >
-      <HeaderBar
-        bookKey={bookKey}
-        gridInsets={chromeGridInsets}
-        screenInsets={screenInsets}
-        bookTitle={book.title}
-        isTopLeft={index === 0}
-        isHoveredAnim={isHoveredAnim}
-        onCloseBook={onCloseBook}
-        onGoToLibrary={onGoToLibrary}
-        onDropdownOpenChange={onDropdownOpenChange}
-      />
+      {ready && (
+        <HeaderBar
+          bookKey={bookKey}
+          gridInsets={chromeGridInsets}
+          screenInsets={screenInsets}
+          bookTitle={book.title}
+          isTopLeft={index === 0}
+          isHoveredAnim={isHoveredAnim}
+          onCloseBook={onCloseBook}
+          onGoToLibrary={onGoToLibrary}
+          onDropdownOpenChange={onDropdownOpenChange}
+        />
+      )}
       {/*
         bg-base-100: while the pull-down bookmark gesture translates this
         wrapper, the transform makes it a stacking context, which isolates the
@@ -233,6 +237,20 @@ const BookCellInner: React.FC<BookCellProps> = ({
             key={viewerKey}
             bookKey={bookKey}
             bookDoc={bookDoc}
+            bookTitle={book.title}
+            onRetry={() => {
+              void useReaderStore
+                .getState()
+                .initViewState(
+                  envConfig,
+                  bookKey.split('-')[0]!,
+                  bookKey,
+                  viewState.isPrimary,
+                  true,
+                )
+                .catch(() => {});
+            }}
+            onBack={onGoToLibrary}
             config={config}
             gridInsets={gridInsets}
             contentInsets={contentInsets}
@@ -268,7 +286,7 @@ const BookCellInner: React.FC<BookCellProps> = ({
               insets={viewInsets}
             />
           )}
-          {showHeader && (
+          {ready && showHeader && (
             <SectionInfo
               bookKey={bookKey}
               section={sectionLabel}
@@ -308,7 +326,7 @@ const BookCellInner: React.FC<BookCellProps> = ({
               gridInsets={gridInsets}
             />
           )}
-          {showFooter && (
+          {ready && showFooter && (
             <ProgressBar
               bookKey={bookKey}
               horizontalGap={horizontalGapPercent}
@@ -323,25 +341,29 @@ const BookCellInner: React.FC<BookCellProps> = ({
         {/* Ink stays in the same visual coordinate space as the live page. */}
         <HandwritingOverlay bookKey={bookKey} gridInsets={gridInsets} />
       </ReaderPageFrame>
-      <BookmarkPullDown bookKey={bookKey} ribbonHidden={!!hoveredBookKey} slideRef={slideRef} />
-      <PageNavigationButtons bookKey={bookKey} isDropdownOpen={isDropdownOpen} />
-      <SearchResultsNav bookKey={bookKey} gridInsets={gridInsets} />
-      <BooknotesNav bookKey={bookKey} gridInsets={gridInsets} toc={bookDoc.toc || []} />
-      <FootnotePopup bookKey={bookKey} bookDoc={bookDoc} gridInsets={gridInsets} />
-      {/* After FootnotePopup so the lookup popups stack above the footnote
+      {ready && (
+        <>
+          <BookmarkPullDown bookKey={bookKey} ribbonHidden={!!hoveredBookKey} slideRef={slideRef} />
+          <PageNavigationButtons bookKey={bookKey} isDropdownOpen={isDropdownOpen} />
+          <SearchResultsNav bookKey={bookKey} gridInsets={gridInsets} />
+          <BooknotesNav bookKey={bookKey} gridInsets={gridInsets} toc={bookDoc.toc || []} />
+          <FootnotePopup bookKey={bookKey} bookDoc={bookDoc} gridInsets={gridInsets} />
+          {/* After FootnotePopup so the lookup popups stack above the footnote
           popup (and its dismiss overlay) when the user selects text inside it.
           The selection toolbar no longer rides on this order — it has its own
           z-[43] band, above the footnote popup's z-[42] (#6145). */}
-      <Annotator bookKey={bookKey} contentInsets={contentInsets} gridInsets={gridInsets} />
-      <FooterBar
-        bookKey={bookKey}
-        bookFormat={book.format}
-        section={section}
-        pageinfo={pageinfo}
-        isHoveredAnim={false}
-        gridInsets={chromeGridInsets}
-      />
-      <ReadingStatsTracker bookKey={bookKey} />
+          <Annotator bookKey={bookKey} contentInsets={contentInsets} gridInsets={gridInsets} />
+          <FooterBar
+            bookKey={bookKey}
+            bookFormat={book.format}
+            section={section}
+            pageinfo={pageinfo}
+            isHoveredAnim={false}
+            gridInsets={chromeGridInsets}
+          />
+          <ReadingStatsTracker bookKey={bookKey} />
+        </>
+      )}
     </div>
   );
 };
